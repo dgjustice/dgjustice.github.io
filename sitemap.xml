@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+    xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+    xmlns:xhtml="http://www.w3.org/1999/xhtml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+                        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+ <url>
+  <loc>http://blog.wificidr.net/</loc>
+  <lastmod>2018-01-03T18:39:00Z</lastmod>
+ </url>
+ <url>
+  <loc>http://blog.wificidr.net/2018/</loc>
+  <lastmod>2018-01-03T16:20:00Z</lastmod>
+ </url>
+ <url>
+  <loc>http://blog.wificidr.net/archive.html</loc>
+  <lastmod>2018-01-03T18:41:00Z</lastmod>
+ </url>
+ <url>
+  <loc>http://blog.wificidr.net/categories/</loc>
+  <lastmod>2018-01-03T17:45:00Z</lastmod>
+ </url>
+ <url>
+  <loc>http://blog.wificidr.net/categories/calculus/</loc>
+  <lastmod>2018-01-03T17:43:00Z</lastmod>
+ </url>
+ <url>
+  <loc>http://blog.wificidr.net/pages/about/</loc>
+  <lastmod>2018-01-03T18:39:00Z</lastmod>
+ </url>
+ <url>
+  <loc>http://blog.wificidr.net/posts/about/</loc>
+  <lastmod>2018-01-03T18:27:00Z</lastmod>
+ </url>
+ <url>
+  <loc>http://blog.wificidr.net/posts/p-series-convergence/</loc>
+  <lastmod>2018-01-03T16:55:00Z</lastmod>
+ </url>
+</urlset>
