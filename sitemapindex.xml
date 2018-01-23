@@ -10,11 +10,19 @@
   <lastmod>2018-01-03T21:04:00Z</lastmod>
  </sitemap>
  <sitemap>
+  <loc>http://blog.wificidr.net/categories/circles.xml</loc>
+  <lastmod>2018-01-23T02:32:00Z</lastmod>
+ </sitemap>
+ <sitemap>
+  <loc>http://blog.wificidr.net/categories/vectors.xml</loc>
+  <lastmod>2018-01-23T02:32:00Z</lastmod>
+ </sitemap>
+ <sitemap>
   <loc>http://blog.wificidr.net/rss.xml</loc>
-  <lastmod>2018-01-03T21:04:00Z</lastmod>
+  <lastmod>2018-01-23T03:50:00Z</lastmod>
  </sitemap>
  <sitemap>
   <loc>http://blog.wificidr.net/sitemap.xml</loc>
-  <lastmod>2018-01-03T21:06:00Z</lastmod>
+  <lastmod>2018-01-23T03:50:00Z</lastmod>
  </sitemap>
 </sitemapindex>

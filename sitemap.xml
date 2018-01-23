@@ -7,7 +7,7 @@
                         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
  <url>
   <loc>http://blog.wificidr.net/</loc>
-  <lastmod>2018-01-03T18:39:00Z</lastmod>
+  <lastmod>2018-01-11T03:06:00Z</lastmod>
  </url>
  <url>
   <loc>http://blog.wificidr.net/2018/</loc>
@@ -15,22 +15,30 @@
  </url>
  <url>
   <loc>http://blog.wificidr.net/archive.html</loc>
-  <lastmod>2018-01-03T18:41:00Z</lastmod>
+  <lastmod>2018-01-23T03:50:00Z</lastmod>
  </url>
  <url>
   <loc>http://blog.wificidr.net/categories/</loc>
-  <lastmod>2018-01-03T17:45:00Z</lastmod>
+  <lastmod>2018-01-11T03:06:00Z</lastmod>
  </url>
  <url>
   <loc>http://blog.wificidr.net/categories/calculus/</loc>
   <lastmod>2018-01-03T17:43:00Z</lastmod>
  </url>
  <url>
+  <loc>http://blog.wificidr.net/categories/circles/</loc>
+  <lastmod>2018-01-11T03:06:00Z</lastmod>
+ </url>
+ <url>
+  <loc>http://blog.wificidr.net/categories/vectors/</loc>
+  <lastmod>2018-01-11T03:06:00Z</lastmod>
+ </url>
+ <url>
   <loc>http://blog.wificidr.net/pages/about/</loc>
   <lastmod>2018-01-03T18:39:00Z</lastmod>
  </url>
  <url>
-  <loc>http://blog.wificidr.net/posts/p-series-convergence/</loc>
-  <lastmod>2018-01-03T16:55:00Z</lastmod>
+  <loc>http://blog.wificidr.net/posts/project-euler-6/</loc>
+  <lastmod>2018-01-23T03:50:00Z</lastmod>
  </url>
 </urlset>
