@@ -6,11 +6,27 @@
     xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
                         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
  <sitemap>
-  <loc>http://blog.wificidr.net/rss.xml</loc>
-  <lastmod>2018-01-23T03:55:00Z</lastmod>
+  <loc>https://blog.wificidr.net/categories/math.xml</loc>
+  <lastmod>2018-05-16T22:50:00Z</lastmod>
  </sitemap>
  <sitemap>
-  <loc>http://blog.wificidr.net/sitemap.xml</loc>
-  <lastmod>2018-01-23T03:59:00Z</lastmod>
+  <loc>https://blog.wificidr.net/categories/pycon.xml</loc>
+  <lastmod>2018-05-16T22:50:00Z</lastmod>
+ </sitemap>
+ <sitemap>
+  <loc>https://blog.wificidr.net/categories/python.xml</loc>
+  <lastmod>2018-05-16T22:50:00Z</lastmod>
+ </sitemap>
+ <sitemap>
+  <loc>https://blog.wificidr.net/galleries/rss.xml</loc>
+  <lastmod>2018-05-16T22:51:00Z</lastmod>
+ </sitemap>
+ <sitemap>
+  <loc>https://blog.wificidr.net/rss.xml</loc>
+  <lastmod>2018-05-16T22:50:00Z</lastmod>
+ </sitemap>
+ <sitemap>
+  <loc>https://blog.wificidr.net/sitemap.xml</loc>
+  <lastmod>2018-05-16T22:51:00Z</lastmod>
  </sitemap>
 </sitemapindex>
