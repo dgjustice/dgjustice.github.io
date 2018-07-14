@@ -1,4 +1,0 @@
-Sitemap: https://blog.wificidr.net/sitemapindex.xml
-
-User-Agent: *
-Host: blog.wificidr.net
