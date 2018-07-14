@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html prefix="" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Testing with Flask and SQLAlchemy | WifiCIDR Blog</title>
+<link href="../../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../../../rss.xml">
+<link rel="canonical" href="https://blog.wificidr.net/posts/pytest-flask-sqlalchemy/pytest-flask-sqlalchemy/">
+<!--[if lt IE 9]><script src="../../../assets/js/html5.js"></script><![endif]--><meta name="author" content="Daniel Justice">
+<meta property="og:site_name" content="WifiCIDR Blog">
+<meta property="og:title" content="Testing with Flask and SQLAlchemy">
+<meta property="og:url" content="https://blog.wificidr.net/posts/pytest-flask-sqlalchemy/pytest-flask-sqlalchemy/">
+<meta property="og:description" content="Testing with PyTest, Flask, and SQLAlchemy¶I would like to walk through the process of developing tests using Flask and SQLAlchemy, and shed light on some of the pitfalls and gotchas along the way!
+Fl">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2018-07-14T02:43:38Z">
+</head>
+<body>
+    
+
+    <header id="header" class="navbar"><div class="container">
+            
+    <div class="brand">
+
+        <div class="brand-text">
+            <a href="https://blog.wificidr.net/" title="WifiCIDR Blog" rel="home">
+                WifiCIDR Blog
+            </a>
+        </div>
+
+        <a id="btn-toggle-nav" class="navbar-toggle">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </a>
+    </div>
+
+            
+    <nav class="navbar-collapse collapse"><ul class="nav">
+<li><a href="../../../archive.html">Archive</a></li>
+                <li><a href="../../../categories/">Tags</a></li>
+                <li><a href="../../../rss.xml">RSS feed</a></li>
+    
+    
+    </ul></nav>
+</div>
+    </header><div class="header-padding"> </div>
+
+    
+    <div class="post-header">
+        <div class="container">
+            <div class="title">
+                Testing with Flask and SQLAlchemy
+            </div>
+        </div>
+    </div>
+
+    <div class="post-meta">
+      <div class="container">
+	<div class="meta clearfix">
+	  <div class="authordate">
+	    <time class="timeago" datetime="2018-07-14T02:43:38+00:00">2018/07/14</time>
+	    
+
+	    
+          |  
+        <a href="index.ipynb" id="sourcelink">Source</a>
+
+	  </div>
+	  <div class="post-tags">
+	  </div>
+	</div>
+      </div>
+    </div>
+    
+    
+    <div id="post-main" class="main">
+        <div class="container">
+        <div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Testing-with-PyTest,-Flask,-and-SQLAlchemy">Testing with PyTest, Flask, and SQLAlchemy<a class="anchor-link" href="#Testing-with-PyTest,-Flask,-and-SQLAlchemy">¶</a>
+</h2>
+<p>I would like to walk through the process of developing tests using Flask and SQLAlchemy, and shed light on some of the pitfalls and gotchas along the way!</p>
+<p><a href="http://flask.pocoo.org/">Flask</a> is a popular web framework in Python that is commonly used to build many kinds of web projects.  It is pretty easy to hack together everything from small websites to REST API's by leveraging a litany of available extentions (<a href="https://flask-restful.readthedocs.io/en/latest/">Flask-Restful</a>, <a href="https://flask-restplus.readthedocs.io/en/latest/">Flask-Restplus</a>, <a href="http://flask-sqlalchemy.pocoo.org/latest/">Flask-SQLAlchemy</a>, etc.).  A very common combination is to use Flask with SQLAlchemy as the ORM.  At some point in your career, you are probably going to be required to write tests, whether these are unit tests or integration tests.  This may be dictated by project requirements or simply to reduce the complexity of finding bugs in your own code.</p>
+<h4 id="Assumptions">Assumptions<a class="anchor-link" href="#Assumptions">¶</a>
+</h4>
+<p>I assume you are quite comfortable with:</p>
+<ul>
+<li>Python</li>
+<li>Flask</li>
+<li>App factories</li>
+<li>SQLAlchemy</li>
+</ul>
+<p>And have a working knowledge of:</p>
+<ul>
+<li>PyTest</li>
+<li>Unittest  </li>
+</ul>
+<p>We are not writing an app; we are disecting snippets.</p>
+<h4 id="Rabbit-holes">Rabbit holes<a class="anchor-link" href="#Rabbit-holes">¶</a>
+</h4>
+<ul>
+<li>I'm not here to weigh in on Flask vs. Django vs. [insert your favorite framework].  I am leveraging personal experience discovered on the job.  Like me, <em>you may not be able to choose what tools you use</em> at all times.</li>
+<li>I have a personal preference for PyTest, but you should also be very familiar with unittest.  This example uses both to some extent.  </li>
+<li>Lastly, there are many heated debates around testing, what kind, when, where and if.  I feel very strongly that testing is necessary in "production" code.  I believe there is a delicate balance between unit tests and integration tests.  </li>
+</ul>
+<p>I am here to act as a guide and hopefully provide some hints for your own journey.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="The-application">The application<a class="anchor-link" href="#The-application">¶</a>
+</h3>
+<p>I have put together a very small application, but written in a way that you might encounter on a larger project (not the typical monolithic file you commonly find in tutorials).  I will be using this <a href="https://github.com/dgjustice/flask_pytest">repository</a> throughout this post.  We will use yet another messaging app, but this one has much less functionality than other examples you have seen.  There is a single GET method (<code>show_messages</code>) that returns a list of messages mapped to an <em>authenticated</em> user.  The user object is attached to <code>Flask.g</code> when the <code>login_required</code> decorator fires.</p>
+<p>The app leverages an <a href="http://flask.pocoo.org/docs/1.0/tutorial/factory/">app factory</a>, a <a href="http://flask.pocoo.org/docs/1.0/blueprints/">Blueprint</a>, and a back-end database running SQLite in memory.  The database provider is not relevant here since we are focused on interaction with the ORM, not what is under the covers.  The app factory method is located in <a href="https://github.com/dgjustice/flask_pytest/blob/rough_draft/src/app.py"><code>src/app.py</code></a>.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="The-model">The model<a class="anchor-link" href="#The-model">¶</a>
+</h3>
+<p>The app uses a very simple model.  We have users and messages.  A message is related to a user by the <code>username</code> foreign key. This is vanilla SQLAlcehmy.</p>
+<div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">DB</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">"""Model representing a user object."""</span>
+    <span class="n">username</span> <span class="o">=</span> <span class="n">DB</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">DB</span><span class="o">.</span><span class="n">String</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">password</span> <span class="o">=</span> <span class="n">DB</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">DB</span><span class="o">.</span><span class="n">String</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">nick</span> <span class="o">=</span> <span class="n">DB</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">DB</span><span class="o">.</span><span class="n">String</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">Message</span><span class="p">(</span><span class="n">DB</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">"""Message model."""</span>
+    <span class="n">message_id</span> <span class="o">=</span> <span class="n">DB</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">DB</span><span class="o">.</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">autoincrement</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">username</span> <span class="o">=</span> <span class="n">DB</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">DB</span><span class="o">.</span><span class="n">String</span><span class="p">,</span> <span class="n">DB</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
+        <span class="n">f</span><span class="s2">"{User.__tablename__}.username"</span>
+    <span class="p">),</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">message_text</span> <span class="o">=</span> <span class="n">DB</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">DB</span><span class="o">.</span><span class="n">String</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="The-message-view">The message view<a class="anchor-link" href="#The-message-view">¶</a>
+</h3>
+<p>The interesting bit of code in is located in the <a href="https://github.com/dgjustice/flask_pytest/blob/rough_draft/src/message_bp.py"><code>src/message_bp.py</code></a> file.  The <code>show_messages</code> method could be implemented more easily using an <a href="http://flask.pocoo.org/extensions/">extension</a>.  Please note the authentication decorator that enforces who can view which posts <a href="https://github.com/dgjustice/flask_pytest/blob/rough_draft/src/auth.py"><code>src/auth.py</code></a>.  The <code>Flask.g</code> object stores the current user in the request context, queried from the database upon login.  This is wrapped up in a Response object and sent back to the client.</p>
+<div class="highlight"><pre><span></span><span class="n">BP</span> <span class="o">=</span> <span class="n">Blueprint</span><span class="p">(</span><span class="s2">"app"</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">)</span>
+
+<span class="nd">@BP.route</span><span class="p">(</span><span class="s2">"/messages"</span><span class="p">)</span>
+<span class="nd">@AUTH.login_required</span>
+<span class="k">def</span> <span class="nf">show_messages</span><span class="p">():</span>
+    <span class="sd">"""Show messages by user."""</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">messages</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">Message</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+            <span class="n">m</span><span class="o">.</span><span class="n">Message</span><span class="o">.</span><span class="n">username</span> <span class="o">==</span> <span class="n">g</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">username</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="k">except</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">exc</span><span class="o">.</span><span class="n">SQLAlchemyError</span><span class="p">:</span>
+        <span class="n">abort</span><span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="s2">"Could not retrieve records from the DB."</span><span class="p">)</span>
+    <span class="n">resp_text</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">([</span>
+        <span class="p">{</span>
+            <span class="s2">"user"</span><span class="p">:</span> <span class="n">message</span><span class="o">.</span><span class="n">username</span><span class="p">,</span>
+            <span class="s2">"message_text"</span><span class="p">:</span> <span class="n">message</span><span class="o">.</span><span class="n">message_text</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="n">messages</span>
+    <span class="p">])</span>
+    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">resp_text</span><span class="p">,</span> <span class="n">mimetype</span><span class="o">=</span><span class="s2">"application/json"</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Testing-with-Flask-and-PyTest---intro">Testing with Flask and PyTest - intro<a class="anchor-link" href="#Testing-with-Flask-and-PyTest---intro">¶</a>
+</h3>
+<p>I first learned <a href="https://docs.python.org/3/library/unittest.html">unittest</a>, and fell in love with <a href="https://docs.pytest.org/en/latest/">PyTest</a> the first time I used it.  This code could easily be adapted to <code>unittest</code>.</p>
+<p>Flask provides a nice <a href="http://flask.pocoo.org/docs/1.0/testing/">testing</a> mini-framework that we will utilize along the way.  Keep in mind that the techniques required to test Flask also apply to any of its extensions.  The main "gotcha" that fellow developers run into is when dealing with an applicaiton or request context.  The simplest way to deal with this is to use Flask's built-in <code>test_client</code>.  Let's take a stab at testing our <code>show_messages</code> method!</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="First-attempt---integration-testing">First attempt - integration testing<a class="anchor-link" href="#First-attempt---integration-testing">¶</a>
+</h3>
+<p>The easist, fastest way to get started with testing your Flask application is have all of the components in place and test the entire system.  Many developers start the coding process with a test database that contains replicas of production data.  This makes debugging as you code pretty simple and has the advantage of working with "real" objects.  You might even have an SQL script that sets up tables in a fresh DB instance before the tests are run.  I have written a Python script that uses the ORM to load our test objects into the SQLite instance.  It is located at <a href="https://github.com/dgjustice/flask_pytest/blob/rough_draft/tests/load_db_data.py"><code>tests/load_db_data.py</code></a>.  Our test runner lives in <a href="https://github.com/dgjustice/flask_pytest/blob/rough_draft/tests/test_messages.py"><code>tests/test_messages.py</code></a>.  I wrote a fixture (similar to unittest's <code>setUp</code>) that loads the DB and creates and application instance.  This fixture is passed to each of the test methods.  Here's our first test:</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">test_get_message_200</span><span class="p">(</span><span class="n">app_inst</span><span class="p">):</span>
+    <span class="sd">"""Send a GET with good auth and expect a message."""</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">app_inst</span><span class="o">.</span><span class="n">test_client</span><span class="p">()</span>
+    <span class="n">auth_str</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="sa">b</span><span class="s2">"foo:foo_pass"</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">)</span>
+    <span class="n">rv</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/app/messages"</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">"Authorization"</span><span class="p">:</span> <span class="n">f</span><span class="s2">"Basic {auth_str}"</span><span class="p">})</span>
+    <span class="k">assert</span> <span class="n">rv</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+    <span class="k">assert</span> <span class="sa">b</span><span class="s1">'"user": "foo"'</span> <span class="ow">in</span> <span class="n">rv</span><span class="o">.</span><span class="n">data</span>
+</pre></div>
+<p>The <code>test_client</code> is provided by Flask.  I also like using <a href="http://docs.python-requests.org/en/master/">requests</a> for integration tests with larger projects.  The auth string is built by base64-encoding a known username and password (setup in the <code>init_db</code> method).  These are wrapped up and sent to the application instance and we make assertions based on <strong>known database state</strong>.  That last part is critical because the test cannot run successfully without the database instance existing, and more importantly, containing data relevant to the test.</p>
+<div class="highlight"><pre><span></span><span class="err">$</span> <span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">pytest</span> <span class="n">tests</span>
+
+<span class="n">platform</span> <span class="n">darwin</span> <span class="o">--</span> <span class="n">Python</span> <span class="mf">3.7</span><span class="o">.</span><span class="mi">0</span><span class="p">,</span> <span class="n">pytest</span><span class="o">-</span><span class="mf">3.6</span><span class="o">.</span><span class="mi">3</span><span class="p">,</span> <span class="n">py</span><span class="o">-</span><span class="mf">1.5</span><span class="o">.</span><span class="mi">4</span><span class="p">,</span> <span class="n">pluggy</span><span class="o">-</span><span class="mf">0.6</span><span class="o">.</span><span class="mi">0</span>
+<span class="n">rootdir</span><span class="p">:</span> <span class="n">pydocker</span><span class="p">,</span> <span class="n">inifile</span><span class="p">:</span>
+<span class="n">collected</span> <span class="mi">2</span> <span class="n">items</span>
+
+<span class="n">tests</span><span class="o">/</span><span class="n">test_messages</span><span class="o">.</span><span class="n">py</span> <span class="o">..</span>                                                                                                                                                                                                              <span class="p">[</span><span class="mi">100</span><span class="o">%</span><span class="p">]</span>
+
+<span class="mi">2</span> <span class="n">passed</span> <span class="ow">in</span> <span class="mf">0.30</span> <span class="n">seconds</span>
+</pre></div>
+<p>Requiring a certain database state (or any other external state) is the Achiles heel of integration testing.  We are really interested in testing our business logic, right?  We trust that the core developers of Flask and SQLAlchemy have tested their modules; we're more interestd in testing <em>our own business logic</em>.  Also, if you are using an on-disk database that lives on a VM that sits in a cloud that sits on spinning hard disks... your tests will be <strong>slow</strong>!  You don't want to shower the Twitter API with automated test calls, either.  How can we avoid these problems, is there a better way?  Yes, but before we look, remember that integration tests are a <strong>critical component</strong> of the overall development process!  They have their place and it is up to you and your team to determine which method is most appropriate for each situation.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="The-dreaded-unit-test">The dreaded unit test<a class="anchor-link" href="#The-dreaded-unit-test">¶</a>
+</h3>
+<p>Dreaded?  Yeah, I certainly think so - but I hope you see the light before we are done.  Writing unit tests with Flask and SQLAlchemy means that you have to decouple application test state and dependencies such as the database connection or calls to 3rd-party API's.  This is a non-trivial task that requires a working knowledge of mocking and patches.  As a prerequisite, I highly recommend this <a href="https://youtu.be/ww1UsGZV8fQ">video</a> from PyCon 2018 by Lisa Roach.</p>
+<p>If you refer back to the <code>show_messages</code> method above, you will see a couple issues right off the bat.  First and ugliest is that <code>login_required</code> decorator.  The next issue is the database query.  Heck, let's throw some code at it and see what happens!  I'll monkeypatch the ORM object as well as the decorator:</p>
+<div class="highlight"><pre><span></span><span class="nd">@patch</span><span class="p">(</span><span class="s2">"src.message_bp.m.Message"</span><span class="p">)</span>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">"src.message_bp.AUTH"</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_show_messages_mock</span><span class="p">(</span><span class="n">mock_m</span><span class="p">,</span> <span class="n">app_inst</span><span class="p">):</span>
+    <span class="sd">"""Send a GET with good auth and expect a message."""</span>
+    <span class="n">mock_m</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">return_value</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"foo"</span><span class="p">,</span> <span class="s2">"bar"</span><span class="p">]</span>
+    <span class="k">with</span> <span class="n">app_inst</span><span class="o">.</span><span class="n">test_request_context</span><span class="p">(</span><span class="s2">"/app/messages"</span><span class="p">):</span>
+        <span class="c1"># Calling the method directly returns a response object</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="n">show_messages</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+</pre></div>
+<p><code>python -m pytest tests/</code> results in:</p>
+<div class="highlight"><pre><span></span><span class="n">mock_m</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">MagicMock</span> <span class="n">name</span><span class="o">=</span><span class="s1">'Message'</span> <span class="nb">id</span><span class="o">=</span><span class="s1">'4350213424'</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">app_inst</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">Flask</span> <span class="s1">'src.app'</span><span class="o">&gt;</span>
+
+<span class="o">...</span>
+<span class="o">&gt;</span>           <span class="k">assert</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+<span class="n">E</span>           <span class="k">assert</span> <span class="mi">401</span> <span class="o">==</span> <span class="mi">200</span>
+<span class="n">E</span>            <span class="o">+</span>  <span class="n">where</span> <span class="mi">401</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">Response</span> <span class="mi">19</span> <span class="nb">bytes</span> <span class="p">[</span><span class="mi">401</span> <span class="n">UNAUTHORIZED</span><span class="p">]</span><span class="o">&gt;.</span><span class="n">status_code</span>
+
+<span class="n">tests</span><span class="o">/</span><span class="n">test_messages</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">47</span><span class="p">:</span> <span class="ne">AssertionError</span>
+</pre></div>
+<p>What happened?  The problem with the decorator object is that it evaluated at <em>import time</em> and we're trying to patch it at <em>run time</em>.  Nuts, that will be kind of hard to work around, right?  This is where I would like to make my first major point.</p>
+<p>-&gt; When refactoring code during tests or using TDD, think of ways to make your code <strong>testable</strong>.  Constantly ask yourself if you can break things into functional pieces or if you need to strip out dependent code.</p>
+<p>How can we do that to <code>show_messages</code>?  The first thing that comes to mind is to gut the entire method and move it to its own function.  Here's our new version:</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_messages</span><span class="p">():</span>
+    <span class="sd">"""Retrieve messages from the DB by user."""</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">messages</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">Message</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+            <span class="n">m</span><span class="o">.</span><span class="n">Message</span><span class="o">.</span><span class="n">username</span> <span class="o">==</span> <span class="n">g</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">username</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="k">except</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">exc</span><span class="o">.</span><span class="n">SQLAlchemyError</span><span class="p">:</span>
+        <span class="n">abort</span><span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="s2">"Could not retrieve records from the DB."</span><span class="p">)</span>
+    <span class="n">resp_text</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">([</span>
+        <span class="p">{</span>
+            <span class="s2">"user"</span><span class="p">:</span> <span class="n">message</span><span class="o">.</span><span class="n">username</span><span class="p">,</span>
+            <span class="s2">"message_text"</span><span class="p">:</span> <span class="n">message</span><span class="o">.</span><span class="n">message_text</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="n">messages</span>
+    <span class="p">])</span>
+    <span class="k">return</span> <span class="n">resp_text</span>
+
+<span class="nd">@BP.route</span><span class="p">(</span><span class="s2">"/messages"</span><span class="p">)</span>
+<span class="nd">@AUTH.login_required</span>
+<span class="k">def</span> <span class="nf">show_messages</span><span class="p">():</span>
+    <span class="sd">"""Show messages by user."""</span>
+    <span class="n">resp_text</span> <span class="o">=</span> <span class="n">get_messages</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">resp_text</span><span class="p">,</span> <span class="n">mimetype</span><span class="o">=</span><span class="s2">"application/json"</span><span class="p">)</span>
+</pre></div>
+<p>At this point, we can still leverage our previous integration tests to make sure we didn't break anything.  Here is where we make our first testing detour.  Now, <code>show_messages</code> lends itself well to an integration test, but it's so simple and concise that we really don't have anything to test as a "unit"... except for that new method we created.  It doesn't have any decorator magic that we need to hack around, so let's see if it can be tested by itself.  The new test function:</p>
+<div class="highlight"><pre><span></span><span class="nd">@patch</span><span class="p">(</span><span class="s2">"src.message_bp.m"</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_show_messages_mock</span><span class="p">(</span><span class="n">mock_m</span><span class="p">,</span> <span class="n">app_inst</span><span class="p">):</span>
+    <span class="sd">"""Send a GET with good auth and expect a message."""</span>
+    <span class="c1"># This could be done in a much better way, keep reading!</span>
+    <span class="n">mock_m</span><span class="o">.</span><span class="n">Message</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">return_value</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">Message</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s2">"test"</span><span class="p">,</span> <span class="n">message_text</span><span class="o">=</span><span class="s2">"test_text"</span><span class="p">),</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">Message</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s2">"test"</span><span class="p">,</span> <span class="n">message_text</span><span class="o">=</span><span class="s2">"test_text2"</span><span class="p">),</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">Message</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s2">"test2"</span><span class="p">,</span> <span class="n">message_text</span><span class="o">=</span><span class="s2">"test_text"</span><span class="p">),</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">Message</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s2">"test2"</span><span class="p">,</span> <span class="n">message_text</span><span class="o">=</span><span class="s2">"test_text2"</span><span class="p">),</span>
+    <span class="p">]</span>
+    <span class="n">resp</span> <span class="o">=</span> <span class="n">get_messages</span><span class="p">()</span>
+    <span class="c1"># Now, we're checking for actual data instead of messing with response codes.</span>
+    <span class="k">assert</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span> <span class="o">==</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s2">"user"</span><span class="p">:</span> <span class="s2">"test"</span><span class="p">,</span> <span class="s2">"message_text"</span><span class="p">:</span> <span class="s2">"test_text"</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">"user"</span><span class="p">:</span> <span class="s2">"test"</span><span class="p">,</span> <span class="s2">"message_text"</span><span class="p">:</span> <span class="s2">"test_text2"</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">"user"</span><span class="p">:</span> <span class="s2">"test2"</span><span class="p">,</span> <span class="s2">"message_text"</span><span class="p">:</span> <span class="s2">"test_text"</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">"user"</span><span class="p">:</span> <span class="s2">"test2"</span><span class="p">,</span> <span class="s2">"message_text"</span><span class="p">:</span> <span class="s2">"test_text2"</span><span class="p">}</span>
+    <span class="p">]</span>
+</pre></div>
+<p>If we give that a shot, where does that leave us?</p>
+<div class="highlight"><pre><span></span><span class="n">src</span><span class="o">/</span><span class="n">message_bp</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">14</span><span class="p">:</span> <span class="ow">in</span> <span class="n">get_messages</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">Message</span><span class="o">.</span><span class="n">username</span> <span class="o">==</span> <span class="n">g</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">username</span>
+<span class="o">...</span>
+<span class="bp">self</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">flask</span><span class="o">.</span><span class="n">g</span> <span class="n">of</span> <span class="s1">'src.app'</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">'user'</span>
+
+    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">'__members__'</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">dir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_current_object</span><span class="p">())</span>
+<span class="o">&gt;</span>       <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_current_object</span><span class="p">(),</span> <span class="n">name</span><span class="p">)</span>
+<span class="n">E</span>       <span class="ne">AttributeError</span><span class="p">:</span> <span class="s1">'_AppCtxGlobals'</span> <span class="nb">object</span> <span class="n">has</span> <span class="n">no</span> <span class="n">attribute</span> <span class="s1">'user'</span>
+</pre></div>
+<p>Well, snap, the pesky <code>g</code> isn't playing nice now.  That's actually an easy fix!  Since we are setting up a test context, all we have to do is manually set something on that object.  The <em>query itself is being mocked</em>, so it's value has no use to us.  Another key point:</p>
+<p>-&gt; You cannot call SQLAlchemy queries or modifiy <code>Flask.g</code> outside of a request or application context.  This applies <em>even if you are mocking other dependent methods</em>.</p>
+<div class="highlight"><pre><span></span><span class="o">...</span>
+    <span class="c1"># You *must* use an application or request context when dealing with Flask.g !!!</span>
+    <span class="k">with</span> <span class="n">app_inst</span><span class="o">.</span><span class="n">test_request_context</span><span class="p">(</span><span class="s2">"/app/messages"</span><span class="p">):</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s2">"not a user"</span><span class="p">)</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="n">get_messages</span><span class="p">()</span>
+    <span class="o">...</span>
+</pre></div>
+<p>I personally believe working through this kind of refactoring is a great exercise.  I think the best tests are ones that focus on small chunks of code.  Also, never forget <em>what</em> you want to test.  If you want to test business logic, then test business logic!  For example, in the above messages view, what if you needed to perform a calculation or combine that data with something from another source?  I would even factor out the DB call to its own method that simply return a list of (possibly serialized) objects.  Methods that return simple objects (even ORM objects) are really quite easy to factor out and test.  I'll come back to this after...</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="A-shout-out-to-Faker!">A shout-out to Faker!<a class="anchor-link" href="#A-shout-out-to-Faker!">¶</a>
+</h3>
+<p>Do you ever get tired of coming up with mock data?  Then check out <a href="http://faker.rtfd.org">Faker</a>!  I cringed a little when I wrote the mock data above, but I wanted to use it as a pet example.  You can easily refactor it to something like this:</p>
+<div class="highlight"><pre><span></span><span class="n">mock_m</span><span class="o">.</span><span class="n">Message</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">return_value</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">Message</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">FAKER</span><span class="o">.</span><span class="n">word</span><span class="p">(),</span> <span class="n">message_text</span><span class="o">=</span><span class="n">FAKER</span><span class="o">.</span><span class="n">text</span><span class="p">())</span>
+            <span class="k">for</span> <span class="n">number</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10000</span><span class="p">)</span>
+    <span class="p">]</span>
+</pre></div>
+<p>Isn't that so much better?!  In the final version of this code, I create 10k objects in the unit test and in the integration tests.  Even with an in-memory SQLite database, the unit tests run about 3 times faster due to the overhead of the DB.  This will only get worse as your project scales or with more complex providers.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Unit-test-finale">Unit test finale<a class="anchor-link" href="#Unit-test-finale">¶</a>
+</h3>
+<p>Finally, I put the query in a standalone function and try to come up with better names.</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">query_message_by_user</span><span class="p">():</span>
+    <span class="sd">"""Retrieve messages from the DB by user."""</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">message_objs</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">Message</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+            <span class="n">m</span><span class="o">.</span><span class="n">Message</span><span class="o">.</span><span class="n">username</span> <span class="o">==</span> <span class="n">g</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">username</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="k">except</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">exc</span><span class="o">.</span><span class="n">SQLAlchemyError</span><span class="p">:</span>
+        <span class="n">abort</span><span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="s2">"Could not retrieve records from the DB."</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">message_objs</span>
+
+<span class="k">def</span> <span class="nf">retrieve_message_text</span><span class="p">():</span>
+    <span class="sd">"""Retrieve messages from database and return JSON string."""</span>
+    <span class="n">messages</span> <span class="o">=</span> <span class="n">query_message_by_user</span><span class="p">()</span>
+    <span class="o">...</span>
+</pre></div>
+<p>That requires a slight change to our unit test patch.</p>
+<div class="highlight"><pre><span></span><span class="c1"># Note that we're patching the `query_message...` method and not the DB call.</span>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">"src.message_bp.query_message_by_user"</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_retrieve_message_text</span><span class="p">(</span><span class="n">mock_q</span><span class="p">,</span> <span class="n">app_inst</span><span class="p">):</span>
+    <span class="sd">"""Send a GET with good auth and expect a message."""</span>
+    <span class="n">mock_q</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">Message</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">FAKER</span><span class="o">.</span><span class="n">word</span><span class="p">(),</span> <span class="n">message_text</span><span class="o">=</span><span class="n">FAKER</span><span class="o">.</span><span class="n">text</span><span class="p">())</span>
+            <span class="k">for</span> <span class="n">number</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10000</span><span class="p">)</span>
+    <span class="p">]</span>
+    <span class="k">with</span> <span class="n">app_inst</span><span class="o">.</span><span class="n">test_request_context</span><span class="p">(</span><span class="s2">"/app/messages"</span><span class="p">):</span>
+        <span class="c1"># You *must* use an application or request context when dealing with Flask.g !!!</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s2">"not a user"</span><span class="p">)</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="n">retrieve_message_text</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span>
+</pre></div>
+<p>You may be wondering why make such a small change.  The <code>retrieve_message_text</code> is now streamlined down to its core logic.  This is a pet example, but this is where that critical business logic should live.  It also frees you to deal with DB queries and error handling without polluting this method with exception-handling.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="In-conclusion">In conclusion<a class="anchor-link" href="#In-conclusion">¶</a>
+</h3>
+<p>This post assumes a lot of prior knowledge in an attempt to make a subtle point.  My goal was to focus on the process of refactoring your code to make it more testable.  The techniques are the same regardless of the test framework you are using in Python.  Flask and SQLAlchemy present some unique challenges of their own and sometimes require delicate handling.  In closing, if you are struggling with a mock or return data, take a step back and see if you can factor the troublesome code into another method.  At that point you might be able to simply patch the method instead of the data itself (as in the last example).  I have learned the hard way that testing is much more art than science.  I hope this helps, and feel free to leave comments on my repo!</p>
+<ul>
+<li><a href="https://github.com/dgjustice/dgjustice.github.io">blog.wificidr.net repo</a></li>
+<li><a href="https://github.com/dgjustice/flask_pytest">Code used in this post</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+        
+    
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML" integrity="sha256-SDRP1VVYu+tgAGKhddBSl5+ezofHKZeI+OzxakbIe/Y=" crossorigin="anonymous"></script><script type="text/x-mathjax-config">
+        MathJax.Hub.Config({tex2jax: {inlineMath: [['$latex ','$'], ['\\(','\\)']]}});
+        </script>
+</div>
+    </div>
+
+    
+    <footer><div class="container">
+            <div class="social">
+
+
+
+                <div class="social-entry">
+                    <a href="../../../rss.xml" target="_blank">
+                        <i class="fa fa-rss"></i> 
+                    </a>
+                </div>
+            </div>
+                <div class="copyright">
+                    Contents © 2018         <a href="mailto:djustice@wificidr.net">Daniel Justice</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+                    
+                </div>
+           
+        </div>
+    </footer><script src="../../../assets/js/all-nocdn.js" type="text/javascript"></script>
+</body>
+</html>
