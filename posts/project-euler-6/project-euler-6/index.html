@@ -11,7 +11,7 @@
 <meta property="og:site_name" content="WifiCIDR Blog">
 <meta property="og:title" content="Project Euler #6">
 <meta property="og:url" content="https://blog.wificidr.net/posts/project-euler-6/project-euler-6/">
-<meta property="og:description" content="Project Euler problem 6¶I stumbled across Project Euler (at Hacker Rank or at Project Euler) a while back, and it has been a low item on my to-do list for some time.  It can be quite frustrating at fi">
+<meta property="og:description" content="Project Euler problem 6¶I stumbled across Project Euler (at HackerRank or at Project Euler) a while back, and it has been a low item on my to-do list for some time.  It can be quite frustrating at fir">
 <meta property="og:type" content="article">
 <meta property="article:published_time" content="2018-01-22T20:35:26-06:00">
 <meta property="article:tag" content="math">
@@ -91,13 +91,13 @@
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Project-Euler-problem-6">Project Euler problem 6<a class="anchor-link" href="#Project-Euler-problem-6">¶</a>
 </h3>
-<p>I stumbled across Project Euler (at <a href="https://www.hackerrank.com/contests/projecteuler/challenges/euler006">Hacker Rank</a> or at <a href="https://projecteuler.net/">Project Euler</a>) a while back, and it has been a low item on my to-do list for some time.  It can be quite frustrating at first, but I find it rewarding each time I unlock a little piece of the mathematical puzzle.  Of course you can cheat, but that completely defeats the purpose and harms no one but yourself.  I hope I can demonstrate why with this example.</p>
+<p>I stumbled across Project Euler (at <a href="https://www.hackerrank.com/contests/projecteuler/challenges/euler006">HackerRank</a> or at <a href="https://projecteuler.net/">Project Euler</a>) a while back, and it has been a low item on my to-do list for some time.  It can be quite frustrating at first, but I find it rewarding each time I unlock a little piece of the mathematical puzzle.  Of course you can cheat, but that completely defeats the purpose and harms no one but yourself.  I hope I can demonstrate why with this example.</p>
 <ul>
-<li>On a side note, Hacker Rank typically penalizes you for brute force methods.  They force you to really think about the problems.</li>
+<li>On a side note, HackerRank typically penalizes you for brute force methods.  They force you to really think about the problems.</li>
 </ul>
 <p><a href="https://projecteuler.net/problem=6">Problem 6</a> asks, "Find the difference between the sum of the squares of the first one hundred natural numbers and the square of the sum."  In other words, what is 
 $$ \big|\big(\sum_1^n n\big)^2 - \big(\sum_1^n n^2\big)\big| $$</p>
-<p>I was already familiar with <a href="http://mathandmultimedia.com/2010/09/15/sum-first-n-positive-integers/">Gauss's method</a> of summing the first series of natural numbers.  What I did not know how to do was to sum their squares.  The brute force method will yield a result, but Hacker Rank will penalize you with a timeout if you go that route.  I chose to dig deeper...</p>
+<p>I was already familiar with <a href="http://mathandmultimedia.com/2010/09/15/sum-first-n-positive-integers/">Gauss's method</a> of summing the first series of natural numbers.  What I did not know how to do was to sum their squares.  The brute force method will yield a result, but HackerRank will penalize you with a timeout if you go that route.  I chose to dig deeper...</p>
 <h4 id="A-row-of-boxes">A row of boxes<a class="anchor-link" href="#A-row-of-boxes">¶</a>
 </h4>
 <p>Nothing beats a little chair time with pencil and paper.  I suspected a strong link between geometry and the answer to this problem, so I started drawing squares on my graph paper.</p>
@@ -107,9 +107,17 @@ $$ \sum_1^n n=\frac{n(n+1)}{2} $$</p>
 <p>Therefore, to find the area of the enclosing rectangle, we simply multiply the sum from above by our 'n'.  Now, we need to account for all those little strips of triangle numbers that are left over on top of the squares.  I have to admit, I spent quite a bit of time on this one and simply got stuck.  I knew I needed to find another sum, but this time the series is the sum of the triangle numbers themselves.  I needed to find a formula for the series 1, 4, 10, 20, 35...</p>
 <h4 id="Tetrahedral-Numbers">Tetrahedral Numbers<a class="anchor-link" href="#Tetrahedral-Numbers">¶</a>
 </h4>
-<p>EDIT: There is an off-by-one error below.  I will rewrite this to clarify when I get time.<br>
-In an attempt to not ruin the learning process, I did an internet search for the mystery series.  I immediately came across this article on <a href="https://en.wikipedia.org/wiki/Tetrahedral_number">tetrahedral numbers</a>.  This was my extra quantity!  To find the sum of a series of squares, subtract the nth tetrahedral number from the area of the rectangle that overlays the boxes.  Finally, the sum of a series of squares can be found by:
-$$ \sum_1^n n^2=n * \frac{n(n+1)}{2} - \frac{n(n+1)(n+2)}{6} $$</p>
+<p>In an attempt to not ruin the learning process, I did an internet search for the mystery series.  I immediately came across this article on <a href="https://en.wikipedia.org/wiki/Tetrahedral_number">tetrahedral numbers</a>.  This was my extra quantity!  To find the sum of a series of squares, subtract the (n - 1)th tetrahedral number from the area of the rectangle that overlays the boxes.</p>
+<p>The tetrahedral numbers are easily visualized if you think of a triangular tower of spheres as in this image:<br><img src="https://upload.wikimedia.org/wikipedia/commons/8/87/Pyramid_of_35_spheres_animation_original.gif" alt=""></p>
+<p><small>By Blotwell [GFDL (http://www.gnu.org/copyleft/fdl.html), CC-BY-SA-3.0 (http://creativecommons.org/licenses/by-sa/3.0/) or GPL (http://www.gnu.org/licenses/gpl.html)], from Wikimedia Commons</small></p>
+<p>If you start taking apart the tower, the spheres perfectly fill in the gaps in the stack of rectangles above.  If you get really bored, you can validate this like I did with a bunch of blocks and marbles.  These items are readily available if you have kids.  One last bit worth noting is that we only need (n - 1) tetrahedral numbers because we don't need to fill in the last row.</p>
+<p>Finally, the sum of a series of squares can be found by:
+$$ \sum_1^n n^2=n * \frac{n(n+1)}{2} - \frac{(n - 1)(n)(n+1)}{6} $$</p>
+<p>$$ =\frac{n^3+n^2}{2} - \frac{(n^2-n)(n+1)}{6} $$</p>
+<p>$$ =\frac{n^3+n^2}{2} - \frac{n^3+n^2-n^2-n}{6} $$</p>
+<p>$$ =\frac{3(n^3+n^2)}{6} - \frac{n^3-n}{6} $$</p>
+<p>$$ =\frac{3n^3+3n^2-n^3+n}{6} $$</p>
+<p>$$ \sum_1^n n^2=\frac{2n^3+3n^2+n}{6} $$</p>
 <h4 id="Why-does-this-matter?">Why does this matter?<a class="anchor-link" href="#Why-does-this-matter?">¶</a>
 </h4>
 <p>Not to sound overly cliché, but it is easy, often too easy, to find answers to all of our questions at our fingertips.  For example, if you want to cut right to the chase, you could have a look at <a href="http://www.mathblog.dk/project-euler-problem-6/">this answer</a>.  Be sure to take a look at the <a href="https://trans4mind.com/personal_development/mathematics/series/sumNaturalSquares.htm">proof</a> as well.  Both posts are respectable, but I think they hide the intuition in the formulas.</p>

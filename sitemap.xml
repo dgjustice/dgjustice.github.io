@@ -7,7 +7,7 @@
                         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
  <url>
   <loc>https://blog.wificidr.net/</loc>
-  <lastmod>2018-07-14T04:46:00Z</lastmod>
+  <lastmod>2018-07-14T15:37:00Z</lastmod>
  </url>
  <url>
   <loc>https://blog.wificidr.net/2018/</loc>
@@ -31,14 +31,6 @@
  </url>
  <url>
   <loc>https://blog.wificidr.net/categories/python/</loc>
-  <lastmod>2018-07-14T04:46:00Z</lastmod>
- </url>
- <url>
-  <loc>https://blog.wificidr.net/galleries/</loc>
-  <lastmod>2018-07-14T04:46:00Z</lastmod>
- </url>
- <url>
-  <loc>https://blog.wificidr.net/listings/</loc>
   <lastmod>2018-07-14T04:46:00Z</lastmod>
  </url>
  <url>
