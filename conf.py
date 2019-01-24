@@ -268,9 +268,9 @@ TIMEZONE = "America/Chicago"
 # LOCALE_DEFAULT = locale to use for languages not mentioned in LOCALES; if
 # not set the default Nikola mapping is used.
 
-# LOCALES = {}
+# LOCALES = {"en": "en_US"}
 # LOCALE_FALLBACK = None
-# LOCALE_DEFAULT = None
+# LOCALE_DEFAULT = "en"
 
 # One or more folders containing files to be copied as-is into the output.
 # The format is a dictionary of {source: relative destination}.
@@ -1355,3 +1355,4 @@ GLOBAL_CONTEXT = {}
 # GLOBAL_CONTEXT as parameter when the template is about to be
 # rendered
 GLOBAL_CONTEXT_FILLER = []
+LESS_COMPILER = 'lessc'
