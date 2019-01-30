@@ -7,42 +7,50 @@
                         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
  <url>
   <loc>https://blog.wificidr.net/</loc>
-  <lastmod>2018-07-14T15:37:00Z</lastmod>
+  <lastmod>2019-01-30T01:07:00Z</lastmod>
  </url>
  <url>
   <loc>https://blog.wificidr.net/2018/</loc>
-  <lastmod>2018-07-14T04:46:00Z</lastmod>
+  <lastmod>2019-01-30T01:07:00Z</lastmod>
+ </url>
+ <url>
+  <loc>https://blog.wificidr.net/2019/</loc>
+  <lastmod>2019-01-30T01:07:00Z</lastmod>
  </url>
  <url>
   <loc>https://blog.wificidr.net/archive.html</loc>
-  <lastmod>2018-07-14T15:34:00Z</lastmod>
+  <lastmod>2019-01-30T01:07:00Z</lastmod>
  </url>
  <url>
   <loc>https://blog.wificidr.net/categories/</loc>
-  <lastmod>2018-07-14T04:46:00Z</lastmod>
+  <lastmod>2019-01-30T01:07:00Z</lastmod>
  </url>
  <url>
   <loc>https://blog.wificidr.net/categories/math/</loc>
-  <lastmod>2018-07-14T04:46:00Z</lastmod>
+  <lastmod>2019-01-30T01:07:00Z</lastmod>
  </url>
  <url>
   <loc>https://blog.wificidr.net/categories/pycon/</loc>
-  <lastmod>2018-07-14T04:46:00Z</lastmod>
+  <lastmod>2019-01-30T01:07:00Z</lastmod>
  </url>
  <url>
   <loc>https://blog.wificidr.net/categories/python/</loc>
-  <lastmod>2018-07-14T04:46:00Z</lastmod>
+  <lastmod>2019-01-30T01:07:00Z</lastmod>
+ </url>
+ <url>
+  <loc>https://blog.wificidr.net/posts/parabola/circles-and-parabolas/</loc>
+  <lastmod>2019-01-30T01:07:00Z</lastmod>
  </url>
  <url>
   <loc>https://blog.wificidr.net/posts/project-euler-6/project-euler-6/</loc>
-  <lastmod>2018-07-14T04:46:00Z</lastmod>
+  <lastmod>2019-01-30T01:07:00Z</lastmod>
  </url>
  <url>
   <loc>https://blog.wificidr.net/posts/pycon-us-2018/pycon-us-2018/</loc>
-  <lastmod>2018-07-14T04:46:00Z</lastmod>
+  <lastmod>2019-01-30T01:07:00Z</lastmod>
  </url>
  <url>
   <loc>https://blog.wificidr.net/posts/pytest-flask-sqlalchemy/pytest-flask-sqlalchemy/</loc>
-  <lastmod>2018-07-14T04:46:00Z</lastmod>
+  <lastmod>2019-01-30T01:07:00Z</lastmod>
  </url>
 </urlset>

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>WifiCIDR Blog (Posts about math)</title><link>https://blog.wificidr.net/</link><description></description><atom:link href="https://blog.wificidr.net/categories/math.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><copyright>Contents © 2018 &lt;a href="mailto:djustice@wificidr.net"&gt;Daniel Justice&lt;/a&gt; </copyright><lastBuildDate>Thu, 19 Jul 2018 01:09:21 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Project Euler #6</title><link>https://blog.wificidr.net/posts/project-euler-6/project-euler-6/</link><dc:creator>Daniel Justice</dc:creator><description>&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
-&lt;/div&gt;
-&lt;div class="inner_cell"&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>WifiCIDR Blog (Posts about math)</title><link>https://blog.wificidr.net/</link><description></description><atom:link href="https://blog.wificidr.net/categories/math.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><copyright>Contents © 2019 &lt;a href="mailto:djustice@wificidr.net"&gt;Daniel Justice&lt;/a&gt; </copyright><lastBuildDate>Wed, 30 Jan 2019 01:25:31 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Project Euler #6</title><link>https://blog.wificidr.net/posts/project-euler-6/project-euler-6/</link><dc:creator>Daniel Justice</dc:creator><description>&lt;div&gt;&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
 &lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
 &lt;h3 id="Project-Euler-problem-6"&gt;Project Euler problem 6&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/project-euler-6/project-euler-6/#Project-Euler-problem-6"&gt;¶&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;I stumbled across Project Euler (at &lt;a href="https://www.hackerrank.com/contests/projecteuler/challenges/euler006"&gt;HackerRank&lt;/a&gt; or at &lt;a href="https://projecteuler.net/"&gt;Project Euler&lt;/a&gt;) a while back, and it has been a low item on my to-do list for some time.  It can be quite frustrating at first, but I find it rewarding each time I unlock a little piece of the mathematical puzzle.  Of course you can cheat, but that completely defeats the purpose and harms no one but yourself.  I hope I can demonstrate why with this example.&lt;/p&gt;
 &lt;ul&gt;
@@ -22,11 +21,11 @@ $$ \sum_1^n n=\frac{n(n+1)}{2} $$&lt;/p&gt;
 &lt;p&gt;If you start taking apart the tower, the spheres perfectly fill in the gaps in the stack of rectangles above.  If you get really bored, you can validate this like I did with a bunch of blocks and marbles.  These items are readily available if you have kids.  One last bit worth noting is that we only need (n - 1) tetrahedral numbers because we don't need to fill in the last row.&lt;/p&gt;
 &lt;p&gt;Finally, the sum of a series of squares can be found by:
 $$ \sum_1^n n^2=n * \frac{n(n+1)}{2} - \frac{(n - 1)(n)(n+1)}{6} $$&lt;/p&gt;
-&lt;p&gt;$$ =\frac{n^3+n^2}{2} - \frac{(n^2-n)(n+1)}{6} $$&lt;/p&gt;
-&lt;p&gt;$$ =\frac{n^3+n^2}{2} - \frac{n^3+n^2-n^2-n}{6} $$&lt;/p&gt;
-&lt;p&gt;$$ =\frac{3(n^3+n^2)}{6} - \frac{n^3-n}{6} $$&lt;/p&gt;
-&lt;p&gt;$$ =\frac{3n^3+3n^2-n^3+n}{6} $$&lt;/p&gt;
-&lt;p&gt;$$ \sum_1^n n^2=\frac{2n^3+3n^2+n}{6} $$&lt;/p&gt;
+$$ =\frac{n^3+n^2}{2} - \frac{(n^2-n)(n+1)}{6} $$&lt;p&gt;&lt;/p&gt;
+$$ =\frac{n^3+n^2}{2} - \frac{n^3+n^2-n^2-n}{6} $$&lt;p&gt;&lt;/p&gt;
+$$ =\frac{3(n^3+n^2)}{6} - \frac{n^3-n}{6} $$&lt;p&gt;&lt;/p&gt;
+$$ =\frac{3n^3+3n^2-n^3+n}{6} $$&lt;p&gt;&lt;/p&gt;
+$$ \sum_1^n n^2=\frac{2n^3+3n^2+n}{6} $$&lt;p&gt;&lt;/p&gt;
 &lt;h4 id="Why-does-this-matter?"&gt;Why does this matter?&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/project-euler-6/project-euler-6/#Why-does-this-matter?"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;Not to sound overly cliché, but it is easy, often too easy, to find answers to all of our questions at our fingertips.  For example, if you want to cut right to the chase, you could have a look at &lt;a href="http://www.mathblog.dk/project-euler-problem-6/"&gt;this answer&lt;/a&gt;.  Be sure to take a look at the &lt;a href="https://trans4mind.com/personal_development/mathematics/series/sumNaturalSquares.htm"&gt;proof&lt;/a&gt; as well.  Both posts are respectable, but I think they hide the intuition in the formulas.&lt;/p&gt;
 &lt;p&gt;In my search for an answer I learned something new, and I also saw the problem in a new light not illustrated at either of the previous links.  Pardon my drawing skills, but imagine the previous image as a stack of cubes, all laid on top of one another pushed to one side.  Here's a top-down view of what I'm describing:&lt;/p&gt;
 &lt;p&gt;&lt;img src="https://blog.wificidr.net/images/stacked_boxes.png" alt=""&gt;&lt;!-- .element height="50%" width="50%" --&gt;&lt;/p&gt;
@@ -35,4 +34,17 @@ $$ \sum_1^n n^2=n * \frac{n(n+1)}{2} - \frac{(n - 1)(n)(n+1)}{6} $$&lt;/p&gt;
 
 &lt;/div&gt;
 &lt;/div&gt;
-&lt;/div&gt;</description><category>math</category><category>python</category><guid>https://blog.wificidr.net/posts/project-euler-6/project-euler-6/</guid><pubDate>Tue, 23 Jan 2018 02:35:26 GMT</pubDate></item></channel></rss>
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing code_cell rendered"&gt;
+&lt;div class="input"&gt;
+&lt;div class="prompt input_prompt"&gt;In [ ]:&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+    &lt;div class="input_area"&gt;
+&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt; 
+&lt;/pre&gt;&lt;/div&gt;
+
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;&lt;/div&gt;</description><category>math</category><category>python</category><guid>https://blog.wificidr.net/posts/project-euler-6/project-euler-6/</guid><pubDate>Tue, 23 Jan 2018 02:35:26 GMT</pubDate></item></channel></rss>
