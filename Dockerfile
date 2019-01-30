@@ -1,5 +1,5 @@
 # docker build -t website:version0.1 .
-# docker run -it -p 8000:8000 --rm --name website website:version0.1 bash
+# docker run -it -p 8000:8000 --rm -v $PWD:/app/ --name website crzdriver/wificidr:nikola0.1 bash
 # Nikola 8.0.0b2 doesn's support python3.7
 FROM python:3.6
 COPY . /app
@@ -15,6 +15,6 @@ RUN apt-get update && apt-get install -y locales && \
     # npm install less && \
     pip install --upgrade pip setuptools && pip install -r requirements.txt && \ 
     # pip install Nikola notebook && \
-    nikola theme -i bnw && nikola build
+    nikola theme -i bnw
 
-CMD ["nikola", "serve"]
+CMD ["python"]
