@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>WifiCIDR Blog</title><link>https://blog.wificidr.net/</link><description>WifiCIDR Blog</description><atom:link href="https://blog.wificidr.net/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><copyright>Contents © 2019 &lt;a href="mailto:djustice@wificidr.net"&gt;Daniel Justice&lt;/a&gt; </copyright><lastBuildDate>Mon, 09 Sep 2019 18:27:56 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>NTC Rosetta and YANG for Dummies Tutorial</title><link>https://blog.wificidr.net/posts/ntc-rosetta-and-yang-for-dummies-tutorial/</link><dc:creator>Daniel Justice</dc:creator><description>&lt;div&gt;&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>WifiCIDR Blog</title><link>https://blog.wificidr.net/</link><description>WifiCIDR Blog</description><atom:link href="https://blog.wificidr.net/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><copyright>Contents © 2019 &lt;a href="mailto:djustice@wificidr.net"&gt;Daniel Justice&lt;/a&gt; </copyright><lastBuildDate>Mon, 09 Sep 2019 19:00:35 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>NTC Rosetta and YANG for Dummies Tutorial</title><link>https://blog.wificidr.net/posts/ntc-rosetta-and-yang-for-dummies-tutorial/</link><dc:creator>Daniel Justice</dc:creator><description>&lt;div&gt;&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
 &lt;/div&gt;&lt;div class="inner_cell"&gt;
 &lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
 &lt;h2 id="YANG-for-Dummies!"&gt;YANG for Dummies!&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/ntc-rosetta-and-yang-for-dummies-tutorial/#YANG-for-Dummies!"&gt;¶&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Most people are excited to hear about the new projects from NetworkToCode, but quickly discover that there are a lot of moving parts that present a steep learning curve.  Community contributions will be critical to the success and adoption of these projects.  The groundwork has already been laid for IOS and JunOS drivers, so I want to document the path to onboarding completely new drivers.  This is standalone work that you can replicate without making changes to upstream libraries.  I'll demonstrate this based on David Barroso's great article titled &lt;a href="https://napalm-automation.net/yang-for-dummies/"&gt;"YANG for dummies"&lt;/a&gt;.  Most of the setup files for this tutorial were plagarized from ntc-rosetta.  I am definitely standing on the backs of giants!&lt;/p&gt;
@@ -12,10 +12,11 @@
 &lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
 &lt;p&gt;To play along with this notebook, first run:&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;make build_test_containter
+&lt;pre&gt;&lt;code&gt;git clone git@github.com:dgjustice/ntc-dummies.git &amp;amp;&amp;amp; cd ntc-dummies
+make build_test_containter
 make jupyter&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;Then open your browser to &lt;a href="https://blog.wificidr.net/posts/ntc-rosetta-and-yang-for-dummies-tutorial/localhost:8888"&gt;localhost:8888&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;Let's start by creating some file structure...&lt;/p&gt;
+&lt;p&gt;Let's start by creating some file structure...  (This is already done in the container)&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;p&gt;Create yang model in &lt;code&gt;data/yang/dummies/models/star-wars/napalm-star-wars.yang&lt;/code&gt;&lt;/p&gt;
 &lt;ul&gt;
@@ -77,7 +78,7 @@ module napalm-star-wars {
 &lt;/div&gt;
 &lt;div class="cell border-box-sizing code_cell rendered"&gt;
 &lt;div class="input"&gt;
-&lt;div class="prompt input_prompt"&gt;In [40]:&lt;/div&gt;
+&lt;div class="prompt input_prompt"&gt;In [2]:&lt;/div&gt;
 &lt;div class="inner_cell"&gt;
     &lt;div class="input_area"&gt;
 &lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;read_file&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
@@ -138,7 +139,7 @@ universe:
 &lt;/div&gt;
 &lt;div class="cell border-box-sizing code_cell rendered"&gt;
 &lt;div class="input"&gt;
-&lt;div class="prompt input_prompt"&gt;In [41]:&lt;/div&gt;
+&lt;div class="prompt input_prompt"&gt;In [3]:&lt;/div&gt;
 &lt;div class="inner_cell"&gt;
     &lt;div class="input_area"&gt;
 &lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;typing&lt;/span&gt; &lt;span class="k"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Any&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;Dict&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;Iterator&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;Optional&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;Tuple&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;cast&lt;/span&gt;
@@ -214,7 +215,7 @@ universe:
 &lt;/div&gt;
 &lt;div class="cell border-box-sizing code_cell rendered"&gt;
 &lt;div class="input"&gt;
-&lt;div class="prompt input_prompt"&gt;In [42]:&lt;/div&gt;
+&lt;div class="prompt input_prompt"&gt;In [4]:&lt;/div&gt;
 &lt;div class="inner_cell"&gt;
     &lt;div class="input_area"&gt;
 &lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;ntc_rosetta.drivers.base&lt;/span&gt; &lt;span class="k"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Driver&lt;/span&gt;
@@ -260,7 +261,7 @@ universe:
 &lt;/div&gt;
 &lt;div class="cell border-box-sizing code_cell rendered"&gt;
 &lt;div class="input"&gt;
-&lt;div class="prompt input_prompt"&gt;In [43]:&lt;/div&gt;
+&lt;div class="prompt input_prompt"&gt;In [5]:&lt;/div&gt;
 &lt;div class="inner_cell"&gt;
     &lt;div class="input_area"&gt;
 &lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# If everything worked&lt;/span&gt;
@@ -307,7 +308,7 @@ universe:
 &lt;/div&gt;
 &lt;div class="cell border-box-sizing code_cell rendered"&gt;
 &lt;div class="input"&gt;
-&lt;div class="prompt input_prompt"&gt;In [44]:&lt;/div&gt;
+&lt;div class="prompt input_prompt"&gt;In [6]:&lt;/div&gt;
 &lt;div class="inner_cell"&gt;
     &lt;div class="input_area"&gt;
 &lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;config_data&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;read_file&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
@@ -371,16 +372,16 @@ universe:
 &lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
 &lt;/div&gt;&lt;div class="inner_cell"&gt;
 &lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
-&lt;h3 id="We-did-it!"&gt;We did it!&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/ntc-rosetta-and-yang-for-dummies-tutorial/#We-did-it!"&gt;¶&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;At this point, we have a populated data model that we can manipulate using Yangson.  For a deeper dive into manipulating populated data models, please see my other &lt;a href="https://github.com/networktocode/ntc-rosetta/blob/develop/docs/tutorials/rosetta_and_yangson_walkthrough.ipynb"&gt;tutorial at the ntc-rosetta project&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id="We-did-it!"&gt;We did it!&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/ntc-rosetta-and-yang-for-dummies-tutorial/#We-did-it!"&gt;¶&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;At this point, we have a populated data model that we can manipulate using Yangson.  For a deeper dive into manipulating populated data models, please see my other &lt;a href="https://ntc-rosetta.readthedocs.io/en/latest/tutorials/rosetta_and_yangson_walkthrough.html#Manipulating-models-with-Rosetta-and-Yangson"&gt;tutorial at the ntc-rosetta project&lt;/a&gt;&lt;/p&gt;
 &lt;h4 id="Do-I-need-to-use-Rosetta?"&gt;Do I need to use Rosetta?&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/ntc-rosetta-and-yang-for-dummies-tutorial/#Do-I-need-to-use-Rosetta?"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;Strictly speaking, no.  You can look at the commented lines in the previous cell for an alternative route (you'll have to separate the &lt;code&gt;get_datamodel&lt;/code&gt; method).  Rosetta is an interface that nicely binds these dependencies together, but your particular use case may have different requirements.&lt;/p&gt;
-&lt;h3 id="Translate-it"&gt;Translate it&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/ntc-rosetta-and-yang-for-dummies-tutorial/#Translate-it"&gt;¶&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;This wraps up the story.  We'll write a simple translator to spit out yaml back out into a "native config" format.&lt;/p&gt;
+&lt;h3 id="Translate-it"&gt;Translate it&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/ntc-rosetta-and-yang-for-dummies-tutorial/#Translate-it"&gt;¶&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;This about wraps up the story.  We'll write a simple translator to spit out yaml back out into a "native config" format.  Keep in mind that this is a pet example.  In production, you will need to handle replaces and merges carefully as well as add tests.&lt;/p&gt;
 
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;div class="cell border-box-sizing code_cell rendered"&gt;
 &lt;div class="input"&gt;
-&lt;div class="prompt input_prompt"&gt;In [45]:&lt;/div&gt;
+&lt;div class="prompt input_prompt"&gt;In [7]:&lt;/div&gt;
 &lt;div class="inner_cell"&gt;
     &lt;div class="input_area"&gt;
 &lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;yangify&lt;/span&gt; &lt;span class="k"&gt;import&lt;/span&gt; &lt;span class="n"&gt;translator&lt;/span&gt;
@@ -430,9 +431,17 @@ universe:
 &lt;/div&gt;
 
 &lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h4 id="Validate-the-translation"&gt;Validate the translation&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/ntc-rosetta-and-yang-for-dummies-tutorial/#Validate-the-translation"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;This is a sanity check to see if we're on the right path.  So far, everything looks good.&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
 &lt;div class="cell border-box-sizing code_cell rendered"&gt;
 &lt;div class="input"&gt;
-&lt;div class="prompt input_prompt"&gt;In [46]:&lt;/div&gt;
+&lt;div class="prompt input_prompt"&gt;In [8]:&lt;/div&gt;
 &lt;div class="inner_cell"&gt;
     &lt;div class="input_area"&gt;
 &lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# update the driver&lt;/span&gt;
@@ -488,6 +497,197 @@ individuals:
 &lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
 &lt;/div&gt;&lt;div class="inner_cell"&gt;
 &lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h3 id="Play-with-the-model"&gt;Play with the model&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/ntc-rosetta-and-yang-for-dummies-tutorial/#Play-with-the-model"&gt;¶&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;At this point, we've built a large pet example.  Does this have any practical merit?  The time I've spent on this surely hopes so!  Why don't we do what we've always wished for in a Star Wars movie - Yoda the &lt;strong&gt;mercenary&lt;/strong&gt;!!!&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing code_cell rendered"&gt;
+&lt;div class="input"&gt;
+&lt;div class="prompt input_prompt"&gt;In [10]:&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+    &lt;div class="input_area"&gt;
+&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;irt&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;parsed&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;datamodel&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;parse_resource_id&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"/napalm-star-wars:universe/individual=Yoda"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;current_data&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;parsed&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;goto&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;irt&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"Current Yoda: "&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;json&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;dumps&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;current_data&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;raw_value&lt;/span&gt;&lt;span class="p"&gt;(),&lt;/span&gt; &lt;span class="n"&gt;indent&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;span class="n"&gt;modify_data&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;current_data&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;raw_value&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;modify_data&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;'affiliation'&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'napalm-star-wars:MERCENARY'&lt;/span&gt;
+
+&lt;span class="n"&gt;stub&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;current_data&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;update&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;modify_data&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;raw&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="kc"&gt;True&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"Candidate Yoda: "&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;json&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;dumps&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;stub&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;raw_value&lt;/span&gt;&lt;span class="p"&gt;(),&lt;/span&gt; &lt;span class="n"&gt;indent&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;span class="n"&gt;stub&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;validate&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class="output_wrapper"&gt;
+&lt;div class="output"&gt;
+
+
+&lt;div class="output_area"&gt;
+
+    &lt;div class="prompt"&gt;&lt;/div&gt;
+
+
+&lt;div class="output_subarea output_stream output_stdout output_text"&gt;
+&lt;pre&gt;Current Yoda:  {
+  "name": "Yoda",
+  "age": 896,
+  "affiliation": "napalm-star-wars:REBEL_ALLIANCE"
+}
+Candidate Yoda:  {
+  "name": "Yoda",
+  "age": 896,
+  "affiliation": "napalm-star-wars:MERCENARY"
+}
+&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class="output_area"&gt;
+
+    &lt;div class="prompt"&gt;&lt;/div&gt;
+
+
+&lt;div class="output_subarea output_text output_error"&gt;
+&lt;pre&gt;
+&lt;span class="ansi-red-fg"&gt;---------------------------------------------------------------------------&lt;/span&gt;
+&lt;span class="ansi-red-fg"&gt;YangTypeError&lt;/span&gt;                             Traceback (most recent call last)
+&lt;span class="ansi-green-fg"&gt;&amp;lt;ipython-input-10-d3e1f770506c&amp;gt;&lt;/span&gt; in &lt;span class="ansi-cyan-fg"&gt;&amp;lt;module&amp;gt;&lt;/span&gt;
+&lt;span class="ansi-green-intense-fg ansi-bold"&gt;      7&lt;/span&gt; stub &lt;span class="ansi-blue-fg"&gt;=&lt;/span&gt; current_data&lt;span class="ansi-blue-fg"&gt;.&lt;/span&gt;update&lt;span class="ansi-blue-fg"&gt;(&lt;/span&gt;modify_data&lt;span class="ansi-blue-fg"&gt;,&lt;/span&gt; raw&lt;span class="ansi-blue-fg"&gt;=&lt;/span&gt;&lt;span class="ansi-green-fg"&gt;True&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;)&lt;/span&gt;
+&lt;span class="ansi-green-intense-fg ansi-bold"&gt;      8&lt;/span&gt; print&lt;span class="ansi-blue-fg"&gt;(&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;"Candidate Yoda: "&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;,&lt;/span&gt; json&lt;span class="ansi-blue-fg"&gt;.&lt;/span&gt;dumps&lt;span class="ansi-blue-fg"&gt;(&lt;/span&gt;stub&lt;span class="ansi-blue-fg"&gt;.&lt;/span&gt;raw_value&lt;span class="ansi-blue-fg"&gt;(&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;)&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;,&lt;/span&gt; indent&lt;span class="ansi-blue-fg"&gt;=&lt;/span&gt;&lt;span class="ansi-cyan-fg"&gt;2&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;)&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;)&lt;/span&gt;
+&lt;span class="ansi-green-fg"&gt;----&amp;gt; 9&lt;/span&gt;&lt;span class="ansi-red-fg"&gt; &lt;/span&gt;stub&lt;span class="ansi-blue-fg"&gt;.&lt;/span&gt;validate&lt;span class="ansi-blue-fg"&gt;(&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;)&lt;/span&gt;
+
+&lt;span class="ansi-green-fg"&gt;/usr/local/lib/python3.6/site-packages/yangson/instance.py&lt;/span&gt; in &lt;span class="ansi-cyan-fg"&gt;validate&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;(self, scope, ctype)&lt;/span&gt;
+&lt;span class="ansi-green-intense-fg ansi-bold"&gt;    334&lt;/span&gt;             YangTypeError&lt;span class="ansi-blue-fg"&gt;:&lt;/span&gt; If the value &lt;span class="ansi-green-fg"&gt;is&lt;/span&gt; a scalar of incorrect type&lt;span class="ansi-blue-fg"&gt;.&lt;/span&gt;
+&lt;span class="ansi-green-intense-fg ansi-bold"&gt;    335&lt;/span&gt;         """
+&lt;span class="ansi-green-fg"&gt;--&amp;gt; 336&lt;/span&gt;&lt;span class="ansi-red-fg"&gt;         &lt;/span&gt;self&lt;span class="ansi-blue-fg"&gt;.&lt;/span&gt;schema_node&lt;span class="ansi-blue-fg"&gt;.&lt;/span&gt;_validate&lt;span class="ansi-blue-fg"&gt;(&lt;/span&gt;self&lt;span class="ansi-blue-fg"&gt;,&lt;/span&gt; scope&lt;span class="ansi-blue-fg"&gt;,&lt;/span&gt; ctype&lt;span class="ansi-blue-fg"&gt;)&lt;/span&gt;
+&lt;span class="ansi-green-intense-fg ansi-bold"&gt;    337&lt;/span&gt; 
+&lt;span class="ansi-green-intense-fg ansi-bold"&gt;    338&lt;/span&gt;     &lt;span class="ansi-green-fg"&gt;def&lt;/span&gt; add_defaults&lt;span class="ansi-blue-fg"&gt;(&lt;/span&gt;self&lt;span class="ansi-blue-fg"&gt;,&lt;/span&gt; ctype&lt;span class="ansi-blue-fg"&gt;:&lt;/span&gt; ContentType &lt;span class="ansi-blue-fg"&gt;=&lt;/span&gt; &lt;span class="ansi-green-fg"&gt;None&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;)&lt;/span&gt; &lt;span class="ansi-blue-fg"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="ansi-blue-fg"&gt;"InstanceNode"&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;:&lt;/span&gt;
+
+&lt;span class="ansi-green-fg"&gt;/usr/local/lib/python3.6/site-packages/yangson/schemanode.py&lt;/span&gt; in &lt;span class="ansi-cyan-fg"&gt;_validate&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;(self, inst, scope, ctype)&lt;/span&gt;
+&lt;span class="ansi-green-intense-fg ansi-bold"&gt;    953&lt;/span&gt;         &lt;span class="ansi-blue-fg"&gt;"""Extend the superclass method."""&lt;/span&gt;
+&lt;span class="ansi-green-intense-fg ansi-bold"&gt;    954&lt;/span&gt;         &lt;span class="ansi-green-fg"&gt;if&lt;/span&gt; isinstance&lt;span class="ansi-blue-fg"&gt;(&lt;/span&gt;inst&lt;span class="ansi-blue-fg"&gt;,&lt;/span&gt; ArrayEntry&lt;span class="ansi-blue-fg"&gt;)&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;:&lt;/span&gt;
+&lt;span class="ansi-green-fg"&gt;--&amp;gt; 955&lt;/span&gt;&lt;span class="ansi-red-fg"&gt;             &lt;/span&gt;super&lt;span class="ansi-blue-fg"&gt;(&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;)&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;.&lt;/span&gt;_validate&lt;span class="ansi-blue-fg"&gt;(&lt;/span&gt;inst&lt;span class="ansi-blue-fg"&gt;,&lt;/span&gt; scope&lt;span class="ansi-blue-fg"&gt;,&lt;/span&gt; ctype&lt;span class="ansi-blue-fg"&gt;)&lt;/span&gt;
+&lt;span class="ansi-green-intense-fg ansi-bold"&gt;    956&lt;/span&gt;         &lt;span class="ansi-green-fg"&gt;else&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;:&lt;/span&gt;
+&lt;span class="ansi-green-intense-fg ansi-bold"&gt;    957&lt;/span&gt;             &lt;span class="ansi-green-fg"&gt;if&lt;/span&gt; scope&lt;span class="ansi-blue-fg"&gt;.&lt;/span&gt;value &lt;span class="ansi-blue-fg"&gt;&amp;amp;&lt;/span&gt; ValidationScope&lt;span class="ansi-blue-fg"&gt;.&lt;/span&gt;semantics&lt;span class="ansi-blue-fg"&gt;.&lt;/span&gt;value&lt;span class="ansi-blue-fg"&gt;:&lt;/span&gt;
+
+&lt;span class="ansi-green-fg"&gt;/usr/local/lib/python3.6/site-packages/yangson/schemanode.py&lt;/span&gt; in &lt;span class="ansi-cyan-fg"&gt;_validate&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;(self, inst, scope, ctype)&lt;/span&gt;
+&lt;span class="ansi-green-intense-fg ansi-bold"&gt;    779&lt;/span&gt;         &lt;span class="ansi-green-fg"&gt;if&lt;/span&gt; scope&lt;span class="ansi-blue-fg"&gt;.&lt;/span&gt;value &lt;span class="ansi-blue-fg"&gt;&amp;amp;&lt;/span&gt; ValidationScope&lt;span class="ansi-blue-fg"&gt;.&lt;/span&gt;semantics&lt;span class="ansi-blue-fg"&gt;.&lt;/span&gt;value&lt;span class="ansi-blue-fg"&gt;:&lt;/span&gt;
+&lt;span class="ansi-green-intense-fg ansi-bold"&gt;    780&lt;/span&gt;             self&lt;span class="ansi-blue-fg"&gt;.&lt;/span&gt;_check_must&lt;span class="ansi-blue-fg"&gt;(&lt;/span&gt;inst&lt;span class="ansi-blue-fg"&gt;)&lt;/span&gt;        &lt;span class="ansi-red-fg"&gt;# must expressions&lt;/span&gt;
+&lt;span class="ansi-green-fg"&gt;--&amp;gt; 781&lt;/span&gt;&lt;span class="ansi-red-fg"&gt;         &lt;/span&gt;super&lt;span class="ansi-blue-fg"&gt;(&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;)&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;.&lt;/span&gt;_validate&lt;span class="ansi-blue-fg"&gt;(&lt;/span&gt;inst&lt;span class="ansi-blue-fg"&gt;,&lt;/span&gt; scope&lt;span class="ansi-blue-fg"&gt;,&lt;/span&gt; ctype&lt;span class="ansi-blue-fg"&gt;)&lt;/span&gt;
+&lt;span class="ansi-green-intense-fg ansi-bold"&gt;    782&lt;/span&gt; 
+&lt;span class="ansi-green-intense-fg ansi-bold"&gt;    783&lt;/span&gt;     def _default_instance(self, pnode: "InstanceNode", ctype: ContentType,
+
+&lt;span class="ansi-green-fg"&gt;/usr/local/lib/python3.6/site-packages/yangson/schemanode.py&lt;/span&gt; in &lt;span class="ansi-cyan-fg"&gt;_validate&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;(self, inst, scope, ctype)&lt;/span&gt;
+&lt;span class="ansi-green-intense-fg ansi-bold"&gt;    475&lt;/span&gt;             self&lt;span class="ansi-blue-fg"&gt;.&lt;/span&gt;_check_schema_pattern&lt;span class="ansi-blue-fg"&gt;(&lt;/span&gt;inst&lt;span class="ansi-blue-fg"&gt;,&lt;/span&gt; ctype&lt;span class="ansi-blue-fg"&gt;)&lt;/span&gt;
+&lt;span class="ansi-green-intense-fg ansi-bold"&gt;    476&lt;/span&gt;         &lt;span class="ansi-green-fg"&gt;for&lt;/span&gt; m &lt;span class="ansi-green-fg"&gt;in&lt;/span&gt; inst&lt;span class="ansi-blue-fg"&gt;:&lt;/span&gt;
+&lt;span class="ansi-green-fg"&gt;--&amp;gt; 477&lt;/span&gt;&lt;span class="ansi-red-fg"&gt;             &lt;/span&gt;inst&lt;span class="ansi-blue-fg"&gt;.&lt;/span&gt;_member&lt;span class="ansi-blue-fg"&gt;(&lt;/span&gt;m&lt;span class="ansi-blue-fg"&gt;)&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;.&lt;/span&gt;validate&lt;span class="ansi-blue-fg"&gt;(&lt;/span&gt;scope&lt;span class="ansi-blue-fg"&gt;,&lt;/span&gt; ctype&lt;span class="ansi-blue-fg"&gt;)&lt;/span&gt;
+&lt;span class="ansi-green-intense-fg ansi-bold"&gt;    478&lt;/span&gt;         super&lt;span class="ansi-blue-fg"&gt;(&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;)&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;.&lt;/span&gt;_validate&lt;span class="ansi-blue-fg"&gt;(&lt;/span&gt;inst&lt;span class="ansi-blue-fg"&gt;,&lt;/span&gt; scope&lt;span class="ansi-blue-fg"&gt;,&lt;/span&gt; ctype&lt;span class="ansi-blue-fg"&gt;)&lt;/span&gt;
+&lt;span class="ansi-green-intense-fg ansi-bold"&gt;    479&lt;/span&gt; 
+
+&lt;span class="ansi-green-fg"&gt;/usr/local/lib/python3.6/site-packages/yangson/instance.py&lt;/span&gt; in &lt;span class="ansi-cyan-fg"&gt;validate&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;(self, scope, ctype)&lt;/span&gt;
+&lt;span class="ansi-green-intense-fg ansi-bold"&gt;    334&lt;/span&gt;             YangTypeError&lt;span class="ansi-blue-fg"&gt;:&lt;/span&gt; If the value &lt;span class="ansi-green-fg"&gt;is&lt;/span&gt; a scalar of incorrect type&lt;span class="ansi-blue-fg"&gt;.&lt;/span&gt;
+&lt;span class="ansi-green-intense-fg ansi-bold"&gt;    335&lt;/span&gt;         """
+&lt;span class="ansi-green-fg"&gt;--&amp;gt; 336&lt;/span&gt;&lt;span class="ansi-red-fg"&gt;         &lt;/span&gt;self&lt;span class="ansi-blue-fg"&gt;.&lt;/span&gt;schema_node&lt;span class="ansi-blue-fg"&gt;.&lt;/span&gt;_validate&lt;span class="ansi-blue-fg"&gt;(&lt;/span&gt;self&lt;span class="ansi-blue-fg"&gt;,&lt;/span&gt; scope&lt;span class="ansi-blue-fg"&gt;,&lt;/span&gt; ctype&lt;span class="ansi-blue-fg"&gt;)&lt;/span&gt;
+&lt;span class="ansi-green-intense-fg ansi-bold"&gt;    337&lt;/span&gt; 
+&lt;span class="ansi-green-intense-fg ansi-bold"&gt;    338&lt;/span&gt;     &lt;span class="ansi-green-fg"&gt;def&lt;/span&gt; add_defaults&lt;span class="ansi-blue-fg"&gt;(&lt;/span&gt;self&lt;span class="ansi-blue-fg"&gt;,&lt;/span&gt; ctype&lt;span class="ansi-blue-fg"&gt;:&lt;/span&gt; ContentType &lt;span class="ansi-blue-fg"&gt;=&lt;/span&gt; &lt;span class="ansi-green-fg"&gt;None&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;)&lt;/span&gt; &lt;span class="ansi-blue-fg"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="ansi-blue-fg"&gt;"InstanceNode"&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;:&lt;/span&gt;
+
+&lt;span class="ansi-green-fg"&gt;/usr/local/lib/python3.6/site-packages/yangson/schemanode.py&lt;/span&gt; in &lt;span class="ansi-cyan-fg"&gt;_validate&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;(self, inst, scope, ctype)&lt;/span&gt;
+&lt;span class="ansi-green-intense-fg ansi-bold"&gt;    779&lt;/span&gt;         &lt;span class="ansi-green-fg"&gt;if&lt;/span&gt; scope&lt;span class="ansi-blue-fg"&gt;.&lt;/span&gt;value &lt;span class="ansi-blue-fg"&gt;&amp;amp;&lt;/span&gt; ValidationScope&lt;span class="ansi-blue-fg"&gt;.&lt;/span&gt;semantics&lt;span class="ansi-blue-fg"&gt;.&lt;/span&gt;value&lt;span class="ansi-blue-fg"&gt;:&lt;/span&gt;
+&lt;span class="ansi-green-intense-fg ansi-bold"&gt;    780&lt;/span&gt;             self&lt;span class="ansi-blue-fg"&gt;.&lt;/span&gt;_check_must&lt;span class="ansi-blue-fg"&gt;(&lt;/span&gt;inst&lt;span class="ansi-blue-fg"&gt;)&lt;/span&gt;        &lt;span class="ansi-red-fg"&gt;# must expressions&lt;/span&gt;
+&lt;span class="ansi-green-fg"&gt;--&amp;gt; 781&lt;/span&gt;&lt;span class="ansi-red-fg"&gt;         &lt;/span&gt;super&lt;span class="ansi-blue-fg"&gt;(&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;)&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;.&lt;/span&gt;_validate&lt;span class="ansi-blue-fg"&gt;(&lt;/span&gt;inst&lt;span class="ansi-blue-fg"&gt;,&lt;/span&gt; scope&lt;span class="ansi-blue-fg"&gt;,&lt;/span&gt; ctype&lt;span class="ansi-blue-fg"&gt;)&lt;/span&gt;
+&lt;span class="ansi-green-intense-fg ansi-bold"&gt;    782&lt;/span&gt; 
+&lt;span class="ansi-green-intense-fg ansi-bold"&gt;    783&lt;/span&gt;     def _default_instance(self, pnode: "InstanceNode", ctype: ContentType,
+
+&lt;span class="ansi-green-fg"&gt;/usr/local/lib/python3.6/site-packages/yangson/schemanode.py&lt;/span&gt; in &lt;span class="ansi-cyan-fg"&gt;_validate&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;(self, inst, scope, ctype)&lt;/span&gt;
+&lt;span class="ansi-green-intense-fg ansi-bold"&gt;    845&lt;/span&gt;                 inst.value not in self.type):
+&lt;span class="ansi-green-intense-fg ansi-bold"&gt;    846&lt;/span&gt;             raise YangTypeError(inst.json_pointer(), self.type.error_tag,
+&lt;span class="ansi-green-fg"&gt;--&amp;gt; 847&lt;/span&gt;&lt;span class="ansi-red-fg"&gt;                                 self.type.error_message)
+&lt;/span&gt;&lt;span class="ansi-green-intense-fg ansi-bold"&gt;    848&lt;/span&gt;         if (isinstance(self.type, LinkType) and        # referential integrity
+&lt;span class="ansi-green-intense-fg ansi-bold"&gt;    849&lt;/span&gt;                 scope&lt;span class="ansi-blue-fg"&gt;.&lt;/span&gt;value &lt;span class="ansi-blue-fg"&gt;&amp;amp;&lt;/span&gt; ValidationScope&lt;span class="ansi-blue-fg"&gt;.&lt;/span&gt;semantics&lt;span class="ansi-blue-fg"&gt;.&lt;/span&gt;value &lt;span class="ansi-green-fg"&gt;and&lt;/span&gt;
+
+&lt;span class="ansi-red-fg"&gt;YangTypeError&lt;/span&gt;: [/napalm-star-wars:universe/individual/3/affiliation] invalid-type: not derived from napalm-star-wars:AFFILIATION&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h4 id="What-broke?!"&gt;What broke?!&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/ntc-rosetta-and-yang-for-dummies-tutorial/#What-broke?!"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;Nothing!!!  This is by design.  If you'll take a look at the beginning of the article, we only loaded the first Napalm-Star-Wars model.  We &lt;strong&gt;didn't&lt;/strong&gt; load the extended universe.  Fine, we'll simply push him all the way to the dark side.  :)&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing code_cell rendered"&gt;
+&lt;div class="input"&gt;
+&lt;div class="prompt input_prompt"&gt;In [13]:&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+    &lt;div class="input_area"&gt;
+&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;modify_data&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;'affiliation'&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'napalm-star-wars:REBEL_ALLIANCE'&lt;/span&gt;
+
+&lt;span class="n"&gt;stub&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;current_data&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;update&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;modify_data&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;raw&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="kc"&gt;True&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"Candidate Yoda: "&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;json&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;dumps&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;stub&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;raw_value&lt;/span&gt;&lt;span class="p"&gt;(),&lt;/span&gt; &lt;span class="n"&gt;indent&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;span class="n"&gt;stub&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;validate&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"Validated!"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="n"&gt;translated&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;dummy_driver&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;translate&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;candidate&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;stub&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;top&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;raw_value&lt;/span&gt;&lt;span class="p"&gt;())&lt;/span&gt;
+&lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;translated&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class="output_wrapper"&gt;
+&lt;div class="output"&gt;
+
+
+&lt;div class="output_area"&gt;
+
+    &lt;div class="prompt"&gt;&lt;/div&gt;
+
+
+&lt;div class="output_subarea output_stream output_stdout output_text"&gt;
+&lt;pre&gt;Candidate Yoda:  {
+  "name": "Yoda",
+  "age": 896,
+  "affiliation": "napalm-star-wars:REBEL_ALLIANCE"
+}
+Validated!
+---
+universe:
+individuals:
+  - Obi-Wan Kenobi
+    57
+    REBEL_ALLIANCE
+  - Luke Skywalker
+    19
+    REBEL_ALLIANCE
+  - Darth Vader
+    42
+    EMPIRE
+  - Yoda
+    896
+    REBEL_ALLIANCE
+
+&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
 &lt;h2 id="Thank-you!"&gt;Thank you!&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/ntc-rosetta-and-yang-for-dummies-tutorial/#Thank-you!"&gt;¶&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;As I mentioned earlier, I stand on the backs of giants.  Many thanks to Ken Celenza and the folks at Network To Code, David Barroso, and others involved in these community projects!!!&lt;/p&gt;
 
 &lt;/div&gt;
@@ -500,19 +700,6 @@ individuals:
 
 &lt;/div&gt;
 &lt;/div&gt;
-&lt;/div&gt;
-&lt;div class="cell border-box-sizing code_cell rendered"&gt;
-&lt;div class="input"&gt;
-&lt;div class="prompt input_prompt"&gt;In [ ]:&lt;/div&gt;
-&lt;div class="inner_cell"&gt;
-    &lt;div class="input_area"&gt;
-&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt; 
-&lt;/pre&gt;&lt;/div&gt;
-
-    &lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-
 &lt;/div&gt;&lt;/div&gt;</description><category>python</category><guid>https://blog.wificidr.net/posts/ntc-rosetta-and-yang-for-dummies-tutorial/</guid><pubDate>Mon, 09 Sep 2019 15:49:38 GMT</pubDate></item><item><title>Circles and Parabolas</title><link>https://blog.wificidr.net/posts/parabola/circles-and-parabolas/</link><dc:creator>Daniel Justice</dc:creator><description>&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
 &lt;/div&gt;&lt;div class="inner_cell"&gt;
 &lt;div class="text_cell_render border-box-sizing rendered_html"&gt;

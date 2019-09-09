@@ -100,10 +100,11 @@
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>To play along with this notebook, first run:</p>
 
-<pre><code>make build_test_containter
+<pre><code>git clone git@github.com:dgjustice/ntc-dummies.git &amp;&amp; cd ntc-dummies
+make build_test_containter
 make jupyter</code></pre>
 <p>Then open your browser to <a href="localhost:8888">localhost:8888</a>.</p>
-<p>Let's start by creating some file structure...</p>
+<p>Let's start by creating some file structure...  (This is already done in the container)</p>
 <ul>
 <li>
 <p>Create yang model in <code>data/yang/dummies/models/star-wars/napalm-star-wars.yang</code></p>
@@ -172,7 +173,7 @@ module napalm-star-wars {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [40]:</div>
+<div class="prompt input_prompt">In [2]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">read_file</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -237,7 +238,7 @@ universe:
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [41]:</div>
+<div class="prompt input_prompt">In [3]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">cast</span>
@@ -319,7 +320,7 @@ universe:
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [42]:</div>
+<div class="prompt input_prompt">In [4]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">ntc_rosetta.drivers.base</span> <span class="k">import</span> <span class="n">Driver</span>
@@ -369,7 +370,7 @@ universe:
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [43]:</div>
+<div class="prompt input_prompt">In [5]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># If everything worked</span>
@@ -420,7 +421,7 @@ universe:
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [44]:</div>
+<div class="prompt input_prompt">In [6]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">config_data</span> <span class="o">=</span> <span class="n">read_file</span><span class="p">()</span>
@@ -488,20 +489,20 @@ universe:
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="We-did-it!">We did it!<a class="anchor-link" href="#We-did-it!">¶</a>
 </h3>
-<p>At this point, we have a populated data model that we can manipulate using Yangson.  For a deeper dive into manipulating populated data models, please see my other <a href="https://github.com/networktocode/ntc-rosetta/blob/develop/docs/tutorials/rosetta_and_yangson_walkthrough.ipynb">tutorial at the ntc-rosetta project</a></p>
+<p>At this point, we have a populated data model that we can manipulate using Yangson.  For a deeper dive into manipulating populated data models, please see my other <a href="https://ntc-rosetta.readthedocs.io/en/latest/tutorials/rosetta_and_yangson_walkthrough.html#Manipulating-models-with-Rosetta-and-Yangson">tutorial at the ntc-rosetta project</a></p>
 <h4 id="Do-I-need-to-use-Rosetta?">Do I need to use Rosetta?<a class="anchor-link" href="#Do-I-need-to-use-Rosetta?">¶</a>
 </h4>
 <p>Strictly speaking, no.  You can look at the commented lines in the previous cell for an alternative route (you'll have to separate the <code>get_datamodel</code> method).  Rosetta is an interface that nicely binds these dependencies together, but your particular use case may have different requirements.</p>
 <h3 id="Translate-it">Translate it<a class="anchor-link" href="#Translate-it">¶</a>
 </h3>
-<p>This wraps up the story.  We'll write a simple translator to spit out yaml back out into a "native config" format.</p>
+<p>This about wraps up the story.  We'll write a simple translator to spit out yaml back out into a "native config" format.  Keep in mind that this is a pet example.  In production, you will need to handle replaces and merges carefully as well as add tests.</p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [45]:</div>
+<div class="prompt input_prompt">In [7]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">yangify</span> <span class="k">import</span> <span class="n">translator</span>
@@ -551,9 +552,21 @@ universe:
 </div>
 
 </div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Validate-the-translation">Validate the translation<a class="anchor-link" href="#Validate-the-translation">¶</a>
+</h4>
+<p>This is a sanity check to see if we're on the right path.  So far, everything looks good.</p>
+
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [46]:</div>
+<div class="prompt input_prompt">In [8]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># update the driver</span>
@@ -611,6 +624,205 @@ individuals:
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Play-with-the-model">Play with the model<a class="anchor-link" href="#Play-with-the-model">¶</a>
+</h3>
+<p>At this point, we've built a large pet example.  Does this have any practical merit?  The time I've spent on this surely hopes so!  Why don't we do what we've always wished for in a Star Wars movie - Yoda the <strong>mercenary</strong>!!!</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [10]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">irt</span> <span class="o">=</span> <span class="n">parsed</span><span class="o">.</span><span class="n">datamodel</span><span class="o">.</span><span class="n">parse_resource_id</span><span class="p">(</span><span class="s2">"/napalm-star-wars:universe/individual=Yoda"</span><span class="p">)</span>
+<span class="n">current_data</span> <span class="o">=</span> <span class="n">parsed</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">goto</span><span class="p">(</span><span class="n">irt</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Current Yoda: "</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">current_data</span><span class="o">.</span><span class="n">raw_value</span><span class="p">(),</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">modify_data</span> <span class="o">=</span> <span class="n">current_data</span><span class="o">.</span><span class="n">raw_value</span><span class="p">()</span>
+<span class="n">modify_data</span><span class="p">[</span><span class="s1">'affiliation'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'napalm-star-wars:MERCENARY'</span>
+
+<span class="n">stub</span> <span class="o">=</span> <span class="n">current_data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">modify_data</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Candidate Yoda: "</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">stub</span><span class="o">.</span><span class="n">raw_value</span><span class="p">(),</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">stub</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Current Yoda:  {
+  "name": "Yoda",
+  "age": 896,
+  "affiliation": "napalm-star-wars:REBEL_ALLIANCE"
+}
+Candidate Yoda:  {
+  "name": "Yoda",
+  "age": 896,
+  "affiliation": "napalm-star-wars:MERCENARY"
+}
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_text output_error">
+<pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">YangTypeError</span>                             Traceback (most recent call last)
+<span class="ansi-green-fg">&lt;ipython-input-10-d3e1f770506c&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
+<span class="ansi-green-intense-fg ansi-bold">      7</span> stub <span class="ansi-blue-fg">=</span> current_data<span class="ansi-blue-fg">.</span>update<span class="ansi-blue-fg">(</span>modify_data<span class="ansi-blue-fg">,</span> raw<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">True</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">      8</span> print<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">"Candidate Yoda: "</span><span class="ansi-blue-fg">,</span> json<span class="ansi-blue-fg">.</span>dumps<span class="ansi-blue-fg">(</span>stub<span class="ansi-blue-fg">.</span>raw_value<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span> indent<span class="ansi-blue-fg">=</span><span class="ansi-cyan-fg">2</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-fg">----&gt; 9</span><span class="ansi-red-fg"> </span>stub<span class="ansi-blue-fg">.</span>validate<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span>
+
+<span class="ansi-green-fg">/usr/local/lib/python3.6/site-packages/yangson/instance.py</span> in <span class="ansi-cyan-fg">validate</span><span class="ansi-blue-fg">(self, scope, ctype)</span>
+<span class="ansi-green-intense-fg ansi-bold">    334</span>             YangTypeError<span class="ansi-blue-fg">:</span> If the value <span class="ansi-green-fg">is</span> a scalar of incorrect type<span class="ansi-blue-fg">.</span>
+<span class="ansi-green-intense-fg ansi-bold">    335</span>         """
+<span class="ansi-green-fg">--&gt; 336</span><span class="ansi-red-fg">         </span>self<span class="ansi-blue-fg">.</span>schema_node<span class="ansi-blue-fg">.</span>_validate<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> scope<span class="ansi-blue-fg">,</span> ctype<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    337</span> 
+<span class="ansi-green-intense-fg ansi-bold">    338</span>     <span class="ansi-green-fg">def</span> add_defaults<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> ctype<span class="ansi-blue-fg">:</span> ContentType <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">-&gt;</span> <span class="ansi-blue-fg">"InstanceNode"</span><span class="ansi-blue-fg">:</span>
+
+<span class="ansi-green-fg">/usr/local/lib/python3.6/site-packages/yangson/schemanode.py</span> in <span class="ansi-cyan-fg">_validate</span><span class="ansi-blue-fg">(self, inst, scope, ctype)</span>
+<span class="ansi-green-intense-fg ansi-bold">    953</span>         <span class="ansi-blue-fg">"""Extend the superclass method."""</span>
+<span class="ansi-green-intense-fg ansi-bold">    954</span>         <span class="ansi-green-fg">if</span> isinstance<span class="ansi-blue-fg">(</span>inst<span class="ansi-blue-fg">,</span> ArrayEntry<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-fg">--&gt; 955</span><span class="ansi-red-fg">             </span>super<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">.</span>_validate<span class="ansi-blue-fg">(</span>inst<span class="ansi-blue-fg">,</span> scope<span class="ansi-blue-fg">,</span> ctype<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    956</span>         <span class="ansi-green-fg">else</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">    957</span>             <span class="ansi-green-fg">if</span> scope<span class="ansi-blue-fg">.</span>value <span class="ansi-blue-fg">&amp;</span> ValidationScope<span class="ansi-blue-fg">.</span>semantics<span class="ansi-blue-fg">.</span>value<span class="ansi-blue-fg">:</span>
+
+<span class="ansi-green-fg">/usr/local/lib/python3.6/site-packages/yangson/schemanode.py</span> in <span class="ansi-cyan-fg">_validate</span><span class="ansi-blue-fg">(self, inst, scope, ctype)</span>
+<span class="ansi-green-intense-fg ansi-bold">    779</span>         <span class="ansi-green-fg">if</span> scope<span class="ansi-blue-fg">.</span>value <span class="ansi-blue-fg">&amp;</span> ValidationScope<span class="ansi-blue-fg">.</span>semantics<span class="ansi-blue-fg">.</span>value<span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">    780</span>             self<span class="ansi-blue-fg">.</span>_check_must<span class="ansi-blue-fg">(</span>inst<span class="ansi-blue-fg">)</span>        <span class="ansi-red-fg"># must expressions</span>
+<span class="ansi-green-fg">--&gt; 781</span><span class="ansi-red-fg">         </span>super<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">.</span>_validate<span class="ansi-blue-fg">(</span>inst<span class="ansi-blue-fg">,</span> scope<span class="ansi-blue-fg">,</span> ctype<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    782</span> 
+<span class="ansi-green-intense-fg ansi-bold">    783</span>     def _default_instance(self, pnode: "InstanceNode", ctype: ContentType,
+
+<span class="ansi-green-fg">/usr/local/lib/python3.6/site-packages/yangson/schemanode.py</span> in <span class="ansi-cyan-fg">_validate</span><span class="ansi-blue-fg">(self, inst, scope, ctype)</span>
+<span class="ansi-green-intense-fg ansi-bold">    475</span>             self<span class="ansi-blue-fg">.</span>_check_schema_pattern<span class="ansi-blue-fg">(</span>inst<span class="ansi-blue-fg">,</span> ctype<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    476</span>         <span class="ansi-green-fg">for</span> m <span class="ansi-green-fg">in</span> inst<span class="ansi-blue-fg">:</span>
+<span class="ansi-green-fg">--&gt; 477</span><span class="ansi-red-fg">             </span>inst<span class="ansi-blue-fg">.</span>_member<span class="ansi-blue-fg">(</span>m<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">.</span>validate<span class="ansi-blue-fg">(</span>scope<span class="ansi-blue-fg">,</span> ctype<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    478</span>         super<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">.</span>_validate<span class="ansi-blue-fg">(</span>inst<span class="ansi-blue-fg">,</span> scope<span class="ansi-blue-fg">,</span> ctype<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    479</span> 
+
+<span class="ansi-green-fg">/usr/local/lib/python3.6/site-packages/yangson/instance.py</span> in <span class="ansi-cyan-fg">validate</span><span class="ansi-blue-fg">(self, scope, ctype)</span>
+<span class="ansi-green-intense-fg ansi-bold">    334</span>             YangTypeError<span class="ansi-blue-fg">:</span> If the value <span class="ansi-green-fg">is</span> a scalar of incorrect type<span class="ansi-blue-fg">.</span>
+<span class="ansi-green-intense-fg ansi-bold">    335</span>         """
+<span class="ansi-green-fg">--&gt; 336</span><span class="ansi-red-fg">         </span>self<span class="ansi-blue-fg">.</span>schema_node<span class="ansi-blue-fg">.</span>_validate<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> scope<span class="ansi-blue-fg">,</span> ctype<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    337</span> 
+<span class="ansi-green-intense-fg ansi-bold">    338</span>     <span class="ansi-green-fg">def</span> add_defaults<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> ctype<span class="ansi-blue-fg">:</span> ContentType <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">-&gt;</span> <span class="ansi-blue-fg">"InstanceNode"</span><span class="ansi-blue-fg">:</span>
+
+<span class="ansi-green-fg">/usr/local/lib/python3.6/site-packages/yangson/schemanode.py</span> in <span class="ansi-cyan-fg">_validate</span><span class="ansi-blue-fg">(self, inst, scope, ctype)</span>
+<span class="ansi-green-intense-fg ansi-bold">    779</span>         <span class="ansi-green-fg">if</span> scope<span class="ansi-blue-fg">.</span>value <span class="ansi-blue-fg">&amp;</span> ValidationScope<span class="ansi-blue-fg">.</span>semantics<span class="ansi-blue-fg">.</span>value<span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">    780</span>             self<span class="ansi-blue-fg">.</span>_check_must<span class="ansi-blue-fg">(</span>inst<span class="ansi-blue-fg">)</span>        <span class="ansi-red-fg"># must expressions</span>
+<span class="ansi-green-fg">--&gt; 781</span><span class="ansi-red-fg">         </span>super<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">.</span>_validate<span class="ansi-blue-fg">(</span>inst<span class="ansi-blue-fg">,</span> scope<span class="ansi-blue-fg">,</span> ctype<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    782</span> 
+<span class="ansi-green-intense-fg ansi-bold">    783</span>     def _default_instance(self, pnode: "InstanceNode", ctype: ContentType,
+
+<span class="ansi-green-fg">/usr/local/lib/python3.6/site-packages/yangson/schemanode.py</span> in <span class="ansi-cyan-fg">_validate</span><span class="ansi-blue-fg">(self, inst, scope, ctype)</span>
+<span class="ansi-green-intense-fg ansi-bold">    845</span>                 inst.value not in self.type):
+<span class="ansi-green-intense-fg ansi-bold">    846</span>             raise YangTypeError(inst.json_pointer(), self.type.error_tag,
+<span class="ansi-green-fg">--&gt; 847</span><span class="ansi-red-fg">                                 self.type.error_message)
+</span><span class="ansi-green-intense-fg ansi-bold">    848</span>         if (isinstance(self.type, LinkType) and        # referential integrity
+<span class="ansi-green-intense-fg ansi-bold">    849</span>                 scope<span class="ansi-blue-fg">.</span>value <span class="ansi-blue-fg">&amp;</span> ValidationScope<span class="ansi-blue-fg">.</span>semantics<span class="ansi-blue-fg">.</span>value <span class="ansi-green-fg">and</span>
+
+<span class="ansi-red-fg">YangTypeError</span>: [/napalm-star-wars:universe/individual/3/affiliation] invalid-type: not derived from napalm-star-wars:AFFILIATION</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="What-broke?!">What broke?!<a class="anchor-link" href="#What-broke?!">¶</a>
+</h4>
+<p>Nothing!!!  This is by design.  If you'll take a look at the beginning of the article, we only loaded the first Napalm-Star-Wars model.  We <strong>didn't</strong> load the extended universe.  Fine, we'll simply push him all the way to the dark side.  :)</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [13]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">modify_data</span><span class="p">[</span><span class="s1">'affiliation'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'napalm-star-wars:REBEL_ALLIANCE'</span>
+
+<span class="n">stub</span> <span class="o">=</span> <span class="n">current_data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">modify_data</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Candidate Yoda: "</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">stub</span><span class="o">.</span><span class="n">raw_value</span><span class="p">(),</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">stub</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Validated!"</span><span class="p">)</span>
+
+<span class="n">translated</span> <span class="o">=</span> <span class="n">dummy_driver</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">candidate</span><span class="o">=</span><span class="n">stub</span><span class="o">.</span><span class="n">top</span><span class="p">()</span><span class="o">.</span><span class="n">raw_value</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">translated</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Candidate Yoda:  {
+  "name": "Yoda",
+  "age": 896,
+  "affiliation": "napalm-star-wars:REBEL_ALLIANCE"
+}
+Validated!
+---
+universe:
+individuals:
+  - Obi-Wan Kenobi
+    57
+    REBEL_ALLIANCE
+  - Luke Skywalker
+    19
+    REBEL_ALLIANCE
+  - Darth Vader
+    42
+    EMPIRE
+  - Yoda
+    896
+    REBEL_ALLIANCE
+
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Thank-you!">Thank you!<a class="anchor-link" href="#Thank-you!">¶</a>
 </h2>
 <p>As I mentioned earlier, I stand on the backs of giants.  Many thanks to Ken Celenza and the folks at Network To Code, David Barroso, and others involved in these community projects!!!</p>
@@ -629,19 +841,6 @@ individuals:
 
 </div>
 </div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In [ ]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
-
-    </div>
-</div>
-</div>
-
 </div>
 </div>
         
