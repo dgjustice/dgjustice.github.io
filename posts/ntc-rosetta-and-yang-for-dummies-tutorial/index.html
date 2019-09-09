@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html prefix="" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>NTC Rosetta and YANG for Dummies Tutorial | WifiCIDR Blog</title>
+<link href="../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../../rss.xml">
+<link rel="canonical" href="https://blog.wificidr.net/posts/ntc-rosetta-and-yang-for-dummies-tutorial/">
+<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="author" content="Daniel Justice">
+<meta property="og:site_name" content="WifiCIDR Blog">
+<meta property="og:title" content="NTC Rosetta and YANG for Dummies Tutorial">
+<meta property="og:url" content="https://blog.wificidr.net/posts/ntc-rosetta-and-yang-for-dummies-tutorial/">
+<meta property="og:description" content="YANG for Dummies!¶Most people are excited to hear about the new projects from NetworkToCode, but quickly discover that there are a lot of moving parts that present a steep learning curve.  Community c">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2019-09-09T10:49:38-05:00">
+<meta property="article:tag" content="python">
+</head>
+<body>
+    
+
+    <header id="header" class="navbar"><div class="container">
+            
+    <div class="brand">
+
+        <div class="brand-text">
+            <a href="https://blog.wificidr.net/" title="WifiCIDR Blog" rel="home">
+                WifiCIDR Blog
+            </a>
+        </div>
+
+        <a id="btn-toggle-nav" class="navbar-toggle">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </a>
+    </div>
+
+            
+    <nav class="navbar-collapse collapse"><ul class="nav">
+<li><a href="../../archive.html">Archive</a></li>
+                <li><a href="../../categories/">Tags</a></li>
+                <li><a href="../../rss.xml">RSS feed</a></li>
+    
+    
+    </ul></nav>
+</div>
+    </header><div class="header-padding"> </div>
+
+    
+    <div class="post-header">
+        <div class="container">
+            <div class="title">
+                NTC Rosetta and YANG for Dummies Tutorial
+            </div>
+        </div>
+    </div>
+
+    <div class="post-meta">
+      <div class="container">
+	<div class="meta clearfix">
+	  <div class="authordate">
+	    <time class="timeago" datetime="2019-09-09T10:49:38-05:00">%2019/%49/%9</time>
+	    
+
+	    
+          |  
+        <a href="index.ipynb" id="sourcelink">Source</a>
+
+	  </div>
+	  <div class="post-tags">
+	    <div class="tag">
+	      <a href="../../categories/python/" rel="tag">python</a>
+	    </div>
+	  </div>
+	</div>
+      </div>
+    </div>
+    
+    
+    <div id="post-main" class="main">
+        <div class="container">
+        <div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="YANG-for-Dummies!">YANG for Dummies!<a class="anchor-link" href="#YANG-for-Dummies!">¶</a>
+</h2>
+<p>Most people are excited to hear about the new projects from NetworkToCode, but quickly discover that there are a lot of moving parts that present a steep learning curve.  Community contributions will be critical to the success and adoption of these projects.  The groundwork has already been laid for IOS and JunOS drivers, so I want to document the path to onboarding completely new drivers.  This is standalone work that you can replicate without making changes to upstream libraries.  I'll demonstrate this based on David Barroso's great article titled <a href="https://napalm-automation.net/yang-for-dummies/">"YANG for dummies"</a>.  Most of the setup files for this tutorial were plagarized from ntc-rosetta.  I am definitely standing on the backs of giants!</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>To play along with this notebook, first run:</p>
+
+<pre><code>make build_test_containter
+make jupyter</code></pre>
+<p>Then open your browser to <a href="localhost:8888">localhost:8888</a>.</p>
+<p>Let's start by creating some file structure...</p>
+<ul>
+<li>
+<p>Create yang model in <code>data/yang/dummies/models/star-wars/napalm-star-wars.yang</code></p>
+<ul>
+<li>
+<pre><code>dummies
+└── models
+   ├── napalm-star-wars
+   │  └── napalm-star-wars.yang
+   └── napalm-star-wars-library.json</code></pre>
+<ul>
+<li>Copied from <a href="https://napalm-automation.net/yang-for-dummies/">Napalm-Automation</a>
+</li>
+</ul>
+</li>
+<li>Create the library file (<strong>minus the comment</strong>): <code>cat napalm-star-wars-library.json</code>
+<pre><code>{
+    "ietf-yang-library:modules-state": {
+        "module-set-id": "6bd894f2-9168-484e-a0bf-f3ed38d864f9",
+        "module": [
+            {
+                "name": "napalm-star-wars",
+                "revision": "2019-08-31",  # &lt;- This key *must* be present, see RFC8040
+                "conformance-type": "implement"
+            }
+        ]
+    }
+}</code></pre>
+<a href="https://tools.ietf.org/html/rfc8040">RFC8040</a>
+</li>
+<li>
+<p><code>head napalm-star-wars.yang</code></p>
+
+<pre><code>// module name
+module napalm-star-wars {
+
+    // boilerplate
+    yang-version "1";
+    namespace "https://napalm-yang.readthedocs.io/yang/napalm-star-wars";
+
+    prefix "napalm-star-wars";
+    revision "2019-08-31" {  # &lt;- This *must* match the revision above.
+      description
+          "initial version";
+      reference "0.0.1";
+    }
+    ...</code></pre>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="The-dummy-device">The dummy device<a class="anchor-link" href="#The-dummy-device">¶</a>
+</h3>
+<p>Our dummy device is going to implement configuration through YAML files.  That's absurd you say!  YAML is a horrible format!  I don't disagree, but it's suitable for pet examples and it lives up to the "dummy" device name.  A more practical example might be to parse a text file for device configuration or interface state.  If you are using something like textfsm, you will end up with a dictionary just like the following example.  The end goal regardless of the input is to start our parsing process with some kind of structured data - most commonly JSON/Python dictionaries.  This could be easily replicated with a dictionary returned from a TextFSM process, for example.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [40]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">read_file</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">"""Read a file and return the text.</span>
+<span class="sd">    </span>
+<span class="sd">    This method will be attached to our parser as a helper below."""</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">"data/star_wars/universe.yml"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">config</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">read_file</span><span class="p">())</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>---
+universe:
+  individuals:
+  - affiliation: REBEL_ALLIANCE
+    age: 57
+    name: Obi-Wan Kenobi
+  - affiliation: REBEL_ALLIANCE
+    age: 19
+    name: Luke Skywalker
+  - affiliation: EMPIRE
+    age: 42
+    name: Darth Vader
+  - affiliation: REBEL_ALLIANCE
+    age: 896
+    name: Yoda
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="The-parser">The parser<a class="anchor-link" href="#The-parser">¶</a>
+</h3>
+<p>This is the code that will parse the model.  Please refer to <a href="https://yangify.readthedocs.io/en/latest/tutorials/parsing-quickstart/parsing-quickstart.html">the official Yangify docs</a> for a complete explanation and walkthrough.  Also see existing implementations at the <a href="https://github.com/networktocode/ntc-rosetta">ntc-rosetta</a> Github page.  As you are developing and debugging your own parsers, keep in mind that <code>pdb</code> is your friend!</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [41]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+<span class="kn">from</span> <span class="nn">ruamel.yaml</span> <span class="k">import</span> <span class="n">YAML</span>
+
+<span class="kn">from</span> <span class="nn">ntc_rosetta.helpers</span> <span class="k">import</span> <span class="n">json_helpers</span> <span class="k">as</span> <span class="n">jh</span>
+
+<span class="kn">from</span> <span class="nn">yangify</span> <span class="k">import</span> <span class="n">parser</span>
+<span class="kn">from</span> <span class="nn">yangify.parser.text_tree</span> <span class="k">import</span> <span class="n">parse_indented_config</span>
+<span class="kn">from</span> <span class="nn">yangify.parser</span> <span class="k">import</span> <span class="n">Parser</span><span class="p">,</span> <span class="n">ParserData</span>
+
+
+<span class="k">def</span> <span class="nf">to_yaml</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="n">Any</span><span class="p">]:</span>
+    <span class="n">yaml</span> <span class="o">=</span> <span class="n">YAML</span><span class="p">()</span>
+    <span class="n">config_data</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">config_data</span>
+
+
+<span class="k">class</span> <span class="nc">IndividualData</span><span class="p">(</span><span class="n">Parser</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">Yangify</span><span class="p">(</span><span class="n">ParserData</span><span class="p">):</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="s2">"/napalm-star-wars:individual"</span>
+
+        <span class="k">def</span> <span class="nf">extract_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]:</span>
+            <span class="k">for</span> <span class="n">person</span> <span class="ow">in</span> <span class="n">jh</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">"individuals"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">native</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">[]):</span>
+                <span class="k">yield</span> <span class="s2">"individual"</span><span class="p">,</span> <span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">person</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">jh</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">"name"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">yy</span><span class="o">.</span><span class="n">native</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">age</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">jh</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">"age"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">yy</span><span class="o">.</span><span class="n">native</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">affiliation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">jh</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">"affiliation"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">yy</span><span class="o">.</span><span class="n">native</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">Universe</span><span class="p">(</span><span class="n">Parser</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">Yangify</span><span class="p">(</span><span class="n">ParserData</span><span class="p">):</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="s2">"/napalm-star-wars:universe"</span>
+
+    <span class="n">individual</span> <span class="o">=</span> <span class="n">IndividualData</span>
+
+
+<span class="k">class</span> <span class="nc">DummyParser</span><span class="p">(</span><span class="n">parser</span><span class="o">.</span><span class="n">RootParser</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    DummyParser expects as native data a dictionary where the `universe`</span>
+<span class="sd">    key is reserved for the device configuration.</span>
+<span class="sd">    """</span>
+
+    <span class="k">class</span> <span class="nc">Yangify</span><span class="p">(</span><span class="n">parser</span><span class="o">.</span><span class="n">ParserData</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">root_native</span> <span class="o">=</span> <span class="n">to_yaml</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root_native</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">native</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root_native</span><span class="p">[</span><span class="s2">"universe"</span><span class="p">]</span>
+
+    <span class="n">universe</span> <span class="o">=</span> <span class="n">Universe</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="The-driver">The driver<a class="anchor-link" href="#The-driver">¶</a>
+</h3>
+<p>We need to register the driver with rosetta so we can make use of some its utility methods.  <strong>We'll need to overload the <code>get_datamodel</code> function so we can load our custom models.</strong></p>
+<h3 id="YANG-models">YANG models<a class="anchor-link" href="#YANG-models">¶</a>
+</h3>
+<p>ntc-rosetta is a framework, so we are able to bring-our-own-yang models to the party.  Simply tell yangson where to find the data, and we're off to the races (or the next step of debugging)!</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [42]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">ntc_rosetta.drivers.base</span> <span class="k">import</span> <span class="n">Driver</span>
+<span class="kn">from</span> <span class="nn">yangson.datamodel</span> <span class="k">import</span> <span class="n">DataModel</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
+
+<span class="c1"># This part looks just like the ios and junos drivers in ntc-rosetta</span>
+<span class="k">class</span> <span class="nc">DummyDriverNapalmStarWars</span><span class="p">(</span><span class="n">Driver</span><span class="p">):</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">DummyParser</span>
+    <span class="n">translator</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">datamodel_name</span> <span class="o">=</span> <span class="s2">"napalm_star_wars"</span>
+    
+    <span class="c1"># These are the overloads.  Please see the file structure and notes</span>
+    <span class="c1"># in the introduction</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_data_model</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataModel</span><span class="p">:</span>
+        <span class="n">base</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s2">"/ntc_dummies/data/yang"</span><span class="p">)</span>
+        <span class="n">lib</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">"dummies/models/napalm-star-wars-library.json"</span><span class="p">)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">base</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">"dummies/models/napalm-star-wars"</span><span class="p">),</span>
+        <span class="p">]</span>
+        <span class="k">return</span> <span class="n">DataModel</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">lib</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+    
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_datamodel</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataModel</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_datamodel</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_datamodel</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_data_model</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_datamodel</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Check-the-datamodel">Check the datamodel<a class="anchor-link" href="#Check-the-datamodel">¶</a>
+</h4>
+<p>Let's take a peek at the YANG model to make sure the above worked correctly</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [43]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># If everything worked</span>
+<span class="n">dummy_driver</span> <span class="o">=</span> <span class="n">DummyDriverNapalmStarWars</span><span class="p">()</span>
+<span class="c1"># Let's see if we properly loaded the DataModel from the new YANG file</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">dummy_driver</span><span class="o">.</span><span class="n">get_datamodel</span><span class="p">()</span><span class="o">.</span><span class="n">ascii_tree</span><span class="p">())</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>+--rw napalm-star-wars:universe
+   +--rw individual* [name]
+      +--rw affiliation? &lt;identityref&gt;
+      +--rw age? &lt;age(uint16)&gt;
+      +--rw name &lt;string&gt;
+
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Parse-it">Parse it<a class="anchor-link" href="#Parse-it">¶</a>
+</h3>
+<p>Finally, we should be able to parse our "configuration" file and get a yang datamodel of our star-wars characters!</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [44]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">config_data</span> <span class="o">=</span> <span class="n">read_file</span><span class="p">()</span>
+
+<span class="c1"># Alternate options</span>
+<span class="c1"># my_universe = DummyParser(dummy_driver.get_datamodel(), native=config_data)</span>
+<span class="c1"># print(my_universe.process().raw_value())</span>
+
+<span class="n">parsed</span> <span class="o">=</span> <span class="n">dummy_driver</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">native</span><span class="o">=</span><span class="n">config_data</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">parsed</span><span class="o">.</span><span class="n">raw_value</span><span class="p">(),</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>{
+    "napalm-star-wars:universe": {
+        "individual": [
+            {
+                "name": "Obi-Wan Kenobi",
+                "age": 57,
+                "affiliation": "napalm-star-wars:REBEL_ALLIANCE"
+            },
+            {
+                "name": "Luke Skywalker",
+                "age": 19,
+                "affiliation": "napalm-star-wars:REBEL_ALLIANCE"
+            },
+            {
+                "name": "Darth Vader",
+                "age": 42,
+                "affiliation": "napalm-star-wars:EMPIRE"
+            },
+            {
+                "name": "Yoda",
+                "age": 896,
+                "affiliation": "napalm-star-wars:REBEL_ALLIANCE"
+            }
+        ]
+    }
+}
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="We-did-it!">We did it!<a class="anchor-link" href="#We-did-it!">¶</a>
+</h3>
+<p>At this point, we have a populated data model that we can manipulate using Yangson.  For a deeper dive into manipulating populated data models, please see my other <a href="https://github.com/networktocode/ntc-rosetta/blob/develop/docs/tutorials/rosetta_and_yangson_walkthrough.ipynb">tutorial at the ntc-rosetta project</a></p>
+<h4 id="Do-I-need-to-use-Rosetta?">Do I need to use Rosetta?<a class="anchor-link" href="#Do-I-need-to-use-Rosetta?">¶</a>
+</h4>
+<p>Strictly speaking, no.  You can look at the commented lines in the previous cell for an alternative route (you'll have to separate the <code>get_datamodel</code> method).  Rosetta is an interface that nicely binds these dependencies together, but your particular use case may have different requirements.</p>
+<h3 id="Translate-it">Translate it<a class="anchor-link" href="#Translate-it">¶</a>
+</h3>
+<p>This wraps up the story.  We'll write a simple translator to spit out yaml back out into a "native config" format.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [45]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">yangify</span> <span class="k">import</span> <span class="n">translator</span>
+<span class="kn">from</span> <span class="nn">yangify.translator</span> <span class="k">import</span> <span class="n">Translator</span><span class="p">,</span> <span class="n">TranslatorData</span>
+<span class="kn">from</span> <span class="nn">yangify.translator.config_tree</span> <span class="k">import</span> <span class="n">ConfigTree</span>
+
+
+<span class="k">class</span> <span class="nc">Individual</span><span class="p">(</span><span class="n">Translator</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    Implements /napalm-star-wars:universe</span>
+<span class="sd">    """</span>
+    <span class="k">class</span> <span class="nc">Yangify</span><span class="p">(</span><span class="n">translator</span><span class="o">.</span><span class="n">TranslatorData</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">pre_process</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">new_section</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yy</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">f</span><span class="s2">"  - </span><span class="si">{value}</span><span class="s2">"</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">age</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yy</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">f</span><span class="s2">"    </span><span class="si">{value}</span><span class="s2">"</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">affiliation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yy</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">f</span><span class="s2">"    </span><span class="si">{value[0]}</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">Universe</span><span class="p">(</span><span class="n">Translator</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">Yangify</span><span class="p">(</span><span class="n">translator</span><span class="o">.</span><span class="n">TranslatorData</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">pre_process</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">new_section</span><span class="p">(</span><span class="s2">"individuals:"</span><span class="p">)</span>
+    <span class="n">individual</span> <span class="o">=</span> <span class="n">Individual</span>
+    
+<span class="k">class</span> <span class="nc">DummyTranslator</span><span class="p">(</span><span class="n">translator</span><span class="o">.</span><span class="n">RootTranslator</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">Yangify</span><span class="p">(</span><span class="n">translator</span><span class="o">.</span><span class="n">TranslatorData</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">root_result</span> <span class="o">=</span> <span class="n">ConfigTree</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root_result</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="s2">"---"</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="s2">"universe:"</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">root_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root_result</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
+
+    <span class="n">universe</span> <span class="o">=</span> <span class="n">Universe</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [46]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># update the driver</span>
+<span class="n">DummyDriverNapalmStarWars</span><span class="o">.</span><span class="n">translator</span> <span class="o">=</span> <span class="n">DummyTranslator</span>
+<span class="n">dummy_driver</span> <span class="o">=</span> <span class="n">DummyDriverNapalmStarWars</span><span class="p">()</span>
+
+<span class="c1"># Alternate options</span>
+<span class="c1"># my_universe = DummyTranslator(dummy_driver.get_datamodel(), candidate=parsed.raw_value())</span>
+<span class="c1"># print(my_universe.process())</span>
+
+<span class="n">translated</span> <span class="o">=</span> <span class="n">dummy_driver</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">candidate</span><span class="o">=</span><span class="n">parsed</span><span class="o">.</span><span class="n">raw_value</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">translated</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>---
+universe:
+individuals:
+  - Obi-Wan Kenobi
+    57
+    REBEL_ALLIANCE
+  - Luke Skywalker
+    19
+    REBEL_ALLIANCE
+  - Darth Vader
+    42
+    EMPIRE
+  - Yoda
+    896
+    REBEL_ALLIANCE
+
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Thank-you!">Thank you!<a class="anchor-link" href="#Thank-you!">¶</a>
+</h2>
+<p>As I mentioned earlier, I stand on the backs of giants.  Many thanks to Ken Celenza and the folks at Network To Code, David Barroso, and others involved in these community projects!!!</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Feedback">Feedback<a class="anchor-link" href="#Feedback">¶</a>
+</h4>
+<p>If you find any errors or want to leave any kind of feedback, feel free to leave a comment as an <a href="https://github.com/dgjustice/dgjustice.github.io/issues">issue</a> or find me lurking on the <a href="slack.networktocode.com">NTC Slack</a>.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span> 
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+        
+    
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML" integrity="sha256-SDRP1VVYu+tgAGKhddBSl5+ezofHKZeI+OzxakbIe/Y=" crossorigin="anonymous"></script><script type="text/x-mathjax-config">
+        MathJax.Hub.Config({tex2jax: {inlineMath: [['$latex ','$'], ['\\(','\\)']]}});
+        </script>
+</div>
+    </div>
+
+    
+    <footer><div class="container">
+            <div class="social">
+
+
+
+                <div class="social-entry">
+                    <a href="../../rss.xml" target="_blank">
+                        <i class="fa fa-rss"></i> 
+                    </a>
+                </div>
+            </div>
+                <div class="copyright">
+                    Contents © 2019         <a href="mailto:djustice@wificidr.net">Daniel Justice</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+                    
+                </div>
+           
+        </div>
+    </footer><script src="../../assets/js/all-nocdn.js" type="text/javascript"></script>
+</body>
+</html>
