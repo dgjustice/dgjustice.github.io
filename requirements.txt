@@ -19,7 +19,7 @@ Jinja2==2.10
 jsonschema==2.6.0
 jupyter-client==5.2.4
 jupyter-core==4.4.0
-Logbook==1.4.3
+Logbook>=1.4.3
 lxml==4.3.0
 Mako==1.0.7
 Markdown==2.6.11
