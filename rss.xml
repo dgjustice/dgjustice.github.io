@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>WifiCIDR Blog</title><link>https://blog.wificidr.net/</link><description>WifiCIDR Blog</description><atom:link href="https://blog.wificidr.net/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><copyright>Contents © 2019 &lt;a href="mailto:djustice@wificidr.net"&gt;Daniel Justice&lt;/a&gt; </copyright><lastBuildDate>Mon, 09 Sep 2019 19:00:35 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>NTC Rosetta and YANG for Dummies Tutorial</title><link>https://blog.wificidr.net/posts/ntc-rosetta-and-yang-for-dummies-tutorial/</link><dc:creator>Daniel Justice</dc:creator><description>&lt;div&gt;&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>WifiCIDR Blog</title><link>https://blog.wificidr.net/</link><description>WifiCIDR Blog</description><atom:link href="https://blog.wificidr.net/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><copyright>Contents © 2019 &lt;a href="mailto:djustice@wificidr.net"&gt;Daniel Justice&lt;/a&gt; </copyright><lastBuildDate>Mon, 09 Sep 2019 19:45:32 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>NTC Rosetta and YANG for Dummies Tutorial</title><link>https://blog.wificidr.net/posts/ntc-rosetta-and-yang-for-dummies-tutorial/</link><dc:creator>Daniel Justice</dc:creator><description>&lt;div&gt;&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
 &lt;/div&gt;&lt;div class="inner_cell"&gt;
 &lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
 &lt;h2 id="YANG-for-Dummies!"&gt;YANG for Dummies!&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/ntc-rosetta-and-yang-for-dummies-tutorial/#YANG-for-Dummies!"&gt;¶&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Most people are excited to hear about the new projects from NetworkToCode, but quickly discover that there are a lot of moving parts that present a steep learning curve.  Community contributions will be critical to the success and adoption of these projects.  The groundwork has already been laid for IOS and JunOS drivers, so I want to document the path to onboarding completely new drivers.  This is standalone work that you can replicate without making changes to upstream libraries.  I'll demonstrate this based on David Barroso's great article titled &lt;a href="https://napalm-automation.net/yang-for-dummies/"&gt;"YANG for dummies"&lt;/a&gt;.  Most of the setup files for this tutorial were plagarized from ntc-rosetta.  I am definitely standing on the backs of giants!&lt;/p&gt;
@@ -78,7 +78,7 @@ module napalm-star-wars {
 &lt;/div&gt;
 &lt;div class="cell border-box-sizing code_cell rendered"&gt;
 &lt;div class="input"&gt;
-&lt;div class="prompt input_prompt"&gt;In [2]:&lt;/div&gt;
+&lt;div class="prompt input_prompt"&gt;In [9]:&lt;/div&gt;
 &lt;div class="inner_cell"&gt;
     &lt;div class="input_area"&gt;
 &lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;read_file&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
@@ -139,7 +139,7 @@ universe:
 &lt;/div&gt;
 &lt;div class="cell border-box-sizing code_cell rendered"&gt;
 &lt;div class="input"&gt;
-&lt;div class="prompt input_prompt"&gt;In [3]:&lt;/div&gt;
+&lt;div class="prompt input_prompt"&gt;In [10]:&lt;/div&gt;
 &lt;div class="inner_cell"&gt;
     &lt;div class="input_area"&gt;
 &lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;typing&lt;/span&gt; &lt;span class="k"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Any&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;Dict&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;Iterator&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;Optional&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;Tuple&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;cast&lt;/span&gt;
@@ -215,7 +215,7 @@ universe:
 &lt;/div&gt;
 &lt;div class="cell border-box-sizing code_cell rendered"&gt;
 &lt;div class="input"&gt;
-&lt;div class="prompt input_prompt"&gt;In [4]:&lt;/div&gt;
+&lt;div class="prompt input_prompt"&gt;In [11]:&lt;/div&gt;
 &lt;div class="inner_cell"&gt;
     &lt;div class="input_area"&gt;
 &lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;ntc_rosetta.drivers.base&lt;/span&gt; &lt;span class="k"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Driver&lt;/span&gt;
@@ -261,7 +261,7 @@ universe:
 &lt;/div&gt;
 &lt;div class="cell border-box-sizing code_cell rendered"&gt;
 &lt;div class="input"&gt;
-&lt;div class="prompt input_prompt"&gt;In [5]:&lt;/div&gt;
+&lt;div class="prompt input_prompt"&gt;In [12]:&lt;/div&gt;
 &lt;div class="inner_cell"&gt;
     &lt;div class="input_area"&gt;
 &lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# If everything worked&lt;/span&gt;
@@ -308,7 +308,7 @@ universe:
 &lt;/div&gt;
 &lt;div class="cell border-box-sizing code_cell rendered"&gt;
 &lt;div class="input"&gt;
-&lt;div class="prompt input_prompt"&gt;In [6]:&lt;/div&gt;
+&lt;div class="prompt input_prompt"&gt;In [13]:&lt;/div&gt;
 &lt;div class="inner_cell"&gt;
     &lt;div class="input_area"&gt;
 &lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;config_data&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;read_file&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
@@ -381,7 +381,7 @@ universe:
 &lt;/div&gt;
 &lt;div class="cell border-box-sizing code_cell rendered"&gt;
 &lt;div class="input"&gt;
-&lt;div class="prompt input_prompt"&gt;In [7]:&lt;/div&gt;
+&lt;div class="prompt input_prompt"&gt;In [14]:&lt;/div&gt;
 &lt;div class="inner_cell"&gt;
     &lt;div class="input_area"&gt;
 &lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;yangify&lt;/span&gt; &lt;span class="k"&gt;import&lt;/span&gt; &lt;span class="n"&gt;translator&lt;/span&gt;
@@ -441,7 +441,7 @@ universe:
 &lt;/div&gt;
 &lt;div class="cell border-box-sizing code_cell rendered"&gt;
 &lt;div class="input"&gt;
-&lt;div class="prompt input_prompt"&gt;In [8]:&lt;/div&gt;
+&lt;div class="prompt input_prompt"&gt;In [15]:&lt;/div&gt;
 &lt;div class="inner_cell"&gt;
     &lt;div class="input_area"&gt;
 &lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# update the driver&lt;/span&gt;
@@ -504,7 +504,7 @@ individuals:
 &lt;/div&gt;
 &lt;div class="cell border-box-sizing code_cell rendered"&gt;
 &lt;div class="input"&gt;
-&lt;div class="prompt input_prompt"&gt;In [10]:&lt;/div&gt;
+&lt;div class="prompt input_prompt"&gt;In [17]:&lt;/div&gt;
 &lt;div class="inner_cell"&gt;
     &lt;div class="input_area"&gt;
 &lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;irt&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;parsed&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;datamodel&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;parse_resource_id&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"/napalm-star-wars:universe/individual=Yoda"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
@@ -555,7 +555,7 @@ Candidate Yoda:  {
 &lt;pre&gt;
 &lt;span class="ansi-red-fg"&gt;---------------------------------------------------------------------------&lt;/span&gt;
 &lt;span class="ansi-red-fg"&gt;YangTypeError&lt;/span&gt;                             Traceback (most recent call last)
-&lt;span class="ansi-green-fg"&gt;&amp;lt;ipython-input-10-d3e1f770506c&amp;gt;&lt;/span&gt; in &lt;span class="ansi-cyan-fg"&gt;&amp;lt;module&amp;gt;&lt;/span&gt;
+&lt;span class="ansi-green-fg"&gt;&amp;lt;ipython-input-17-d3e1f770506c&amp;gt;&lt;/span&gt; in &lt;span class="ansi-cyan-fg"&gt;&amp;lt;module&amp;gt;&lt;/span&gt;
 &lt;span class="ansi-green-intense-fg ansi-bold"&gt;      7&lt;/span&gt; stub &lt;span class="ansi-blue-fg"&gt;=&lt;/span&gt; current_data&lt;span class="ansi-blue-fg"&gt;.&lt;/span&gt;update&lt;span class="ansi-blue-fg"&gt;(&lt;/span&gt;modify_data&lt;span class="ansi-blue-fg"&gt;,&lt;/span&gt; raw&lt;span class="ansi-blue-fg"&gt;=&lt;/span&gt;&lt;span class="ansi-green-fg"&gt;True&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;)&lt;/span&gt;
 &lt;span class="ansi-green-intense-fg ansi-bold"&gt;      8&lt;/span&gt; print&lt;span class="ansi-blue-fg"&gt;(&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;"Candidate Yoda: "&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;,&lt;/span&gt; json&lt;span class="ansi-blue-fg"&gt;.&lt;/span&gt;dumps&lt;span class="ansi-blue-fg"&gt;(&lt;/span&gt;stub&lt;span class="ansi-blue-fg"&gt;.&lt;/span&gt;raw_value&lt;span class="ansi-blue-fg"&gt;(&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;)&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;,&lt;/span&gt; indent&lt;span class="ansi-blue-fg"&gt;=&lt;/span&gt;&lt;span class="ansi-cyan-fg"&gt;2&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;)&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;)&lt;/span&gt;
 &lt;span class="ansi-green-fg"&gt;----&amp;gt; 9&lt;/span&gt;&lt;span class="ansi-red-fg"&gt; &lt;/span&gt;stub&lt;span class="ansi-blue-fg"&gt;.&lt;/span&gt;validate&lt;span class="ansi-blue-fg"&gt;(&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;)&lt;/span&gt;
@@ -627,10 +627,10 @@ Candidate Yoda:  {
 &lt;/div&gt;
 &lt;div class="cell border-box-sizing code_cell rendered"&gt;
 &lt;div class="input"&gt;
-&lt;div class="prompt input_prompt"&gt;In [13]:&lt;/div&gt;
+&lt;div class="prompt input_prompt"&gt;In [18]:&lt;/div&gt;
 &lt;div class="inner_cell"&gt;
     &lt;div class="input_area"&gt;
-&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;modify_data&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;'affiliation'&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'napalm-star-wars:REBEL_ALLIANCE'&lt;/span&gt;
+&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;modify_data&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;'affiliation'&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'napalm-star-wars:EMPIRE'&lt;/span&gt;
 
 &lt;span class="n"&gt;stub&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;current_data&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;update&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;modify_data&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;raw&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="kc"&gt;True&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"Candidate Yoda: "&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;json&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;dumps&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;stub&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;raw_value&lt;/span&gt;&lt;span class="p"&gt;(),&lt;/span&gt; &lt;span class="n"&gt;indent&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
@@ -658,7 +658,7 @@ Candidate Yoda:  {
 &lt;pre&gt;Candidate Yoda:  {
   "name": "Yoda",
   "age": 896,
-  "affiliation": "napalm-star-wars:REBEL_ALLIANCE"
+  "affiliation": "napalm-star-wars:EMPIRE"
 }
 Validated!
 ---
@@ -675,7 +675,7 @@ individuals:
     EMPIRE
   - Yoda
     896
-    REBEL_ALLIANCE
+    EMPIRE
 
 &lt;/pre&gt;
 &lt;/div&gt;
