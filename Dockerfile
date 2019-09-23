@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y locales && \
     # curl -sL https://deb.nodesource.com/setup_11.x | bash - && \
     # apt-get install -y nodejs && \
     # npm install less && \
-    pip install --upgrade pip setuptools && pip install -r requirements.txt && \ 
+    pip install --upgrade pip setuptools ghp-import2 && pip install -r requirements.txt && \ 
     # pip install Nikola notebook && \
     nikola theme -i bnw
 
