@@ -1,5 +1,5 @@
 # docker build -t website:version0.1 .
-# docker run -it -p 8000:8000 --rm -v $PWD:/app/ --name website crzdriver/wificidr:nikola0.1 bash
+# docker run --rm -it -v ${PWD}:/app -v ${HOME}:${HOME} -v /etc/passwd:/etc/passwd:ro -v /etc/group:/etc/group:ro --user $(id -u):$(id -g) website:version0.1 bash
 # Nikola 8.0.0b2 doesn's support python3.7
 FROM python:3.6
 COPY . /app
