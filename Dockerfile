@@ -1,5 +1,3 @@
-# docker build -t website:version0.1 .
-# docker run --rm -it -v ${PWD}:/app -v ${HOME}:${HOME} -v /etc/passwd:/etc/passwd:ro -v /etc/group:/etc/group:ro --user $(id -u):$(id -g) website:version0.1 bash
 # Nikola 8.0.0b2 doesn's support python3.7
 FROM python:3.6
 COPY . /app
@@ -16,5 +14,10 @@ RUN apt-get update && apt-get install -y locales && \
     pip install --upgrade pip setuptools ghp-import2 && pip install -r requirements.txt && \ 
     # pip install Nikola notebook && \
     nikola theme -i bnw
+
+RUN git config --global url."https://".insteadOf git:// && \
+    git config --global user.name "dgjustice" && \
+    git config --global user.email "djustice@wificidr.net" && \
+    git config --global credential.helper "/bin/bash /app/credentials.sh"
 
 CMD ["python"]
