@@ -1,5 +1,565 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>WifiCIDR Blog</title><link>https://blog.wificidr.net/</link><description>WifiCIDR Blog</description><atom:link href="https://blog.wificidr.net/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><copyright>Contents © 2019 &lt;a href="mailto:djustice@wificidr.net"&gt;Daniel Justice&lt;/a&gt; </copyright><lastBuildDate>Mon, 23 Sep 2019 17:13:55 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>NTC Rosetta and YANG for Dummies Tutorial</title><link>https://blog.wificidr.net/posts/ntc-rosetta-and-yang-for-dummies-tutorial/</link><dc:creator>Daniel Justice</dc:creator><description>&lt;div&gt;&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>WifiCIDR Blog</title><link>https://blog.wificidr.net/</link><description>WifiCIDR Blog</description><atom:link href="https://blog.wificidr.net/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><copyright>Contents © 2020 &lt;a href="mailto:djustice@wificidr.net"&gt;Daniel Justice&lt;/a&gt; </copyright><lastBuildDate>Sun, 31 May 2020 19:18:15 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Functional Programming in Python</title><link>https://blog.wificidr.net/posts/functional-programming-in-python/</link><dc:creator>Daniel Justice</dc:creator><description>&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h2 id="A-small-foray-into-functional-programming-in-Python"&gt;A small foray into functional programming in Python&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/functional-programming-in-python/#A-small-foray-into-functional-programming-in-Python"&gt;¶&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;This is an annotation of my own journey into functional programming.
+My goal is to write my thoughts down and share my experiences, not to make a technical argument about one set of technologies/techniques or another.&lt;/p&gt;
+&lt;p&gt;I have been studying category theory and functional programming as I continue along the path of trying to become a better developer.
+I don't have a degree in mathematics, nor do I have a hard-core computer science background, so many of these concepts fall into my personal bucket of "non-trivial" despite what the egg-heads on &lt;a href="https://www.quora.com/What-is-category-theory-23346?share=1"&gt;Quora&lt;/a&gt; say about it.
+People like Bartosz Milewski are beating the drum that we're doing it all wrong and &lt;a href="https://bartoszmilewski.com/2014/10/28/category-theory-for-programmers-the-preface/"&gt;using the wrong abstractions&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Queue up Raymond Hettinger beating the podium and yelling "There must be a better way!"...&lt;/p&gt;
+&lt;p&gt;I don't want to mislead my tiny pool of readers; I'm not here to weigh in on that discussion.
+As Hillel Wayne says,  &lt;a href="https://hillelwayne.com/talks/what-we-know-we-dont-know/"&gt;we should exercise caution in the absence of empirical evidence&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;One thing that I do find interesting and potentially very useful is the application of monads with I/O and Optional (maybe) data types.
+I have found myself increasingly frustrated with Python's type system and error-handling, and I have been seeking "the better way".
+Is the better way another language?&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://yourlanguagesucks.com/"&gt;They all suck&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Most all of them kept around &lt;a href="https://www.infoq.com/presentations/Null-References-The-Billion-Dollar-Mistake-Tony-Hoare/"&gt;&lt;code&gt;nil/None&lt;/code&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;I don't believe another language is the answer, but more on that later.
+Is it even possible to have a functional programming discussion without mentioning Haskell?
+Let's not risk it and go ahead and offer our sacrifice to the FP gods.
+I want to get my IP address from a web service.&lt;/p&gt;
+&lt;h4 id="Get-my-IP-in-Haskell"&gt;Get my IP in Haskell&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/functional-programming-in-python/#Get-my-IP-in-Haskell"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cm"&gt;{-# LANGUAGE OverloadedStrings #-}&lt;/span&gt;
+&lt;span class="cm"&gt;{-# LANGUAGE RecordWildCards #-}&lt;/span&gt;
+
+&lt;span class="kr"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;Main&lt;/span&gt; &lt;span class="kr"&gt;where&lt;/span&gt;
+
+&lt;span class="kr"&gt;import&lt;/span&gt;           &lt;span class="nn"&gt;Control.Exception&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nf"&gt;try&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="kr"&gt;import&lt;/span&gt;           &lt;span class="nn"&gt;Data.Aeson&lt;/span&gt;
+&lt;span class="kr"&gt;import&lt;/span&gt; &lt;span class="k"&gt;qualified&lt;/span&gt; &lt;span class="nn"&gt;Data.Text&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="n"&gt;Text&lt;/span&gt;
+&lt;span class="kr"&gt;import&lt;/span&gt;           &lt;span class="nn"&gt;Network.HTTP.Simple&lt;/span&gt;
+
+&lt;span class="kr"&gt;data&lt;/span&gt; &lt;span class="kt"&gt;IpAddrData&lt;/span&gt; &lt;span class="ow"&gt;=&lt;/span&gt; &lt;span class="kt"&gt;IpAddrData&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="n"&gt;ip&lt;/span&gt; &lt;span class="ow"&gt;::&lt;/span&gt; &lt;span class="kt"&gt;Text&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="kt"&gt;Text&lt;/span&gt;
+                              &lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;ip_decimal&lt;/span&gt; &lt;span class="ow"&gt;::&lt;/span&gt; &lt;span class="kt"&gt;Int&lt;/span&gt;
+                              &lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;city&lt;/span&gt; &lt;span class="ow"&gt;::&lt;/span&gt; &lt;span class="kt"&gt;Text&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="kt"&gt;Text&lt;/span&gt;
+                              &lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;country&lt;/span&gt; &lt;span class="ow"&gt;::&lt;/span&gt; &lt;span class="kt"&gt;Text&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="kt"&gt;Text&lt;/span&gt;
+                              &lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="kr"&gt;deriving&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;Show&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="kr"&gt;instance&lt;/span&gt; &lt;span class="kt"&gt;FromJSON&lt;/span&gt; &lt;span class="kt"&gt;IpAddrData&lt;/span&gt; &lt;span class="kr"&gt;where&lt;/span&gt;
+  &lt;span class="n"&gt;parseJSON&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;Object&lt;/span&gt; &lt;span class="n"&gt;v&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="ow"&gt;=&lt;/span&gt; &lt;span class="kt"&gt;IpAddrData&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;$&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;v&lt;/span&gt; &lt;span class="o"&gt;.:&lt;/span&gt; &lt;span class="s"&gt;"ip"&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;*&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;v&lt;/span&gt; &lt;span class="o"&gt;.:&lt;/span&gt; &lt;span class="s"&gt;"ip_decimal"&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;*&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;v&lt;/span&gt; &lt;span class="o"&gt;.:&lt;/span&gt; &lt;span class="s"&gt;"city"&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;*&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;v&lt;/span&gt; &lt;span class="o"&gt;.:&lt;/span&gt; &lt;span class="s"&gt;"country"&lt;/span&gt;
+
+&lt;span class="kr"&gt;instance&lt;/span&gt; &lt;span class="kt"&gt;ToJSON&lt;/span&gt; &lt;span class="kt"&gt;IpAddrData&lt;/span&gt; &lt;span class="kr"&gt;where&lt;/span&gt;
+  &lt;span class="n"&gt;toJSON&lt;/span&gt; &lt;span class="kt"&gt;IpAddrData&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="o"&gt;..&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="ow"&gt;=&lt;/span&gt; &lt;span class="n"&gt;object&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s"&gt;"ip"&lt;/span&gt; &lt;span class="o"&gt;.=&lt;/span&gt; &lt;span class="n"&gt;ip&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;"ip_decimal"&lt;/span&gt; &lt;span class="o"&gt;.=&lt;/span&gt; &lt;span class="n"&gt;ip_decimal&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;"city"&lt;/span&gt; &lt;span class="o"&gt;.=&lt;/span&gt; &lt;span class="n"&gt;city&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;"country"&lt;/span&gt; &lt;span class="o"&gt;.=&lt;/span&gt; &lt;span class="n"&gt;country&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+
+&lt;span class="nf"&gt;formatCityCountry&lt;/span&gt; &lt;span class="ow"&gt;::&lt;/span&gt; &lt;span class="kt"&gt;IpAddrData&lt;/span&gt; &lt;span class="ow"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="kt"&gt;Text&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="kt"&gt;Text&lt;/span&gt;
+&lt;span class="nf"&gt;formatCityCountry&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="ow"&gt;=&lt;/span&gt; &lt;span class="kt"&gt;Text&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;concat&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;city&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;", "&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;country&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+
+&lt;span class="nf"&gt;main&lt;/span&gt; &lt;span class="ow"&gt;::&lt;/span&gt; &lt;span class="kt"&gt;IO&lt;/span&gt; &lt;span class="nb"&gt;()&lt;/span&gt;
+&lt;span class="nf"&gt;main&lt;/span&gt; &lt;span class="ow"&gt;=&lt;/span&gt;
+    &lt;span class="n"&gt;try&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;httpJSON&lt;/span&gt; &lt;span class="s"&gt;"https://whatsmyip.ovh/json"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="o"&gt;&amp;gt;&amp;gt;=&lt;/span&gt; &lt;span class="nf"&gt;\&lt;/span&gt;&lt;span class="n"&gt;eresponse&lt;/span&gt; &lt;span class="ow"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="kr"&gt;case&lt;/span&gt; &lt;span class="n"&gt;eresponse&lt;/span&gt; &lt;span class="kr"&gt;of&lt;/span&gt;
+        &lt;span class="kt"&gt;Left&lt;/span&gt; &lt;span class="n"&gt;e&lt;/span&gt; &lt;span class="ow"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;print&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;e&lt;/span&gt; &lt;span class="ow"&gt;::&lt;/span&gt; &lt;span class="kt"&gt;HttpException&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="kt"&gt;Right&lt;/span&gt; &lt;span class="n"&gt;r&lt;/span&gt; &lt;span class="ow"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;print&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;formatCityCountry&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;getResponseBody&lt;/span&gt; &lt;span class="n"&gt;r&lt;/span&gt; &lt;span class="ow"&gt;::&lt;/span&gt; &lt;span class="kt"&gt;IpAddrData&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;h3 id="Put-down-the-Kool-Aid,-folks"&gt;Put down the Kool-Aid, folks&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/functional-programming-in-python/#Put-down-the-Kool-Aid,-folks"&gt;¶&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;First, I want to dispell some myths.
+I have to admit that I had some pretty naïve views of Haskell when I started messing with it.
+My ignorance is probably shining through here, but I'm only human.
+You see that &lt;code&gt;try&lt;/code&gt; bit in the Haskell code?
+Haskell might be "pure", but it isn't magic!
+We still have to deal with runtime exceptions.
+Second, it's typed and checked at compile time, right?
+Our program should be "correct"!&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;stack build  --ghc-options&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"-XOverloadedStrings -XRecordWildCards"&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="nb"&gt;echo&lt;/span&gt; &lt;span class="nv"&gt;$?&lt;/span&gt;
+&lt;span class="m"&gt;0&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Drum roll...&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;stack &lt;span class="nb"&gt;exec&lt;/span&gt; fp-exe
+fp-exe: JSONParseException Request &lt;span class="o"&gt;{&lt;/span&gt;
+  &lt;span class="nv"&gt;host&lt;/span&gt;                 &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;"whatsmyip.ovh"&lt;/span&gt;
+  &lt;span class="nv"&gt;port&lt;/span&gt;                 &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="m"&gt;443&lt;/span&gt;
+  &lt;span class="nv"&gt;secure&lt;/span&gt;               &lt;span class="o"&gt;=&lt;/span&gt; True
+  &lt;span class="nv"&gt;requestHeaders&lt;/span&gt;       &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="o"&gt;[(&lt;/span&gt;&lt;span class="s2"&gt;"Accept"&lt;/span&gt;,&lt;span class="s2"&gt;"application/json"&lt;/span&gt;&lt;span class="o"&gt;)]&lt;/span&gt;
+  &lt;span class="nv"&gt;path&lt;/span&gt;                 &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;"/ip"&lt;/span&gt;
+  &lt;span class="nv"&gt;queryString&lt;/span&gt;          &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;""&lt;/span&gt;
+  &lt;span class="nv"&gt;method&lt;/span&gt;               &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;"GET"&lt;/span&gt;
+  &lt;span class="nv"&gt;proxy&lt;/span&gt;                &lt;span class="o"&gt;=&lt;/span&gt; Nothing
+  &lt;span class="nv"&gt;rawBody&lt;/span&gt;              &lt;span class="o"&gt;=&lt;/span&gt; False
+  &lt;span class="nv"&gt;redirectCount&lt;/span&gt;        &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="m"&gt;10&lt;/span&gt;
+  &lt;span class="nv"&gt;responseTimeout&lt;/span&gt;      &lt;span class="o"&gt;=&lt;/span&gt; ResponseTimeoutDefault
+  &lt;span class="nv"&gt;requestVersion&lt;/span&gt;       &lt;span class="o"&gt;=&lt;/span&gt; HTTP/1.1
+&lt;span class="o"&gt;}&lt;/span&gt;
+ &lt;span class="o"&gt;(&lt;/span&gt;Response &lt;span class="o"&gt;{&lt;/span&gt;&lt;span class="nv"&gt;responseStatus&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; Status &lt;span class="o"&gt;{&lt;/span&gt;&lt;span class="nv"&gt;statusCode&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="m"&gt;200&lt;/span&gt;, &lt;span class="nv"&gt;statusMessage&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;"OK"&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;, &lt;span class="nv"&gt;responseVersion&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; HTTP/1.1, &lt;span class="nv"&gt;responseHeaders&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="o"&gt;[(&lt;/span&gt;&lt;span class="s2"&gt;"Server"&lt;/span&gt;,&lt;span class="s2"&gt;"nginx"&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;,&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"Date"&lt;/span&gt;,&lt;span class="s2"&gt;"Sat, 30 May 2020 22:59:44 GMT"&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;,&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"Content-Type"&lt;/span&gt;,&lt;span class="s2"&gt;"text/plain; charset=utf-8"&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;,&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"Content-Length"&lt;/span&gt;,&lt;span class="s2"&gt;"16"&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;,&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"Connection"&lt;/span&gt;,&lt;span class="s2"&gt;"keep-alive"&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;,&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"Strict-Transport-Security"&lt;/span&gt;,&lt;span class="s2"&gt;"max-age=31536000"&lt;/span&gt;&lt;span class="o"&gt;)]&lt;/span&gt;, &lt;span class="nv"&gt;responseBody&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="o"&gt;()&lt;/span&gt;, &lt;span class="nv"&gt;responseCookieJar&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; CJ &lt;span class="o"&gt;{&lt;/span&gt;&lt;span class="nv"&gt;expose&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="o"&gt;[]}&lt;/span&gt;, responseClose&lt;span class="err"&gt;'&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; ResponseClose&lt;span class="o"&gt;})&lt;/span&gt; &lt;span class="o"&gt;(&lt;/span&gt;ParseError &lt;span class="o"&gt;{&lt;/span&gt;&lt;span class="nv"&gt;errorContexts&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="o"&gt;[]&lt;/span&gt;, &lt;span class="nv"&gt;errorMessage&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;"endOfInput"&lt;/span&gt;, &lt;span class="nv"&gt;errorPosition&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;:8 &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;7&lt;/span&gt;&lt;span class="o"&gt;)})&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;What happened?!
+I snuck in there and pointed it to a different endpoint that doesn't return JSON data, so the parser died.
+And yes, I must admit that I purposefully ommitted &lt;code&gt;-Wall -Werror&lt;/code&gt;...
+But those still would not have saved us - &lt;strong&gt;the error is in the construction of the program, not the language&lt;/strong&gt;.
+Is there a way around that?
+Yes, of course there is, but we're not here to deep-dive into Haskell - what happend to a Python article?&lt;/p&gt;
+&lt;h4 id="Functional-Python"&gt;Functional Python&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/functional-programming-in-python/#Functional-Python"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;There are a lot of cool tools in the &lt;a href="https://docs.python.org/3/library/functools.html"&gt;functools&lt;/a&gt; library.
+Many Pythonistas are also aware of the &lt;code&gt;map&lt;/code&gt;, &lt;code&gt;reduce&lt;/code&gt;, and &lt;code&gt;filter&lt;/code&gt; methods taught in many Python FP articles.
+This is barely the tip of the iceberg.
+Some very smart folks at &lt;a href="https://drylabs.io/"&gt;Dry-labs&lt;/a&gt; have brought monads to Python.
+They're not the first to try it, but it is one of the most complete libraries I have seen.&lt;/p&gt;
+&lt;h4 id="Get-my-IP-in-Python"&gt;Get my IP in Python&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/functional-programming-in-python/#Get-my-IP-in-Python"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;pydantic&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;BaseModel&lt;/span&gt;
+
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;requests&lt;/span&gt;
+
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;returns.context&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;RequiresContextIOResultE&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;returns.functions&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;tap&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;returns.io&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;IOResultE&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;impure_safe&lt;/span&gt;
+
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;typing&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;t&lt;/span&gt;
+
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;OVHIpAddr&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;BaseModel&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;ip&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;
+    &lt;span class="n"&gt;ip_decimal&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;int&lt;/span&gt;
+    &lt;span class="n"&gt;country&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;
+    &lt;span class="n"&gt;city&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;
+
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;get_ip_addr&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;url&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;RequiresContextIOResultE&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;t&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Any&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;OVHIpAddr&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Get our IP address from a service"""&lt;/span&gt;
+
+    &lt;span class="nd"&gt;@impure_safe&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;inner&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;session&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;t&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Any&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;OVHIpAddr&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;resp&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;requests&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;url&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;OVHIpAddr&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;resp&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;json&lt;/span&gt;&lt;span class="p"&gt;())&lt;/span&gt;
+
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;RequiresContextIOResultE&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;inner&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;format_city_country&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;OVHIpAddr&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Format the city and country"""&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="s2"&gt;"{data.city}, {data.country}"&lt;/span&gt;
+
+
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="vm"&gt;__name__&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s2"&gt;"__main__"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;session&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;requests&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Session&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="p"&gt;(&lt;/span&gt;
+        &lt;span class="n"&gt;get_ip_addr&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"https://whatsmyip.ovh/json"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;map&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;format_city_country&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;map&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;tap&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;))(&lt;/span&gt;&lt;span class="n"&gt;session&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;h3 id="Still-broken"&gt;Still broken&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/functional-programming-in-python/#Still-broken"&gt;¶&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Finally, we get to the meat of my rambling.
+The Python code above has just about the exact same failure modes as the Haskell snippet before, and the fix is the same in both cases.
+We need to deal with the possibility that the JSON parser poops the bed.
+If you actually run the code above, you'll notice that it &lt;em&gt;doesn't&lt;/em&gt; die on bad JSON input.
+That is because the parsing is wrapped up in &lt;code&gt;impure_safe&lt;/code&gt;... but we violated single responsibility in the process.
+Does that matter?
+What if we add &lt;code&gt;print(resp.not_an_attr)&lt;/code&gt;?
+The exception is swallowed by the wrapper, and we spent 10 minutes trying to track down a silent error with little to no feedback from the code.
+TL;DR; the language didn't save us.
+FP didn't save us.&lt;/p&gt;
+&lt;h4 id="Wait-a-sec,-your-design-sucks"&gt;Wait a sec, your design sucks&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/functional-programming-in-python/#Wait-a-sec,-your-design-sucks"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;Absolutely, I agree.
+And in fairness to FP, Either and Maybe are elegant solutions to a tangled chain of risky function calls.
+The techniques have to be wielded in an intelligent manner to produce meaningful results!&lt;/p&gt;
+&lt;h3 id="Functional-my-Python"&gt;Functional my Python&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/functional-programming-in-python/#Functional-my-Python"&gt;¶&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;So let's apply FP to all of our Python codes!
+Unless you are familiar with dry-python's &lt;a href="https://github.com/dry-python/returns"&gt;&lt;code&gt;returns&lt;/code&gt;&lt;/a&gt; package, that last chunk of code is probably a lot of &lt;strong&gt;wat&lt;/strong&gt;.
+This isn't a tutorial on monads, but the code above basically wraps an I/O-bound call in a container that can be composed with other functions.
+&lt;code&gt;returns&lt;/code&gt; enables us to practice a concept called &lt;a href="https://fsharpforfunandprofit.com/rop/"&gt;Railway-oriented programming&lt;/a&gt;.
+Before we rewrite all of our Python repositories, let's consider...&lt;/p&gt;
+&lt;h4 id="The-good"&gt;The good&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/functional-programming-in-python/#The-good"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;&lt;code&gt;returns&lt;/code&gt; has great &lt;a href="https://returns.readthedocs.io/en/latest/"&gt;documentation&lt;/a&gt;.
+It is still an early-stage project and is under rapid development, and I am impressed with their commitment to testing and documentation.
+They are very responsive to issues and questions.
+&lt;code&gt;Maybe&lt;/code&gt; has a great use case when dealing with unpredictable dictionaries or class instances.
+Some libraries use a bit of magic to create dynamic objects from JSON responses, and nested key/property lookups can be a &lt;strong&gt;nightmare&lt;/strong&gt; of subtle errors.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;attr&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;monsters&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"monster"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;{})&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"arm"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"fingers"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;{})&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;count&lt;/span&gt;
+&lt;span class="n"&gt;Traceback&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;most&lt;/span&gt; &lt;span class="n"&gt;recent&lt;/span&gt; &lt;span class="n"&gt;call&lt;/span&gt; &lt;span class="n"&gt;last&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+  &lt;span class="n"&gt;File&lt;/span&gt; &lt;span class="s2"&gt;"&amp;lt;stdin&amp;gt;"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;line&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;module&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="ne"&gt;AttributeError&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;'NoneType'&lt;/span&gt; &lt;span class="nb"&gt;object&lt;/span&gt; &lt;span class="n"&gt;has&lt;/span&gt; &lt;span class="n"&gt;no&lt;/span&gt; &lt;span class="n"&gt;attribute&lt;/span&gt; &lt;span class="s1"&gt;'get'&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Dang it, I forgot to pass in a default argument!&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;monster_mash&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;map&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;lambda&lt;/span&gt; &lt;span class="n"&gt;mash&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;mash&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"monster"&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;map&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;lambda&lt;/span&gt; &lt;span class="n"&gt;monster&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;monster&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"arm"&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;map&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;lambda&lt;/span&gt; &lt;span class="n"&gt;arm&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;arm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"fingers"&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;map&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;lambda&lt;/span&gt; &lt;span class="n"&gt;fingers&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;getattr&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fingers&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"count"&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;returns&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;maybe&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;_Nothing&lt;/span&gt; &lt;span class="nb"&gt;object&lt;/span&gt; &lt;span class="n"&gt;at&lt;/span&gt; &lt;span class="mh"&gt;0x7fe06938a370&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;See!  Isn't that better!
+We now have to explicitly deal with a &lt;code&gt;Just value&lt;/code&gt; or &lt;code&gt;Nothing&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Why are you looking at me so skeptically?
+Why are you pointing and shaking your head?
+Is it just me, or do you feel like we just hammered a big square block through a round hole?
+A coworker asked me to look at a script that was failing on him, and it looked like a great opportunity to go way down the Python/FP rabbit hole.
+You can see for yourself &lt;a href="https://github.com/dgjustice/packtpub-downloader/blob/master/packt_downloader"&gt;how it turned out&lt;/a&gt;.&lt;/p&gt;
+&lt;h4 id="The-bad"&gt;The bad&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/functional-programming-in-python/#The-bad"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;Honestly, where to start?
+Python isn't a functional language and doesn't have very elegant mechanisms for handling monadic constructs.
+I went through a phase where I thought "Pythonic" was a great way to code.
+Don't get me wrong, I still try to follow those principles when and where it makes sense.
+I think they are good guidelines for people starting off on their development journey, but the guard rails turn into barriers in some instances.
+On the flip side, if you crash through the barriers and chart your own course, the results can be messy.
+I do believe that libraries like &lt;code&gt;returns&lt;/code&gt; have a place in our toolbox, and I am excited to follow the project as it evolves - and how it deals with being that square peg.&lt;/p&gt;
+&lt;h4 id="The-ugly"&gt;The ugly&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/functional-programming-in-python/#The-ugly"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;This is an important point, and a good example of what makes dynamic languages both awesome and horrifying.
+We can use frameworks to write &lt;a href="https://github.com/dgjustice/packtpub-downloader/blob/master/packt_downloader/__init__.py#L326-L369"&gt;code that is almost unreadable&lt;/a&gt; to our fellow Python developers.
+To add insult to injury, that block was formatted with &lt;code&gt;black&lt;/code&gt;, so have fun trying to put comments in sane places so others can follow what the heck is going on!&lt;/p&gt;
+&lt;p&gt;And type annotations in Python.
+80% of the time, Mypy works all the time.
+Another feature that I find awesome and infuriating in alternating 15-minute blocks!
+Here is a story about functional programming and type annotations in Python.&lt;/p&gt;
+&lt;p&gt;A team built a road through a winding mountain pass and a long valley below.
+You can drive a lot of different types of vehicles on this road, some small and fast, others large and slow.
+As time goes on, people realize that accidents often happen near the sharp turns and cliffs.
+Some more people came along and decided to add guard rails in certain parts of the road, but the road wasn't originally designed for them.
+Unfortunately, this means that most of the guard rails ended up along the straight and wide parts of the road.&lt;/p&gt;
+&lt;p&gt;Libraries like &lt;code&gt;returns&lt;/code&gt; will help in the general case, but the thorniest corner cases will always be the hardest to solve.
+FP libraries and type annotations cannot solve the foot-guns that are built into the language.
+Python doesn't have "compile-time" checks baked in, and there is nothing stopping a desperate developer on a short timeline from accessing &lt;code&gt;unsafe_obj._inner_value&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;\&amp;lt;\rant&amp;gt;&lt;/p&gt;
+&lt;p&gt;In fairness, the road described earlier is still under active development, and those guard rails are getting better as time goes on.&lt;/p&gt;
+&lt;h4 id="Dict-annotations-🐿️"&gt;Dict annotations 🐿️&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/functional-programming-in-python/#Dict-annotations-%F0%9F%90%BF%EF%B8%8F"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;A note about ♥♥&lt;a href="https://blog.wificidr.net/posts/functional-programming-in-python/pydantic-docs.helpmanual.io/"&gt;Pydantic&lt;/a&gt;♥♥...
+Go through all of your typed Python code and replace every. single. instance. of &lt;code&gt;Dict[str, Dict[int, Dict[Optional[omg...]]]]&lt;/code&gt; with something that inherits from &lt;code&gt;BaseModel&lt;/code&gt;.
+You're welcome; your hair might start growing back.
+For the love of sanity at least use &lt;a href="https://docs.python.org/3/library/dataclasses.html"&gt;data classes&lt;/a&gt; or &lt;a href="https://www.attrs.org/en/stable/"&gt;attrs&lt;/a&gt; or &lt;a href="https://docs.python.org/3/library/typing.html#typing.NamedTuple"&gt;NamedTuple&lt;/a&gt;.
+Don't worry about dependencies, our Python containers are &lt;a href="https://www.urbandictionary.com/define.php?term=Yuge"&gt;YUGE&lt;/a&gt;!&lt;/p&gt;
+&lt;p&gt;Never return a bare tuple from a method.
+It seems simple, oh it's &lt;strong&gt;obvious&lt;/strong&gt; what that does, but be a good teammate and don't make them guess.&lt;/p&gt;
+&lt;h3 id="Is-it-Python...-or-me?"&gt;Is it Python... or me?&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/functional-programming-in-python/#Is-it-Python...-or-me?"&gt;¶&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Remember the languages question from the opening?
+&lt;a href="https://yourlanguagesucks.com/"&gt;They all suck&lt;/a&gt;!
+Python was my ticket to success about ten years ago and has been an integral part of my career growth; I would be a fool to say otherwise.
+Just look at how many of these &lt;a href="https://github.com/networktocode/awesome-network-automation"&gt;cool network automation&lt;/a&gt; projects are based on the language.
+Designing a "correct" program is really hard.
+Even Haskell, that "pure" language that is supposed to save us from our stupidity, has a really hard time dealing assertions about natural numbers.
+Look and see how many tutorials copy and paste the same &lt;code&gt;safeDiv&lt;/code&gt; method to demonstrate the Maybe monad.
+C'mon, it's just a pesky little zero in the middle of infinity!
+Apparently, dealing with partial functions isn't easy after all.&lt;/p&gt;
+&lt;h4 id="The-right-tool-for-the-right-job"&gt;The right tool for the right job&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/functional-programming-in-python/#The-right-tool-for-the-right-job"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;Learning different styles and techniques has made me a better developer.
+We can take these concepts and apply them in different ways in several different languages.
+Just [favorite search engine] "monads in [some-programming-language]", and you will see some really interesting links.&lt;/p&gt;
+&lt;p&gt;Python &lt;strong&gt;is&lt;/strong&gt; an awesome language.
+I still enjoy using it daily to keep food on the table, but I am branching out more.
+I may have poked at Haskell a bit, but I am trying to learn it and be productive with its tools.
+It is a fascinating language that will flip your OOP brain on its lid, but it's not the end-all, be-all!&lt;/p&gt;
+&lt;p&gt;Some may disagree, but I find it &lt;strong&gt;really&lt;/strong&gt; hard to build small Python containers.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;341M    /usr/local/lib/python3.7/
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;So maybe Python isn't the best choice for that new microservice that you know is going to have several dependencies.
+Or maybe your requirements are well-defined and you can keep the scope slim getting away with a distroless container.
+Maybe you're inheriting a project written in a language designed by &lt;a href="http://www.golang.sucks/"&gt;mean people&lt;/a&gt;, and you just have to roll with it.
+Who knows, but you have to make a choice with few clear-cut options.&lt;/p&gt;
+&lt;p&gt;I am loathe to wade into language wars.
+I have seen really cool, massively functional projects in languages that appear to be horrible mismatches for the task at hand.
+Are &lt;a href="https://github.com/ansible/ansible/issues"&gt;four thousand issues&lt;/a&gt; a language problem?
+Their main competitor &lt;a href="https://github.com/saltstack/salt/issues"&gt;isn't doing much better&lt;/a&gt;.
+Are those really language issues?
+Nah, VS Code &lt;a href="https://github.com/microsoft/vscode/issues"&gt;has them both beat&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;What can I say, &lt;a href="http://www.gamearchitect.net/Articles/SoftwareIsHard.html"&gt;software is hard&lt;/a&gt;.&lt;/p&gt;
+&lt;h3 id="It's-all-about-design"&gt;It's all about &lt;del&gt;design&lt;/del&gt;&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/functional-programming-in-python/#It's-all-about-design"&gt;¶&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;As I said, this post is all about me getting my thoughts written down.
+I really don't have much of a point to make other than I'm trying to do my part to avoid the &lt;a href="https://www.theatlantic.com/technology/archive/2017/09/saving-the-world-from-code/540393/"&gt;software apocalypse&lt;/a&gt;.
+Design &lt;strong&gt;is&lt;/strong&gt; critical to writing correct programs, but is it "what it's all about"?&lt;/p&gt;
+&lt;p&gt;A former manager reminds me pretty often that "it" is about people.
+I spend most of my time writing tools that other people consume; I rarely "eat my own dog food".
+It is too easy to get bogged down in the technical minutae and day-to-day fire drills.
+To me, writing good software is about being a better teammate.
+I am embarassed every time someone brings me a bug, and even more so if it took two or three tries to fix it.
+Test coverage won't save me here, nor will the hottest trends.
+I don't know what the answer is, but I'm trying to do better.&lt;/p&gt;
+&lt;h4 id="My-preferred-guardrails"&gt;My preferred guardrails&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/functional-programming-in-python/#My-preferred-guardrails"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;So what is in my toolbox?
+How do I try to stay sane and craft good code?
+Glad you asked!&lt;/p&gt;
+&lt;p&gt;For linting, &lt;a href="https://github.com/psf/black"&gt;Black&lt;/a&gt; is it.
+Agree with your team on a line legth, and autoformat.
+I don't pass CI on bad formatting - just do it.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://pylama.readthedocs.io/en/latest/"&gt;Pylama&lt;/a&gt; - great baseline sanity checks and lots of plugins.&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://docs.pytest.org/en/latest/"&gt;Pytest&lt;/a&gt; - test all the things.&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://mypy.readthedocs.io/en/stable/"&gt;Mypy&lt;/a&gt; - check as many types as you can...&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://google.github.io/pytype/user_guide.html"&gt;pytype&lt;/a&gt; - and infer the rest when you can't.&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://codecov.io/"&gt;CodeCov&lt;/a&gt; - Keep that number going up!&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://faker.readthedocs.io/en/master/"&gt;faker&lt;/a&gt; - Super convenient random inputs&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h5 id="And-what's-on-my-radar"&gt;And what's on my radar&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/functional-programming-in-python/#And-what's-on-my-radar"&gt;¶&lt;/a&gt;&lt;/h5&gt;&lt;p&gt;I really need to review &lt;a href="https://hypothesis.readthedocs.io/en/latest/"&gt;hypothesis&lt;/a&gt; and figure out where I can be using it.&lt;/p&gt;
+&lt;p&gt;&lt;a href="http://lamport.azurewebsites.net/tla/tla.html"&gt;TLA+&lt;/a&gt; and formal methods.
+I have Hillel's book; I need to force myself to spend the time to finish it.&lt;/p&gt;
+&lt;h4 id="Conclusion"&gt;Conclusion&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/functional-programming-in-python/#Conclusion"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;Make it a discussion!
+Feel free to drop me a line on &lt;a href="https://www.linkedin.com/in/daniel-justice-netdev/"&gt;LinkedIn&lt;/a&gt; or harass me in an &lt;a href="https://github.com/dgjustice/dgjustice.github.io/issues"&gt;issue&lt;/a&gt;!&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;</description><guid>https://blog.wificidr.net/posts/functional-programming-in-python/</guid><pubDate>Sat, 30 May 2020 21:55:51 GMT</pubDate></item><item><title>Categories for Pythonistas - Part 1</title><link>https://blog.wificidr.net/posts/categories-for-pythonistas-part-1/</link><dc:creator>Daniel Justice</dc:creator><description>&lt;div&gt;&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h2 id="Categories-for-Pythonistas,-Part-1"&gt;Categories for Pythonistas, Part 1&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/categories-for-pythonistas-part-1/#Categories-for-Pythonistas,-Part-1"&gt;¶&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;This is an attempt to translate Category Theory Concepts to Python based on the material at &lt;a href="http://brendanfong.com/programmingcats.html"&gt;http://brendanfong.com/programmingcats.html&lt;/a&gt;.  Haskell and Python are very different languages, but I hope that many of the techniques taught will be applicable to more general cases.  It is assumed that you are already comfortable coding in Python and have some experience with its functional features.  Mathematics and computer science are riddled with jargon and cryptic symbols.  We will do our best to communicate in the vernacular as much as possible, but there is great value to learning the language of this domain.  The terseness found in many texts is best appreciated through practice and application.&lt;/p&gt;
+&lt;p&gt;The section numbers will follow the section numbers in the document &lt;a href="http://brendanfong.com/programmingcats_files/cats4progs-DRAFT.pdf"&gt;http://brendanfong.com/programmingcats_files/cats4progs-DRAFT.pdf&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id="Sets-and-functions,-section-1.1"&gt;Sets and functions, section 1.1&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/categories-for-pythonistas-part-1/#Sets-and-functions,-section-1.1"&gt;¶&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;The first thing we need to realize is that Python is not a purely functional language, nor is it strongly typed.  These two facts may feel like stuffing a square peg through a round hole, so we will do our best to sand down the edges first!&lt;/p&gt;
+&lt;p&gt;Functions or methods in Python are not always "pure"; they may produce side effects - and this is a critcal distinction.  Pure functions are like the functions you learned about in grade school math.  You can compute &lt;code&gt;x + y&lt;/code&gt; with the same arugments and &lt;em&gt;always&lt;/em&gt; get the same result.  Side effects come into play with any kind of I/O.  Think database operations, network operations, things of this sort.  Pure functions can be memoized; their results can be safely cachced.&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing code_cell rendered"&gt;
+&lt;div class="input"&gt;
+&lt;div class="prompt input_prompt"&gt;In [39]:&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+    &lt;div class="input_area"&gt;
+&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;add3&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="sd"&gt;"""A pure function that adds 3 to an integer"""&lt;/span&gt;
+    &lt;span class="c1"&gt;# Always returns the same result with the same inputs&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;
+
+&lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;add3&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class="output_wrapper"&gt;
+&lt;div class="output"&gt;
+
+
+&lt;div class="output_area"&gt;
+
+    &lt;div class="prompt"&gt;&lt;/div&gt;
+
+
+&lt;div class="output_subarea output_stream output_stdout output_text"&gt;
+&lt;pre&gt;5
+&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;p&gt;One thing to note almost immediately is that there is no practical way to enforce typing in Python.  The type annotations express my &lt;em&gt;intent&lt;/em&gt;, but we cannot prevent users from calling &lt;code&gt;add&lt;/code&gt; like &lt;code&gt;add({"foo": "bar"}, 42)&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;The next example demonstrates a function with side effects.  &lt;code&gt;input&lt;/code&gt; can have unpredictable behavior, and the cast &lt;code&gt;int(num)&lt;/code&gt; will fail on certain inputs (we call these partial functions).  &lt;code&gt;get_number_from_user&lt;/code&gt; may fail to return in many different ways.&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing code_cell rendered"&gt;
+&lt;div class="input"&gt;
+&lt;div class="prompt input_prompt"&gt;In [40]:&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+    &lt;div class="input_area"&gt;
+&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;typing&lt;/span&gt; &lt;span class="k"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Optional&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;get_number_from_user&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;Optional&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt;
+    &lt;span class="sd"&gt;"""This function has side effects!"""&lt;/span&gt;
+    &lt;span class="c1"&gt;# The user could send us anything... or hit ctrl+c&lt;/span&gt;
+    &lt;span class="c1"&gt;# num = input("Enter a number: ")&lt;/span&gt;
+    &lt;span class="n"&gt;num&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;"abc"&lt;/span&gt;
+    &lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="s2"&gt;"the input type: {type(num)}"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="c1"&gt;# try/except just to keep the cells running for now&lt;/span&gt;
+    &lt;span class="k"&gt;try&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="c1"&gt;# This is never guaranteed to work&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;except&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"""Exception!!!&lt;/span&gt;
+&lt;span class="s2"&gt;            ---------------------------------------------------------------------------&lt;/span&gt;
+&lt;span class="s2"&gt;            ValueError                                Traceback (most recent call last)&lt;/span&gt;
+&lt;span class="s2"&gt;            &amp;lt;ipython-input-25-e2519f5ea9d5&amp;gt; in &amp;lt;module&amp;gt;&lt;/span&gt;
+&lt;span class="s2"&gt;                  7     return int(num)&lt;/span&gt;
+&lt;span class="s2"&gt;                  8 &lt;/span&gt;
+&lt;span class="s2"&gt;            ----&amp;gt; 9 num = get_number_from_user()&lt;/span&gt;
+
+&lt;span class="s2"&gt;            &amp;lt;ipython-input-25-e2519f5ea9d5&amp;gt; in get_number_from_user()&lt;/span&gt;
+&lt;span class="s2"&gt;                  5     print(f"the input type: {type(num)}")&lt;/span&gt;
+&lt;span class="s2"&gt;                  6     # This is never guaranteed to work&lt;/span&gt;
+&lt;span class="s2"&gt;            ----&amp;gt; 7     return int(num)&lt;/span&gt;
+&lt;span class="s2"&gt;                  8 &lt;/span&gt;
+&lt;span class="s2"&gt;                  9 num = get_number_from_user()&lt;/span&gt;
+
+&lt;span class="s2"&gt;            ValueError: invalid literal for int() with base 10: 'abc'&lt;/span&gt;
+&lt;span class="s2"&gt;        """&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="n"&gt;num&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;get_number_from_user&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class="output_wrapper"&gt;
+&lt;div class="output"&gt;
+
+
+&lt;div class="output_area"&gt;
+
+    &lt;div class="prompt"&gt;&lt;/div&gt;
+
+
+&lt;div class="output_subarea output_stream output_stdout output_text"&gt;
+&lt;pre&gt;the input type: &amp;lt;class 'str'&amp;gt;
+Exception!!!
+            ---------------------------------------------------------------------------
+            ValueError                                Traceback (most recent call last)
+            &amp;lt;ipython-input-25-e2519f5ea9d5&amp;gt; in &amp;lt;module&amp;gt;
+                  7     return int(num)
+                  8 
+            ----&amp;gt; 9 num = get_number_from_user()
+
+            &amp;lt;ipython-input-25-e2519f5ea9d5&amp;gt; in get_number_from_user()
+                  5     print(f"the input type: {type(num)}")
+                  6     # This is never guaranteed to work
+            ----&amp;gt; 7     return int(num)
+                  8 
+                  9 num = get_number_from_user()
+
+            ValueError: invalid literal for int() with base 10: 'abc'
+        
+&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;p&gt;A function $f$ takes an input $x$ and produces an output $y$.  If we apply another function $g$ to $y$, we produce $z$.&lt;/p&gt;
+$$x \xrightarrow[]{\text{f}} y \xrightarrow[]{\text{g}} z$$&lt;p&gt;In the following example, we are demonstrating morphisms $\mathbb{Z} \rightarrow \mathbb{Z}$, e.g. &lt;code&gt;int&lt;/code&gt; -&amp;gt; &lt;code&gt;int&lt;/code&gt;, but we can use other categories as well.&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing code_cell rendered"&gt;
+&lt;div class="input"&gt;
+&lt;div class="prompt input_prompt"&gt;In [41]:&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+    &lt;div class="input_area"&gt;
+&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;multiply2&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="sd"&gt;"""A pure function to multiply an integer by 2"""&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;
+
+&lt;span class="c1"&gt;# define x&lt;/span&gt;
+&lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;4&lt;/span&gt;
+&lt;span class="c1"&gt;# apply add3&lt;/span&gt;
+&lt;span class="n"&gt;y&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;add3&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="c1"&gt;# apply multiply2&lt;/span&gt;
+&lt;span class="n"&gt;z&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;multiply2&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;z&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class="output_wrapper"&gt;
+&lt;div class="output"&gt;
+
+
+&lt;div class="output_area"&gt;
+
+    &lt;div class="prompt"&gt;&lt;/div&gt;
+
+
+&lt;div class="output_subarea output_stream output_stdout output_text"&gt;
+&lt;pre&gt;14
+&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;p&gt;We can also compose these functions similar to function composition in mathematics.&lt;/p&gt;
+$$z = (f \circ g)(x)$$&lt;p&gt;Though the notation in python requires nesting function calls as in the following:&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing code_cell rendered"&gt;
+&lt;div class="input"&gt;
+&lt;div class="prompt input_prompt"&gt;In [42]:&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+    &lt;div class="input_area"&gt;
+&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# define x&lt;/span&gt;
+&lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;4&lt;/span&gt;
+&lt;span class="c1"&gt;# compose add3 multiply2 after add3&lt;/span&gt;
+&lt;span class="n"&gt;z&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;multiply2&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;add3&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+
+&lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;z&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class="output_wrapper"&gt;
+&lt;div class="output"&gt;
+
+
+&lt;div class="output_area"&gt;
+
+    &lt;div class="prompt"&gt;&lt;/div&gt;
+
+
+&lt;div class="output_subarea output_stream output_stdout output_text"&gt;
+&lt;pre&gt;14
+&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;p&gt;What about a morphism $\mathbb{Z} \rightarrow \mathbb{B}$?&lt;/p&gt;
+&lt;p&gt;Let's demonstrate that $x \xrightarrow[]{\text{f}} y \xrightarrow[]{\text{g}} z$ == $(f \circ g)(x)$&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing code_cell rendered"&gt;
+&lt;div class="input"&gt;
+&lt;div class="prompt input_prompt"&gt;In [43]:&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+    &lt;div class="input_area"&gt;
+&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;add42&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;n&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mi"&gt;42&lt;/span&gt;
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;iseven&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;z&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;bool&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="kc"&gt;True&lt;/span&gt; &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;z&lt;/span&gt; &lt;span class="o"&gt;%&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt; &lt;span class="k"&gt;else&lt;/span&gt; &lt;span class="kc"&gt;False&lt;/span&gt;
+
+&lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;
+&lt;span class="n"&gt;y&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;add42&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;z&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;iseven&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="n"&gt;z&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="n"&gt;iseven&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;add42&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class="output_wrapper"&gt;
+&lt;div class="output"&gt;
+
+
+&lt;div class="output_area"&gt;
+
+    &lt;div class="prompt output_prompt"&gt;Out[43]:&lt;/div&gt;
+
+
+
+
+&lt;div class="output_text output_subarea output_execute_result"&gt;
+&lt;pre&gt;True&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h3 id="Sets-and-functions,-section-1.2"&gt;Sets and functions, section 1.2&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/categories-for-pythonistas-part-1/#Sets-and-functions,-section-1.2"&gt;¶&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Section 1.2 of the book is thoroughly covered in freely-available texts on the internet.  Python has support for set operations and this is documented at &lt;a href="https://docs.python.org/3.8/library/stdtypes.html#set-types-set-frozenset"&gt;https://docs.python.org/3.8/library/stdtypes.html#set-types-set-frozenset&lt;/a&gt;.&lt;/p&gt;
+&lt;h3 id="Categories,-section-1.3"&gt;Categories, section 1.3&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/categories-for-pythonistas-part-1/#Categories,-section-1.3"&gt;¶&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Categories!  :P&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/div&gt;</description><guid>https://blog.wificidr.net/posts/categories-for-pythonistas-part-1/</guid><pubDate>Fri, 17 Apr 2020 15:02:08 GMT</pubDate></item><item><title>NTC Rosetta and YANG for Dummies Tutorial</title><link>https://blog.wificidr.net/posts/ntc-rosetta-and-yang-for-dummies-tutorial/</link><dc:creator>Daniel Justice</dc:creator><description>&lt;div&gt;&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
 &lt;/div&gt;&lt;div class="inner_cell"&gt;
 &lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
 &lt;h2 id="YANG-for-Dummies!"&gt;YANG for Dummies!&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/ntc-rosetta-and-yang-for-dummies-tutorial/#YANG-for-Dummies!"&gt;¶&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Most people are excited to hear about the new projects from NetworkToCode, but quickly discover that there are a lot of moving parts that present a steep learning curve.  Community contributions will be critical to the success and adoption of these projects.  The groundwork has already been laid for IOS and JunOS drivers, so I want to document the path to onboarding completely new drivers.  This is standalone work that you can replicate without making changes to upstream libraries.  I'll demonstrate this based on David Barroso's great article titled &lt;a href="https://napalm-automation.net/yang-for-dummies/"&gt;"YANG for dummies"&lt;/a&gt;.  Most of the setup files for this tutorial were plagarized from ntc-rosetta.  I am definitely standing on the backs of giants!&lt;/p&gt;
