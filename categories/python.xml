@@ -1,5 +1,275 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>WifiCIDR Blog (Posts about python)</title><link>https://blog.wificidr.net/</link><description></description><atom:link href="https://blog.wificidr.net/categories/python.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><copyright>Contents © 2020 &lt;a href="mailto:djustice@wificidr.net"&gt;Daniel Justice&lt;/a&gt; </copyright><lastBuildDate>Sun, 31 May 2020 19:18:16 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>NTC Rosetta and YANG for Dummies Tutorial</title><link>https://blog.wificidr.net/posts/ntc-rosetta-and-yang-for-dummies-tutorial/</link><dc:creator>Daniel Justice</dc:creator><description>&lt;div&gt;&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>WifiCIDR Blog (Posts about python)</title><link>https://blog.wificidr.net/</link><description></description><atom:link href="https://blog.wificidr.net/categories/python.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><copyright>Contents © 2020 &lt;a href="mailto:djustice@wificidr.net"&gt;Daniel Justice&lt;/a&gt; </copyright><lastBuildDate>Sun, 31 May 2020 19:44:35 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Functional Programming in Python</title><link>https://blog.wificidr.net/posts/functional-programming-in-python/</link><dc:creator>Daniel Justice</dc:creator><description>&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h2 id="A-small-foray-into-functional-programming-in-Python"&gt;A small foray into functional programming in Python&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/functional-programming-in-python/#A-small-foray-into-functional-programming-in-Python"&gt;¶&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;This is an annotation of my own journey into functional programming.
+My goal is to write my thoughts down and share my experiences, not to make a technical argument about one set of technologies/techniques or another.&lt;/p&gt;
+&lt;p&gt;I have been studying category theory and functional programming as I continue along the path of trying to become a better developer.
+I don't have a degree in mathematics, nor do I have a hard-core computer science background, so many of these concepts fall into my personal bucket of "non-trivial" despite what the egg-heads on &lt;a href="https://www.quora.com/What-is-category-theory-23346?share=1"&gt;Quora&lt;/a&gt; say about it.
+People like Bartosz Milewski are beating the drum that we're doing it all wrong and &lt;a href="https://bartoszmilewski.com/2014/10/28/category-theory-for-programmers-the-preface/"&gt;using the wrong abstractions&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Queue up Raymond Hettinger beating the podium and yelling "There must be a better way!"...&lt;/p&gt;
+&lt;p&gt;I don't want to mislead my tiny pool of readers; I'm not here to weigh in on that discussion.
+As Hillel Wayne says,  &lt;a href="https://hillelwayne.com/talks/what-we-know-we-dont-know/"&gt;we should exercise caution in the absence of empirical evidence&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;One thing that I do find interesting and potentially very useful is the application of monads with I/O and Optional (maybe) data types.
+I have found myself increasingly frustrated with Python's type system and error-handling, and I have been seeking "the better way".
+Is the better way another language?&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://yourlanguagesucks.com/"&gt;They all suck&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Most all of them kept around &lt;a href="https://www.infoq.com/presentations/Null-References-The-Billion-Dollar-Mistake-Tony-Hoare/"&gt;&lt;code&gt;nil/None&lt;/code&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;I don't believe another language is the answer, but more on that later.
+Is it even possible to have a functional programming discussion without mentioning Haskell?
+Let's not risk it and go ahead and offer our sacrifice to the FP gods.
+I want to get my IP address from a web service.&lt;/p&gt;
+&lt;h4 id="Get-my-IP-in-Haskell"&gt;Get my IP in Haskell&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/functional-programming-in-python/#Get-my-IP-in-Haskell"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cm"&gt;{-# LANGUAGE OverloadedStrings #-}&lt;/span&gt;
+&lt;span class="cm"&gt;{-# LANGUAGE RecordWildCards #-}&lt;/span&gt;
+
+&lt;span class="kr"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;Main&lt;/span&gt; &lt;span class="kr"&gt;where&lt;/span&gt;
+
+&lt;span class="kr"&gt;import&lt;/span&gt;           &lt;span class="nn"&gt;Control.Exception&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nf"&gt;try&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="kr"&gt;import&lt;/span&gt;           &lt;span class="nn"&gt;Data.Aeson&lt;/span&gt;
+&lt;span class="kr"&gt;import&lt;/span&gt; &lt;span class="k"&gt;qualified&lt;/span&gt; &lt;span class="nn"&gt;Data.Text&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="n"&gt;Text&lt;/span&gt;
+&lt;span class="kr"&gt;import&lt;/span&gt;           &lt;span class="nn"&gt;Network.HTTP.Simple&lt;/span&gt;
+
+&lt;span class="kr"&gt;data&lt;/span&gt; &lt;span class="kt"&gt;IpAddrData&lt;/span&gt; &lt;span class="ow"&gt;=&lt;/span&gt; &lt;span class="kt"&gt;IpAddrData&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="n"&gt;ip&lt;/span&gt; &lt;span class="ow"&gt;::&lt;/span&gt; &lt;span class="kt"&gt;Text&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="kt"&gt;Text&lt;/span&gt;
+                              &lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;ip_decimal&lt;/span&gt; &lt;span class="ow"&gt;::&lt;/span&gt; &lt;span class="kt"&gt;Int&lt;/span&gt;
+                              &lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;city&lt;/span&gt; &lt;span class="ow"&gt;::&lt;/span&gt; &lt;span class="kt"&gt;Text&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="kt"&gt;Text&lt;/span&gt;
+                              &lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;country&lt;/span&gt; &lt;span class="ow"&gt;::&lt;/span&gt; &lt;span class="kt"&gt;Text&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="kt"&gt;Text&lt;/span&gt;
+                              &lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="kr"&gt;deriving&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;Show&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="kr"&gt;instance&lt;/span&gt; &lt;span class="kt"&gt;FromJSON&lt;/span&gt; &lt;span class="kt"&gt;IpAddrData&lt;/span&gt; &lt;span class="kr"&gt;where&lt;/span&gt;
+  &lt;span class="n"&gt;parseJSON&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;Object&lt;/span&gt; &lt;span class="n"&gt;v&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="ow"&gt;=&lt;/span&gt; &lt;span class="kt"&gt;IpAddrData&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;$&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;v&lt;/span&gt; &lt;span class="o"&gt;.:&lt;/span&gt; &lt;span class="s"&gt;"ip"&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;*&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;v&lt;/span&gt; &lt;span class="o"&gt;.:&lt;/span&gt; &lt;span class="s"&gt;"ip_decimal"&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;*&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;v&lt;/span&gt; &lt;span class="o"&gt;.:&lt;/span&gt; &lt;span class="s"&gt;"city"&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;*&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;v&lt;/span&gt; &lt;span class="o"&gt;.:&lt;/span&gt; &lt;span class="s"&gt;"country"&lt;/span&gt;
+
+&lt;span class="kr"&gt;instance&lt;/span&gt; &lt;span class="kt"&gt;ToJSON&lt;/span&gt; &lt;span class="kt"&gt;IpAddrData&lt;/span&gt; &lt;span class="kr"&gt;where&lt;/span&gt;
+  &lt;span class="n"&gt;toJSON&lt;/span&gt; &lt;span class="kt"&gt;IpAddrData&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="o"&gt;..&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="ow"&gt;=&lt;/span&gt; &lt;span class="n"&gt;object&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s"&gt;"ip"&lt;/span&gt; &lt;span class="o"&gt;.=&lt;/span&gt; &lt;span class="n"&gt;ip&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;"ip_decimal"&lt;/span&gt; &lt;span class="o"&gt;.=&lt;/span&gt; &lt;span class="n"&gt;ip_decimal&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;"city"&lt;/span&gt; &lt;span class="o"&gt;.=&lt;/span&gt; &lt;span class="n"&gt;city&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;"country"&lt;/span&gt; &lt;span class="o"&gt;.=&lt;/span&gt; &lt;span class="n"&gt;country&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+
+&lt;span class="nf"&gt;formatCityCountry&lt;/span&gt; &lt;span class="ow"&gt;::&lt;/span&gt; &lt;span class="kt"&gt;IpAddrData&lt;/span&gt; &lt;span class="ow"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="kt"&gt;Text&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="kt"&gt;Text&lt;/span&gt;
+&lt;span class="nf"&gt;formatCityCountry&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="ow"&gt;=&lt;/span&gt; &lt;span class="kt"&gt;Text&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;concat&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;city&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;", "&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;country&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+
+&lt;span class="nf"&gt;main&lt;/span&gt; &lt;span class="ow"&gt;::&lt;/span&gt; &lt;span class="kt"&gt;IO&lt;/span&gt; &lt;span class="nb"&gt;()&lt;/span&gt;
+&lt;span class="nf"&gt;main&lt;/span&gt; &lt;span class="ow"&gt;=&lt;/span&gt;
+    &lt;span class="n"&gt;try&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;httpJSON&lt;/span&gt; &lt;span class="s"&gt;"https://whatsmyip.ovh/json"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="o"&gt;&amp;gt;&amp;gt;=&lt;/span&gt; &lt;span class="nf"&gt;\&lt;/span&gt;&lt;span class="n"&gt;eresponse&lt;/span&gt; &lt;span class="ow"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="kr"&gt;case&lt;/span&gt; &lt;span class="n"&gt;eresponse&lt;/span&gt; &lt;span class="kr"&gt;of&lt;/span&gt;
+        &lt;span class="kt"&gt;Left&lt;/span&gt; &lt;span class="n"&gt;e&lt;/span&gt; &lt;span class="ow"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;print&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;e&lt;/span&gt; &lt;span class="ow"&gt;::&lt;/span&gt; &lt;span class="kt"&gt;HttpException&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="kt"&gt;Right&lt;/span&gt; &lt;span class="n"&gt;r&lt;/span&gt; &lt;span class="ow"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;print&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;formatCityCountry&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;getResponseBody&lt;/span&gt; &lt;span class="n"&gt;r&lt;/span&gt; &lt;span class="ow"&gt;::&lt;/span&gt; &lt;span class="kt"&gt;IpAddrData&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;h3 id="Put-down-the-Kool-Aid,-folks"&gt;Put down the Kool-Aid, folks&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/functional-programming-in-python/#Put-down-the-Kool-Aid,-folks"&gt;¶&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;First, I want to dispell some myths.
+I have to admit that I had some pretty naïve views of Haskell when I started messing with it.
+My ignorance is probably shining through here, but I'm only human.
+You see that &lt;code&gt;try&lt;/code&gt; bit in the Haskell code?
+Haskell might be "pure", but it isn't magic!
+We still have to deal with runtime exceptions.
+Second, it's typed and checked at compile time, right?
+Our program should be "correct"!&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;stack build  --ghc-options&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"-XOverloadedStrings -XRecordWildCards"&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="nb"&gt;echo&lt;/span&gt; &lt;span class="nv"&gt;$?&lt;/span&gt;
+&lt;span class="m"&gt;0&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Drum roll...&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;stack &lt;span class="nb"&gt;exec&lt;/span&gt; fp-exe
+fp-exe: JSONParseException Request &lt;span class="o"&gt;{&lt;/span&gt;
+  &lt;span class="nv"&gt;host&lt;/span&gt;                 &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;"whatsmyip.ovh"&lt;/span&gt;
+  &lt;span class="nv"&gt;port&lt;/span&gt;                 &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="m"&gt;443&lt;/span&gt;
+  &lt;span class="nv"&gt;secure&lt;/span&gt;               &lt;span class="o"&gt;=&lt;/span&gt; True
+  &lt;span class="nv"&gt;requestHeaders&lt;/span&gt;       &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="o"&gt;[(&lt;/span&gt;&lt;span class="s2"&gt;"Accept"&lt;/span&gt;,&lt;span class="s2"&gt;"application/json"&lt;/span&gt;&lt;span class="o"&gt;)]&lt;/span&gt;
+  &lt;span class="nv"&gt;path&lt;/span&gt;                 &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;"/ip"&lt;/span&gt;
+  &lt;span class="nv"&gt;queryString&lt;/span&gt;          &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;""&lt;/span&gt;
+  &lt;span class="nv"&gt;method&lt;/span&gt;               &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;"GET"&lt;/span&gt;
+  &lt;span class="nv"&gt;proxy&lt;/span&gt;                &lt;span class="o"&gt;=&lt;/span&gt; Nothing
+  &lt;span class="nv"&gt;rawBody&lt;/span&gt;              &lt;span class="o"&gt;=&lt;/span&gt; False
+  &lt;span class="nv"&gt;redirectCount&lt;/span&gt;        &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="m"&gt;10&lt;/span&gt;
+  &lt;span class="nv"&gt;responseTimeout&lt;/span&gt;      &lt;span class="o"&gt;=&lt;/span&gt; ResponseTimeoutDefault
+  &lt;span class="nv"&gt;requestVersion&lt;/span&gt;       &lt;span class="o"&gt;=&lt;/span&gt; HTTP/1.1
+&lt;span class="o"&gt;}&lt;/span&gt;
+ &lt;span class="o"&gt;(&lt;/span&gt;Response &lt;span class="o"&gt;{&lt;/span&gt;&lt;span class="nv"&gt;responseStatus&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; Status &lt;span class="o"&gt;{&lt;/span&gt;&lt;span class="nv"&gt;statusCode&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="m"&gt;200&lt;/span&gt;, &lt;span class="nv"&gt;statusMessage&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;"OK"&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;, &lt;span class="nv"&gt;responseVersion&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; HTTP/1.1, &lt;span class="nv"&gt;responseHeaders&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="o"&gt;[(&lt;/span&gt;&lt;span class="s2"&gt;"Server"&lt;/span&gt;,&lt;span class="s2"&gt;"nginx"&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;,&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"Date"&lt;/span&gt;,&lt;span class="s2"&gt;"Sat, 30 May 2020 22:59:44 GMT"&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;,&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"Content-Type"&lt;/span&gt;,&lt;span class="s2"&gt;"text/plain; charset=utf-8"&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;,&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"Content-Length"&lt;/span&gt;,&lt;span class="s2"&gt;"16"&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;,&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"Connection"&lt;/span&gt;,&lt;span class="s2"&gt;"keep-alive"&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;,&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"Strict-Transport-Security"&lt;/span&gt;,&lt;span class="s2"&gt;"max-age=31536000"&lt;/span&gt;&lt;span class="o"&gt;)]&lt;/span&gt;, &lt;span class="nv"&gt;responseBody&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="o"&gt;()&lt;/span&gt;, &lt;span class="nv"&gt;responseCookieJar&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; CJ &lt;span class="o"&gt;{&lt;/span&gt;&lt;span class="nv"&gt;expose&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="o"&gt;[]}&lt;/span&gt;, responseClose&lt;span class="err"&gt;'&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; ResponseClose&lt;span class="o"&gt;})&lt;/span&gt; &lt;span class="o"&gt;(&lt;/span&gt;ParseError &lt;span class="o"&gt;{&lt;/span&gt;&lt;span class="nv"&gt;errorContexts&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="o"&gt;[]&lt;/span&gt;, &lt;span class="nv"&gt;errorMessage&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;"endOfInput"&lt;/span&gt;, &lt;span class="nv"&gt;errorPosition&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;:8 &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;7&lt;/span&gt;&lt;span class="o"&gt;)})&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;What happened?!
+I snuck in there and pointed it to a different endpoint that doesn't return JSON data, so the parser died.
+And yes, I must admit that I purposefully ommitted &lt;code&gt;-Wall -Werror&lt;/code&gt;...
+But those still would not have saved us - &lt;strong&gt;the error is in the construction of the program, not the language&lt;/strong&gt;.
+Is there a way around that?
+Yes, of course there is, but we're not here to deep-dive into Haskell - what happend to a Python article?&lt;/p&gt;
+&lt;h4 id="Functional-Python"&gt;Functional Python&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/functional-programming-in-python/#Functional-Python"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;There are a lot of cool tools in the &lt;a href="https://docs.python.org/3/library/functools.html"&gt;functools&lt;/a&gt; library.
+Many Pythonistas are also aware of the &lt;code&gt;map&lt;/code&gt;, &lt;code&gt;reduce&lt;/code&gt;, and &lt;code&gt;filter&lt;/code&gt; methods taught in many Python FP articles.
+This is barely the tip of the iceberg.
+Some very smart folks at &lt;a href="https://drylabs.io/"&gt;Dry-labs&lt;/a&gt; have brought monads to Python.
+They're not the first to try it, but it is one of the most complete libraries I have seen.&lt;/p&gt;
+&lt;h4 id="Get-my-IP-in-Python"&gt;Get my IP in Python&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/functional-programming-in-python/#Get-my-IP-in-Python"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;pydantic&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;BaseModel&lt;/span&gt;
+
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;requests&lt;/span&gt;
+
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;returns.context&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;RequiresContextIOResultE&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;returns.functions&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;tap&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;returns.io&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;IOResultE&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;impure_safe&lt;/span&gt;
+
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;typing&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;t&lt;/span&gt;
+
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;OVHIpAddr&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;BaseModel&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;ip&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;
+    &lt;span class="n"&gt;ip_decimal&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;int&lt;/span&gt;
+    &lt;span class="n"&gt;country&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;
+    &lt;span class="n"&gt;city&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;
+
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;get_ip_addr&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;url&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;RequiresContextIOResultE&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;t&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Any&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;OVHIpAddr&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Get our IP address from a service"""&lt;/span&gt;
+
+    &lt;span class="nd"&gt;@impure_safe&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;inner&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;session&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;t&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Any&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;OVHIpAddr&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;resp&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;requests&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;url&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;OVHIpAddr&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;resp&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;json&lt;/span&gt;&lt;span class="p"&gt;())&lt;/span&gt;
+
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;RequiresContextIOResultE&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;inner&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;format_city_country&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;OVHIpAddr&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Format the city and country"""&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="s2"&gt;"{data.city}, {data.country}"&lt;/span&gt;
+
+
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="vm"&gt;__name__&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s2"&gt;"__main__"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;session&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;requests&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Session&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="p"&gt;(&lt;/span&gt;
+        &lt;span class="n"&gt;get_ip_addr&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"https://whatsmyip.ovh/json"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;map&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;format_city_country&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;map&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;tap&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;))(&lt;/span&gt;&lt;span class="n"&gt;session&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;h3 id="Still-broken"&gt;Still broken&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/functional-programming-in-python/#Still-broken"&gt;¶&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Finally, we get to the meat of my rambling.
+The Python code above has just about the exact same failure modes as the Haskell snippet before, and the fix is the same in both cases.
+We need to deal with the possibility that the JSON parser poops the bed.
+If you actually run the code above, you'll notice that it &lt;em&gt;doesn't&lt;/em&gt; die on bad JSON input.
+That is because the parsing is wrapped up in &lt;code&gt;impure_safe&lt;/code&gt;... but we violated single responsibility in the process.
+Does that matter?
+What if we add &lt;code&gt;print(resp.not_an_attr)&lt;/code&gt;?
+The exception is swallowed by the wrapper, and we spent 10 minutes trying to track down a silent error with little to no feedback from the code.
+TL;DR; the language didn't save us.
+FP didn't save us.&lt;/p&gt;
+&lt;h4 id="Wait-a-sec,-your-design-sucks"&gt;Wait a sec, your design sucks&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/functional-programming-in-python/#Wait-a-sec,-your-design-sucks"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;Absolutely, I agree.
+And in fairness to FP, Either and Maybe are elegant solutions to a tangled chain of risky function calls.
+The techniques have to be wielded in an intelligent manner to produce meaningful results!&lt;/p&gt;
+&lt;h3 id="Functional-my-Python"&gt;Functional my Python&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/functional-programming-in-python/#Functional-my-Python"&gt;¶&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;So let's apply FP to all of our Python codes!
+Unless you are familiar with dry-python's &lt;a href="https://github.com/dry-python/returns"&gt;&lt;code&gt;returns&lt;/code&gt;&lt;/a&gt; package, that last chunk of code is probably a lot of &lt;strong&gt;wat&lt;/strong&gt;.
+This isn't a tutorial on monads, but the code above basically wraps an I/O-bound call in a container that can be composed with other functions.
+&lt;code&gt;returns&lt;/code&gt; enables us to practice a concept called &lt;a href="https://fsharpforfunandprofit.com/rop/"&gt;Railway-oriented programming&lt;/a&gt;.
+Before we rewrite all of our Python repositories, let's consider...&lt;/p&gt;
+&lt;h4 id="The-good"&gt;The good&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/functional-programming-in-python/#The-good"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;&lt;code&gt;returns&lt;/code&gt; has great &lt;a href="https://returns.readthedocs.io/en/latest/"&gt;documentation&lt;/a&gt;.
+It is still an early-stage project and is under rapid development, and I am impressed with their commitment to testing and documentation.
+They are very responsive to issues and questions.
+&lt;code&gt;Maybe&lt;/code&gt; has a great use case when dealing with unpredictable dictionaries or class instances.
+Some libraries use a bit of magic to create dynamic objects from JSON responses, and nested key/property lookups can be a &lt;strong&gt;nightmare&lt;/strong&gt; of subtle errors.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;attr&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;monsters&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"monster"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;{})&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"arm"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"fingers"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;{})&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;count&lt;/span&gt;
+&lt;span class="n"&gt;Traceback&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;most&lt;/span&gt; &lt;span class="n"&gt;recent&lt;/span&gt; &lt;span class="n"&gt;call&lt;/span&gt; &lt;span class="n"&gt;last&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+  &lt;span class="n"&gt;File&lt;/span&gt; &lt;span class="s2"&gt;"&amp;lt;stdin&amp;gt;"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;line&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;module&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="ne"&gt;AttributeError&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;'NoneType'&lt;/span&gt; &lt;span class="nb"&gt;object&lt;/span&gt; &lt;span class="n"&gt;has&lt;/span&gt; &lt;span class="n"&gt;no&lt;/span&gt; &lt;span class="n"&gt;attribute&lt;/span&gt; &lt;span class="s1"&gt;'get'&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Dang it, I forgot to pass in a default argument!&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;monster_mash&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;map&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;lambda&lt;/span&gt; &lt;span class="n"&gt;mash&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;mash&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"monster"&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;map&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;lambda&lt;/span&gt; &lt;span class="n"&gt;monster&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;monster&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"arm"&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;map&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;lambda&lt;/span&gt; &lt;span class="n"&gt;arm&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;arm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"fingers"&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;map&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;lambda&lt;/span&gt; &lt;span class="n"&gt;fingers&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;getattr&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fingers&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"count"&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;returns&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;maybe&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;_Nothing&lt;/span&gt; &lt;span class="nb"&gt;object&lt;/span&gt; &lt;span class="n"&gt;at&lt;/span&gt; &lt;span class="mh"&gt;0x7fe06938a370&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;See!  Isn't that better!
+We now have to explicitly deal with a &lt;code&gt;Just value&lt;/code&gt; or &lt;code&gt;Nothing&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Why are you looking at me so skeptically?
+Why are you pointing and shaking your head?
+Is it just me, or do you feel like we just hammered a big square block through a round hole?
+A coworker asked me to look at a script that was failing on him, and it looked like a great opportunity to go way down the Python/FP rabbit hole.
+You can see for yourself &lt;a href="https://github.com/dgjustice/packtpub-downloader/blob/master/packt_downloader"&gt;how it turned out&lt;/a&gt;.&lt;/p&gt;
+&lt;h4 id="The-bad"&gt;The bad&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/functional-programming-in-python/#The-bad"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;Honestly, where to start?
+Python isn't a functional language and doesn't have very elegant mechanisms for handling monadic constructs.
+I went through a phase where I thought "Pythonic" was a great way to code.
+Don't get me wrong, I still try to follow those principles when and where it makes sense.
+I think they are good guidelines for people starting off on their development journey, but the guard rails turn into barriers in some instances.
+On the flip side, if you crash through the barriers and chart your own course, the results can be messy.
+I do believe that libraries like &lt;code&gt;returns&lt;/code&gt; have a place in our toolbox, and I am excited to follow the project as it evolves - and how it deals with being that square peg.&lt;/p&gt;
+&lt;h4 id="The-ugly"&gt;The ugly&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/functional-programming-in-python/#The-ugly"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;This is an important point, and a good example of what makes dynamic languages both awesome and horrifying.
+We can use frameworks to write &lt;a href="https://github.com/dgjustice/packtpub-downloader/blob/master/packt_downloader/__init__.py#L326-L369"&gt;code that is almost unreadable&lt;/a&gt; to our fellow Python developers.
+To add insult to injury, that block was formatted with &lt;code&gt;black&lt;/code&gt;, so have fun trying to put comments in sane places so others can follow what the heck is going on!&lt;/p&gt;
+&lt;p&gt;And type annotations in Python.
+80% of the time, Mypy works all the time.
+Another feature that I find awesome and infuriating in alternating 15-minute blocks!
+Here is a story about functional programming and type annotations in Python.&lt;/p&gt;
+&lt;p&gt;A team built a road through a winding mountain pass and a long valley below.
+You can drive a lot of different types of vehicles on this road, some small and fast, others large and slow.
+As time goes on, people realize that accidents often happen near the sharp turns and cliffs.
+Some more people came along and decided to add guard rails in certain parts of the road, but the road wasn't originally designed for them.
+Unfortunately, this means that most of the guard rails ended up along the straight and wide parts of the road.&lt;/p&gt;
+&lt;p&gt;Libraries like &lt;code&gt;returns&lt;/code&gt; will help in the general case, but the thorniest corner cases will always be the hardest to solve.
+FP libraries and type annotations cannot solve the foot-guns that are built into the language.
+Python doesn't have "compile-time" checks baked in, and there is nothing stopping a desperate developer on a short timeline from accessing &lt;code&gt;unsafe_obj._inner_value&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;\&amp;lt;\rant&amp;gt;&lt;/p&gt;
+&lt;p&gt;In fairness, the road described earlier is still under active development, and those guard rails are getting better as time goes on.&lt;/p&gt;
+&lt;h4 id="Dict-annotations-🐿️"&gt;Dict annotations 🐿️&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/functional-programming-in-python/#Dict-annotations-%F0%9F%90%BF%EF%B8%8F"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;A note about ♥♥&lt;a href="https://blog.wificidr.net/posts/functional-programming-in-python/pydantic-docs.helpmanual.io/"&gt;Pydantic&lt;/a&gt;♥♥...
+Go through all of your typed Python code and replace every. single. instance. of &lt;code&gt;Dict[str, Dict[int, Dict[Optional[omg...]]]]&lt;/code&gt; with something that inherits from &lt;code&gt;BaseModel&lt;/code&gt;.
+You're welcome; your hair might start growing back.
+For the love of sanity at least use &lt;a href="https://docs.python.org/3/library/dataclasses.html"&gt;data classes&lt;/a&gt; or &lt;a href="https://www.attrs.org/en/stable/"&gt;attrs&lt;/a&gt; or &lt;a href="https://docs.python.org/3/library/typing.html#typing.NamedTuple"&gt;NamedTuple&lt;/a&gt;.
+Don't worry about dependencies, our Python containers are &lt;a href="https://www.urbandictionary.com/define.php?term=Yuge"&gt;YUGE&lt;/a&gt;!&lt;/p&gt;
+&lt;p&gt;Never return a bare tuple from a method.
+It seems simple, oh it's &lt;strong&gt;obvious&lt;/strong&gt; what that does, but be a good teammate and don't make them guess.&lt;/p&gt;
+&lt;h3 id="Is-it-Python...-or-me?"&gt;Is it Python... or me?&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/functional-programming-in-python/#Is-it-Python...-or-me?"&gt;¶&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Remember the languages question from the opening?
+&lt;a href="https://yourlanguagesucks.com/"&gt;They all suck&lt;/a&gt;!
+Python was my ticket to success about ten years ago and has been an integral part of my career growth; I would be a fool to say otherwise.
+Just look at how many of these &lt;a href="https://github.com/networktocode/awesome-network-automation"&gt;cool network automation&lt;/a&gt; projects are based on the language.
+Designing a "correct" program is really hard.
+Even Haskell, that "pure" language that is supposed to save us from our stupidity, has a really hard time dealing assertions about natural numbers.
+Look and see how many tutorials copy and paste the same &lt;code&gt;safeDiv&lt;/code&gt; method to demonstrate the Maybe monad.
+C'mon, it's just a pesky little zero in the middle of infinity!
+Apparently, dealing with partial functions isn't easy after all.&lt;/p&gt;
+&lt;h4 id="The-right-tool-for-the-right-job"&gt;The right tool for the right job&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/functional-programming-in-python/#The-right-tool-for-the-right-job"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;Learning different styles and techniques has made me a better developer.
+We can take these concepts and apply them in different ways in several different languages.
+Just [favorite search engine] "monads in [some-programming-language]", and you will see some really interesting links.&lt;/p&gt;
+&lt;p&gt;Python &lt;strong&gt;is&lt;/strong&gt; an awesome language.
+I still enjoy using it daily to keep food on the table, but I am branching out more.
+I may have poked at Haskell a bit, but I am trying to learn it and be productive with its tools.
+It is a fascinating language that will flip your OOP brain on its lid, but it's not the end-all, be-all!&lt;/p&gt;
+&lt;p&gt;Some may disagree, but I find it &lt;strong&gt;really&lt;/strong&gt; hard to build small Python containers.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;341M    /usr/local/lib/python3.7/
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;So maybe Python isn't the best choice for that new microservice that you know is going to have several dependencies.
+Or maybe your requirements are well-defined and you can keep the scope slim getting away with a distroless container.
+Maybe you're inheriting a project written in a language designed by &lt;a href="http://www.golang.sucks/"&gt;mean people&lt;/a&gt;, and you just have to roll with it.
+Who knows, but you have to make a choice with few clear-cut options.&lt;/p&gt;
+&lt;p&gt;I am loathe to wade into language wars.
+I have seen really cool, massively functional projects in languages that appear to be horrible mismatches for the task at hand.
+Are &lt;a href="https://github.com/ansible/ansible/issues"&gt;four thousand issues&lt;/a&gt; a language problem?
+Their main competitor &lt;a href="https://github.com/saltstack/salt/issues"&gt;isn't doing much better&lt;/a&gt;.
+Are those really language issues?
+Nah, VS Code &lt;a href="https://github.com/microsoft/vscode/issues"&gt;has them both beat&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;What can I say, &lt;a href="http://www.gamearchitect.net/Articles/SoftwareIsHard.html"&gt;software is hard&lt;/a&gt;.&lt;/p&gt;
+&lt;h3 id="It's-all-about-design"&gt;It's all about &lt;del&gt;design&lt;/del&gt;&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/functional-programming-in-python/#It's-all-about-design"&gt;¶&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;As I said, this post is all about me getting my thoughts written down.
+I really don't have much of a point to make other than I'm trying to do my part to avoid the &lt;a href="https://www.theatlantic.com/technology/archive/2017/09/saving-the-world-from-code/540393/"&gt;software apocalypse&lt;/a&gt;.
+Design &lt;strong&gt;is&lt;/strong&gt; critical to writing correct programs, but is it "what it's all about"?&lt;/p&gt;
+&lt;p&gt;A former manager reminds me pretty often that "it" is about people.
+I spend most of my time writing tools that other people consume; I rarely "eat my own dog food".
+It is too easy to get bogged down in the technical minutae and day-to-day fire drills.
+To me, writing good software is about being a better teammate.
+I am embarassed every time someone brings me a bug, and even more so if it took two or three tries to fix it.
+Test coverage won't save me here, nor will the hottest trends.
+I don't know what the answer is, but I'm trying to do better.&lt;/p&gt;
+&lt;h4 id="My-preferred-guardrails"&gt;My preferred guardrails&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/functional-programming-in-python/#My-preferred-guardrails"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;So what is in my toolbox?
+How do I try to stay sane and craft good code?
+Glad you asked!&lt;/p&gt;
+&lt;p&gt;For linting, &lt;a href="https://github.com/psf/black"&gt;Black&lt;/a&gt; is it.
+Agree with your team on a line legth, and autoformat.
+I don't pass CI on bad formatting - just do it.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://pylama.readthedocs.io/en/latest/"&gt;Pylama&lt;/a&gt; - great baseline sanity checks and lots of plugins.&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://docs.pytest.org/en/latest/"&gt;Pytest&lt;/a&gt; - test all the things.&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://mypy.readthedocs.io/en/stable/"&gt;Mypy&lt;/a&gt; - check as many types as you can...&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://google.github.io/pytype/user_guide.html"&gt;pytype&lt;/a&gt; - and infer the rest when you can't.&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://codecov.io/"&gt;CodeCov&lt;/a&gt; - Keep that number going up!&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://faker.readthedocs.io/en/master/"&gt;faker&lt;/a&gt; - Super convenient random inputs&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h5 id="And-what's-on-my-radar"&gt;And what's on my radar&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/functional-programming-in-python/#And-what's-on-my-radar"&gt;¶&lt;/a&gt;&lt;/h5&gt;&lt;p&gt;I really need to review &lt;a href="https://hypothesis.readthedocs.io/en/latest/"&gt;hypothesis&lt;/a&gt; and figure out where I can be using it.&lt;/p&gt;
+&lt;p&gt;&lt;a href="http://lamport.azurewebsites.net/tla/tla.html"&gt;TLA+&lt;/a&gt; and formal methods.
+I have Hillel's book; I need to force myself to spend the time to finish it.&lt;/p&gt;
+&lt;h4 id="Conclusion"&gt;Conclusion&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/functional-programming-in-python/#Conclusion"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;Make it a discussion!
+Feel free to drop me a line on &lt;a href="https://www.linkedin.com/in/daniel-justice-netdev/"&gt;LinkedIn&lt;/a&gt; or harass me in an &lt;a href="https://github.com/dgjustice/dgjustice.github.io/issues"&gt;issue&lt;/a&gt;!&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;</description><category>python</category><guid>https://blog.wificidr.net/posts/functional-programming-in-python/</guid><pubDate>Sat, 30 May 2020 21:55:51 GMT</pubDate></item><item><title>NTC Rosetta and YANG for Dummies Tutorial</title><link>https://blog.wificidr.net/posts/ntc-rosetta-and-yang-for-dummies-tutorial/</link><dc:creator>Daniel Justice</dc:creator><description>&lt;div&gt;&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
 &lt;/div&gt;&lt;div class="inner_cell"&gt;
 &lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
 &lt;h2 id="YANG-for-Dummies!"&gt;YANG for Dummies!&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/ntc-rosetta-and-yang-for-dummies-tutorial/#YANG-for-Dummies!"&gt;¶&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Most people are excited to hear about the new projects from NetworkToCode, but quickly discover that there are a lot of moving parts that present a steep learning curve.  Community contributions will be critical to the success and adoption of these projects.  The groundwork has already been laid for IOS and JunOS drivers, so I want to document the path to onboarding completely new drivers.  This is standalone work that you can replicate without making changes to upstream libraries.  I'll demonstrate this based on David Barroso's great article titled &lt;a href="https://napalm-automation.net/yang-for-dummies/"&gt;"YANG for dummies"&lt;/a&gt;.  Most of the setup files for this tutorial were plagarized from ntc-rosetta.  I am definitely standing on the backs of giants!&lt;/p&gt;
@@ -700,7 +970,294 @@ individuals:
 
 &lt;/div&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;/div&gt;</description><category>python</category><guid>https://blog.wificidr.net/posts/ntc-rosetta-and-yang-for-dummies-tutorial/</guid><pubDate>Mon, 09 Sep 2019 15:49:38 GMT</pubDate></item><item><title>PyCon US 2018</title><link>https://blog.wificidr.net/posts/pycon-us-2018/pycon-us-2018/</link><dc:creator>Daniel Justice</dc:creator><description>&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;/div&gt;</description><category>python</category><guid>https://blog.wificidr.net/posts/ntc-rosetta-and-yang-for-dummies-tutorial/</guid><pubDate>Mon, 09 Sep 2019 15:49:38 GMT</pubDate></item><item><title>Testing with Flask and SQLAlchemy</title><link>https://blog.wificidr.net/posts/pytest-flask-sqlalchemy/pytest-flask-sqlalchemy/</link><dc:creator>Daniel Justice</dc:creator><description>&lt;div&gt;&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h2 id="Testing-with-PyTest,-Flask,-and-SQLAlchemy"&gt;Testing with PyTest, Flask, and SQLAlchemy&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/pytest-flask-sqlalchemy/pytest-flask-sqlalchemy/#Testing-with-PyTest,-Flask,-and-SQLAlchemy"&gt;¶&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;I would like to walk through the process of developing tests using Flask and SQLAlchemy, and shed light on some of the pitfalls and gotchas along the way!&lt;/p&gt;
+&lt;p&gt;&lt;a href="http://flask.pocoo.org/"&gt;Flask&lt;/a&gt; is a popular web framework in Python that is commonly used to build many kinds of web projects.  It is pretty easy to hack together everything from small websites to REST API's by leveraging a litany of available extentions (&lt;a href="https://flask-restful.readthedocs.io/en/latest/"&gt;Flask-Restful&lt;/a&gt;, &lt;a href="https://flask-restplus.readthedocs.io/en/latest/"&gt;Flask-Restplus&lt;/a&gt;, &lt;a href="http://flask-sqlalchemy.pocoo.org/latest/"&gt;Flask-SQLAlchemy&lt;/a&gt;, etc.).  A very common combination is to use Flask with SQLAlchemy as the ORM.  At some point in your career, you are probably going to be required to write tests, whether these are unit tests or integration tests.  This may be dictated by project requirements or simply to reduce the complexity of finding bugs in your own code.&lt;/p&gt;
+&lt;h4 id="Assumptions"&gt;Assumptions&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/pytest-flask-sqlalchemy/pytest-flask-sqlalchemy/#Assumptions"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;I assume you are quite comfortable with:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Python&lt;/li&gt;
+&lt;li&gt;Flask&lt;/li&gt;
+&lt;li&gt;App factories&lt;/li&gt;
+&lt;li&gt;SQLAlchemy&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;And have a working knowledge of:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;PyTest&lt;/li&gt;
+&lt;li&gt;Unittest  &lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;We are not writing an app; we are disecting snippets.&lt;/p&gt;
+&lt;h4 id="Rabbit-holes"&gt;Rabbit holes&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/pytest-flask-sqlalchemy/pytest-flask-sqlalchemy/#Rabbit-holes"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;I'm not here to weigh in on Flask vs. Django vs. [insert your favorite framework].  I am leveraging personal experience discovered on the job.  Like me, &lt;em&gt;you may not be able to choose what tools you use&lt;/em&gt; at all times.&lt;/li&gt;
+&lt;li&gt;I have a personal preference for PyTest, but you should also be very familiar with unittest.  This example uses both to some extent.  &lt;/li&gt;
+&lt;li&gt;Lastly, there are many heated debates around testing, what kind, when, where and if.  I feel very strongly that testing is necessary in "production" code.  I believe there is a delicate balance between unit tests and integration tests.  &lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;I am here to act as a guide and hopefully provide some hints for your own journey.&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h3 id="The-application"&gt;The application&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/pytest-flask-sqlalchemy/pytest-flask-sqlalchemy/#The-application"&gt;¶&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;I have put together a very small application, but written in a way that you might encounter on a larger project (not the typical monolithic file you commonly find in tutorials).  I will be using this &lt;a href="https://github.com/dgjustice/flask_pytest"&gt;repository&lt;/a&gt; throughout this post.  We will use yet another messaging app, but this one has much less functionality than other examples you have seen.  There is a single GET method (&lt;code&gt;show_messages&lt;/code&gt;) that returns a list of messages mapped to an &lt;em&gt;authenticated&lt;/em&gt; user.  The user object is attached to &lt;code&gt;Flask.g&lt;/code&gt; when the &lt;code&gt;login_required&lt;/code&gt; decorator fires.&lt;/p&gt;
+&lt;p&gt;The app leverages an &lt;a href="http://flask.pocoo.org/docs/1.0/tutorial/factory/"&gt;app factory&lt;/a&gt;, a &lt;a href="http://flask.pocoo.org/docs/1.0/blueprints/"&gt;Blueprint&lt;/a&gt;, and a back-end database running SQLite in memory.  The database provider is not relevant here since we are focused on interaction with the ORM, not what is under the covers.  The app factory method is located in &lt;a href="https://github.com/dgjustice/flask_pytest/blob/rough_draft/src/app.py"&gt;&lt;code&gt;src/app.py&lt;/code&gt;&lt;/a&gt;.&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h3 id="The-model"&gt;The model&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/pytest-flask-sqlalchemy/pytest-flask-sqlalchemy/#The-model"&gt;¶&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;The app uses a very simple model.  We have users and messages.  A message is related to a user by the &lt;code&gt;username&lt;/code&gt; foreign key. This is vanilla SQLAlcehmy.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;User&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;DB&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Model&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Model representing a user object."""&lt;/span&gt;
+    &lt;span class="n"&gt;username&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;DB&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Column&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;DB&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;String&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;primary_key&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;True&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;password&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;DB&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Column&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;DB&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;String&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;nullable&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;False&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;nick&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;DB&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Column&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;DB&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;String&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;nullable&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;False&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Message&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;DB&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Model&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Message model."""&lt;/span&gt;
+    &lt;span class="n"&gt;message_id&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;DB&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Column&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;DB&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Integer&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;primary_key&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;True&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;autoincrement&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;True&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;username&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;DB&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Column&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;DB&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;String&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;DB&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ForeignKey&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+        &lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="s2"&gt;"{User.__tablename__}.username"&lt;/span&gt;
+    &lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="n"&gt;nullable&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;False&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;message_text&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;DB&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Column&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;DB&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;String&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;nullable&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;False&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h3 id="The-message-view"&gt;The message view&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/pytest-flask-sqlalchemy/pytest-flask-sqlalchemy/#The-message-view"&gt;¶&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;The interesting bit of code in is located in the &lt;a href="https://github.com/dgjustice/flask_pytest/blob/rough_draft/src/message_bp.py"&gt;&lt;code&gt;src/message_bp.py&lt;/code&gt;&lt;/a&gt; file.  The &lt;code&gt;show_messages&lt;/code&gt; method could be implemented more easily using an &lt;a href="http://flask.pocoo.org/extensions/"&gt;extension&lt;/a&gt;.  Please note the authentication decorator that enforces who can view which posts &lt;a href="https://github.com/dgjustice/flask_pytest/blob/rough_draft/src/auth.py"&gt;&lt;code&gt;src/auth.py&lt;/code&gt;&lt;/a&gt;.  The &lt;code&gt;Flask.g&lt;/code&gt; object stores the current user in the request context, queried from the database upon login.  This is wrapped up in a Response object and sent back to the client.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;BP&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Blueprint&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"app"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="vm"&gt;__name__&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="nd"&gt;@BP.route&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"/messages"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nd"&gt;@AUTH.login_required&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;show_messages&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Show messages by user."""&lt;/span&gt;
+    &lt;span class="k"&gt;try&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;messages&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Message&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;query&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;filter&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+            &lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Message&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;username&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="n"&gt;g&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;username&lt;/span&gt;
+        &lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;all&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="k"&gt;except&lt;/span&gt; &lt;span class="n"&gt;sqlalchemy&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;exc&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;SQLAlchemyError&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;abort&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;500&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"Could not retrieve records from the DB."&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;resp_text&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;json&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;dumps&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;
+        &lt;span class="p"&gt;{&lt;/span&gt;
+            &lt;span class="s2"&gt;"user"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;message&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;username&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+            &lt;span class="s2"&gt;"message_text"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;message&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;message_text&lt;/span&gt;
+        &lt;span class="p"&gt;}&lt;/span&gt;
+        &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;message&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;messages&lt;/span&gt;
+    &lt;span class="p"&gt;])&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;Response&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;resp_text&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;mimetype&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"application/json"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h3 id="Testing-with-Flask-and-PyTest---intro"&gt;Testing with Flask and PyTest - intro&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/pytest-flask-sqlalchemy/pytest-flask-sqlalchemy/#Testing-with-Flask-and-PyTest---intro"&gt;¶&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;I first learned &lt;a href="https://docs.python.org/3/library/unittest.html"&gt;unittest&lt;/a&gt;, and fell in love with &lt;a href="https://docs.pytest.org/en/latest/"&gt;PyTest&lt;/a&gt; the first time I used it.  This code could easily be adapted to &lt;code&gt;unittest&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Flask provides a nice &lt;a href="http://flask.pocoo.org/docs/1.0/testing/"&gt;testing&lt;/a&gt; mini-framework that we will utilize along the way.  Keep in mind that the techniques required to test Flask also apply to any of its extensions.  The main "gotcha" that fellow developers run into is when dealing with an applicaiton or request context.  The simplest way to deal with this is to use Flask's built-in &lt;code&gt;test_client&lt;/code&gt;.  Let's take a stab at testing our &lt;code&gt;show_messages&lt;/code&gt; method!&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h3 id="First-attempt---integration-testing"&gt;First attempt - integration testing&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/pytest-flask-sqlalchemy/pytest-flask-sqlalchemy/#First-attempt---integration-testing"&gt;¶&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;The easist, fastest way to get started with testing your Flask application is have all of the components in place and test the entire system.  Many developers start the coding process with a test database that contains replicas of production data.  This makes debugging as you code pretty simple and has the advantage of working with "real" objects.  You might even have an SQL script that sets up tables in a fresh DB instance before the tests are run.  I have written a Python script that uses the ORM to load our test objects into the SQLite instance.  It is located at &lt;a href="https://github.com/dgjustice/flask_pytest/blob/rough_draft/tests/load_db_data.py"&gt;&lt;code&gt;tests/load_db_data.py&lt;/code&gt;&lt;/a&gt;.  Our test runner lives in &lt;a href="https://github.com/dgjustice/flask_pytest/blob/rough_draft/tests/test_messages.py"&gt;&lt;code&gt;tests/test_messages.py&lt;/code&gt;&lt;/a&gt;.  I wrote a fixture (similar to unittest's &lt;code&gt;setUp&lt;/code&gt;) that loads the DB and creates and application instance.  This fixture is passed to each of the test methods.  Here's our first test:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;test_get_message_200&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;app_inst&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Send a GET with good auth and expect a message."""&lt;/span&gt;
+    &lt;span class="n"&gt;client&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;app_inst&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;test_client&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="n"&gt;auth_str&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;base64&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;b64encode&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="sa"&gt;b&lt;/span&gt;&lt;span class="s2"&gt;"foo:foo_pass"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;decode&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"utf-8"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;rv&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"/app/messages"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;headers&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s2"&gt;"Authorization"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="s2"&gt;"Basic {auth_str}"&lt;/span&gt;&lt;span class="p"&gt;})&lt;/span&gt;
+    &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="n"&gt;rv&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;status_code&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="mi"&gt;200&lt;/span&gt;
+    &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="sa"&gt;b&lt;/span&gt;&lt;span class="s1"&gt;'"user": "foo"'&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;rv&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;data&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;The &lt;code&gt;test_client&lt;/code&gt; is provided by Flask.  I also like using &lt;a href="http://docs.python-requests.org/en/master/"&gt;requests&lt;/a&gt; for integration tests with larger projects.  The auth string is built by base64-encoding a known username and password (setup in the &lt;code&gt;init_db&lt;/code&gt; method).  These are wrapped up and sent to the application instance and we make assertions based on &lt;strong&gt;known database state&lt;/strong&gt;.  That last part is critical because the test cannot run successfully without the database instance existing, and more importantly, containing data relevant to the test.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="err"&gt;$&lt;/span&gt; &lt;span class="n"&gt;python&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;m&lt;/span&gt; &lt;span class="n"&gt;pytest&lt;/span&gt; &lt;span class="n"&gt;tests&lt;/span&gt;
+
+&lt;span class="n"&gt;platform&lt;/span&gt; &lt;span class="n"&gt;darwin&lt;/span&gt; &lt;span class="o"&gt;--&lt;/span&gt; &lt;span class="n"&gt;Python&lt;/span&gt; &lt;span class="mf"&gt;3.7&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;pytest&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mf"&gt;3.6&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;py&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mf"&gt;1.5&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;pluggy&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mf"&gt;0.6&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;
+&lt;span class="n"&gt;rootdir&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;pydocker&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;inifile&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+&lt;span class="n"&gt;collected&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt; &lt;span class="n"&gt;items&lt;/span&gt;
+
+&lt;span class="n"&gt;tests&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;test_messages&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;py&lt;/span&gt; &lt;span class="o"&gt;..&lt;/span&gt;                                                                                                                                                                                                              &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;100&lt;/span&gt;&lt;span class="o"&gt;%&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+
+&lt;span class="mi"&gt;2&lt;/span&gt; &lt;span class="n"&gt;passed&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="mf"&gt;0.30&lt;/span&gt; &lt;span class="n"&gt;seconds&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Requiring a certain database state (or any other external state) is the Achiles heel of integration testing.  We are really interested in testing our business logic, right?  We trust that the core developers of Flask and SQLAlchemy have tested their modules; we're more interestd in testing &lt;em&gt;our own business logic&lt;/em&gt;.  Also, if you are using an on-disk database that lives on a VM that sits in a cloud that sits on spinning hard disks... your tests will be &lt;strong&gt;slow&lt;/strong&gt;!  You don't want to shower the Twitter API with automated test calls, either.  How can we avoid these problems, is there a better way?  Yes, but before we look, remember that integration tests are a &lt;strong&gt;critical component&lt;/strong&gt; of the overall development process!  They have their place and it is up to you and your team to determine which method is most appropriate for each situation.&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h3 id="The-dreaded-unit-test"&gt;The dreaded unit test&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/pytest-flask-sqlalchemy/pytest-flask-sqlalchemy/#The-dreaded-unit-test"&gt;¶&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Dreaded?  Yeah, I certainly think so - but I hope you see the light before we are done.  Writing unit tests with Flask and SQLAlchemy means that you have to decouple application test state and dependencies such as the database connection or calls to 3rd-party API's.  This is a non-trivial task that requires a working knowledge of mocking and patches.  As a prerequisite, I highly recommend this &lt;a href="https://youtu.be/ww1UsGZV8fQ"&gt;video&lt;/a&gt; from PyCon 2018 by Lisa Roach.&lt;/p&gt;
+&lt;p&gt;If you refer back to the &lt;code&gt;show_messages&lt;/code&gt; method above, you will see a couple issues right off the bat.  First and ugliest is that &lt;code&gt;login_required&lt;/code&gt; decorator.  The next issue is the database query.  Heck, let's throw some code at it and see what happens!  I'll monkeypatch the ORM object as well as the decorator:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nd"&gt;@patch&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"src.message_bp.m.Message"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nd"&gt;@patch&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"src.message_bp.AUTH"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;lambda&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;test_show_messages_mock&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;mock_m&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;app_inst&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Send a GET with good auth and expect a message."""&lt;/span&gt;
+    &lt;span class="n"&gt;mock_m&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;query&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;filter&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;return_value&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;all&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;return_value&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;"foo"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"bar"&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+    &lt;span class="k"&gt;with&lt;/span&gt; &lt;span class="n"&gt;app_inst&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;test_request_context&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"/app/messages"&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="c1"&gt;# Calling the method directly returns a response object&lt;/span&gt;
+        &lt;span class="n"&gt;resp&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;show_messages&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+        &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="n"&gt;resp&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;status_code&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="mi"&gt;200&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;code&gt;python -m pytest tests/&lt;/code&gt; results in:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;mock_m&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;MagicMock&lt;/span&gt; &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'Message'&lt;/span&gt; &lt;span class="nb"&gt;id&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'4350213424'&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;app_inst&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;Flask&lt;/span&gt; &lt;span class="s1"&gt;'src.app'&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+
+&lt;span class="o"&gt;...&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;           &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="n"&gt;resp&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;status_code&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="mi"&gt;200&lt;/span&gt;
+&lt;span class="n"&gt;E&lt;/span&gt;           &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="mi"&gt;401&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="mi"&gt;200&lt;/span&gt;
+&lt;span class="n"&gt;E&lt;/span&gt;            &lt;span class="o"&gt;+&lt;/span&gt;  &lt;span class="n"&gt;where&lt;/span&gt; &lt;span class="mi"&gt;401&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;Response&lt;/span&gt; &lt;span class="mi"&gt;19&lt;/span&gt; &lt;span class="nb"&gt;bytes&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;401&lt;/span&gt; &lt;span class="n"&gt;UNAUTHORIZED&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;.&lt;/span&gt;&lt;span class="n"&gt;status_code&lt;/span&gt;
+
+&lt;span class="n"&gt;tests&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;test_messages&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;py&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;47&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="ne"&gt;AssertionError&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;What happened?  The problem with the decorator object is that it evaluated at &lt;em&gt;import time&lt;/em&gt; and we're trying to patch it at &lt;em&gt;run time&lt;/em&gt;.  Nuts, that will be kind of hard to work around, right?  This is where I would like to make my first major point.&lt;/p&gt;
+&lt;p&gt;-&amp;gt; When refactoring code during tests or using TDD, think of ways to make your code &lt;strong&gt;testable&lt;/strong&gt;.  Constantly ask yourself if you can break things into functional pieces or if you need to strip out dependent code.&lt;/p&gt;
+&lt;p&gt;How can we do that to &lt;code&gt;show_messages&lt;/code&gt;?  The first thing that comes to mind is to gut the entire method and move it to its own function.  Here's our new version:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;get_messages&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Retrieve messages from the DB by user."""&lt;/span&gt;
+    &lt;span class="k"&gt;try&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;messages&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Message&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;query&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;filter&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+            &lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Message&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;username&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="n"&gt;g&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;username&lt;/span&gt;
+        &lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;all&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="k"&gt;except&lt;/span&gt; &lt;span class="n"&gt;sqlalchemy&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;exc&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;SQLAlchemyError&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;abort&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;500&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"Could not retrieve records from the DB."&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;resp_text&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;json&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;dumps&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;
+        &lt;span class="p"&gt;{&lt;/span&gt;
+            &lt;span class="s2"&gt;"user"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;message&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;username&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+            &lt;span class="s2"&gt;"message_text"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;message&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;message_text&lt;/span&gt;
+        &lt;span class="p"&gt;}&lt;/span&gt;
+        &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;message&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;messages&lt;/span&gt;
+    &lt;span class="p"&gt;])&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;resp_text&lt;/span&gt;
+
+&lt;span class="nd"&gt;@BP.route&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"/messages"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nd"&gt;@AUTH.login_required&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;show_messages&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Show messages by user."""&lt;/span&gt;
+    &lt;span class="n"&gt;resp_text&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;get_messages&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;Response&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;resp_text&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;mimetype&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"application/json"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;At this point, we can still leverage our previous integration tests to make sure we didn't break anything.  Here is where we make our first testing detour.  Now, &lt;code&gt;show_messages&lt;/code&gt; lends itself well to an integration test, but it's so simple and concise that we really don't have anything to test as a "unit"... except for that new method we created.  It doesn't have any decorator magic that we need to hack around, so let's see if it can be tested by itself.  The new test function:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nd"&gt;@patch&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"src.message_bp.m"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;test_show_messages_mock&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;mock_m&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;app_inst&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Send a GET with good auth and expect a message."""&lt;/span&gt;
+    &lt;span class="c1"&gt;# This could be done in a much better way, keep reading!&lt;/span&gt;
+    &lt;span class="n"&gt;mock_m&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Message&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;query&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;filter&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;return_value&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;all&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;return_value&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;
+        &lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Message&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;username&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"test"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;message_text&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"test_text"&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+        &lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Message&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;username&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"test"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;message_text&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"test_text2"&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+        &lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Message&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;username&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"test2"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;message_text&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"test_text"&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+        &lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Message&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;username&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"test2"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;message_text&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"test_text2"&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+    &lt;span class="p"&gt;]&lt;/span&gt;
+    &lt;span class="n"&gt;resp&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;get_messages&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="c1"&gt;# Now, we're checking for actual data instead of messing with response codes.&lt;/span&gt;
+    &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="n"&gt;json&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;loads&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;resp&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;
+        &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s2"&gt;"user"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"test"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"message_text"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"test_text"&lt;/span&gt;&lt;span class="p"&gt;},&lt;/span&gt;
+        &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s2"&gt;"user"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"test"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"message_text"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"test_text2"&lt;/span&gt;&lt;span class="p"&gt;},&lt;/span&gt;
+        &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s2"&gt;"user"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"test2"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"message_text"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"test_text"&lt;/span&gt;&lt;span class="p"&gt;},&lt;/span&gt;
+        &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s2"&gt;"user"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"test2"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"message_text"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"test_text2"&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+    &lt;span class="p"&gt;]&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;If we give that a shot, where does that leave us?&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;src&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;message_bp&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;py&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;14&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;get_messages&lt;/span&gt;
+    &lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Message&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;username&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="n"&gt;g&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;username&lt;/span&gt;
+&lt;span class="o"&gt;...&lt;/span&gt;
+&lt;span class="bp"&gt;self&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;flask&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;g&lt;/span&gt; &lt;span class="n"&gt;of&lt;/span&gt; &lt;span class="s1"&gt;'src.app'&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;name&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'user'&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="fm"&gt;__getattr__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;name&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s1"&gt;'__members__'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+            &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nb"&gt;dir&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;_get_current_object&lt;/span&gt;&lt;span class="p"&gt;())&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;       &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nb"&gt;getattr&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;_get_current_object&lt;/span&gt;&lt;span class="p"&gt;(),&lt;/span&gt; &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;E&lt;/span&gt;       &lt;span class="ne"&gt;AttributeError&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;'_AppCtxGlobals'&lt;/span&gt; &lt;span class="nb"&gt;object&lt;/span&gt; &lt;span class="n"&gt;has&lt;/span&gt; &lt;span class="n"&gt;no&lt;/span&gt; &lt;span class="n"&gt;attribute&lt;/span&gt; &lt;span class="s1"&gt;'user'&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Well, snap, the pesky &lt;code&gt;g&lt;/code&gt; isn't playing nice now.  That's actually an easy fix!  Since we are setting up a test context, all we have to do is manually set something on that object.  The &lt;em&gt;query itself is being mocked&lt;/em&gt;, so it's value has no use to us.  Another key point:&lt;/p&gt;
+&lt;p&gt;-&amp;gt; You cannot call SQLAlchemy queries or modifiy &lt;code&gt;Flask.g&lt;/code&gt; outside of a request or application context.  This applies &lt;em&gt;even if you are mocking other dependent methods&lt;/em&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;...&lt;/span&gt;
+    &lt;span class="c1"&gt;# You *must* use an application or request context when dealing with Flask.g !!!&lt;/span&gt;
+    &lt;span class="k"&gt;with&lt;/span&gt; &lt;span class="n"&gt;app_inst&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;test_request_context&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"/app/messages"&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="n"&gt;g&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;user&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;MagicMock&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;username&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"not a user"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="n"&gt;resp&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;get_messages&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="o"&gt;...&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;I personally believe working through this kind of refactoring is a great exercise.  I think the best tests are ones that focus on small chunks of code.  Also, never forget &lt;em&gt;what&lt;/em&gt; you want to test.  If you want to test business logic, then test business logic!  For example, in the above messages view, what if you needed to perform a calculation or combine that data with something from another source?  I would even factor out the DB call to its own method that simply return a list of (possibly serialized) objects.  Methods that return simple objects (even ORM objects) are really quite easy to factor out and test.  I'll come back to this after...&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h3 id="A-shout-out-to-Faker!"&gt;A shout-out to Faker!&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/pytest-flask-sqlalchemy/pytest-flask-sqlalchemy/#A-shout-out-to-Faker!"&gt;¶&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Do you ever get tired of coming up with mock data?  Then check out &lt;a href="http://faker.rtfd.org"&gt;Faker&lt;/a&gt;!  I cringed a little when I wrote the mock data above, but I wanted to use it as a pet example.  You can easily refactor it to something like this:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;mock_m&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Message&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;query&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;filter&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;return_value&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;all&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;return_value&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;
+        &lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Message&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;username&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;FAKER&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;word&lt;/span&gt;&lt;span class="p"&gt;(),&lt;/span&gt; &lt;span class="n"&gt;message_text&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;FAKER&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;text&lt;/span&gt;&lt;span class="p"&gt;())&lt;/span&gt;
+            &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;number&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;10000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="p"&gt;]&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Isn't that so much better?!  In the final version of this code, I create 10k objects in the unit test and in the integration tests.  Even with an in-memory SQLite database, the unit tests run about 3 times faster due to the overhead of the DB.  This will only get worse as your project scales or with more complex providers.&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h3 id="Unit-test-finale"&gt;Unit test finale&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/pytest-flask-sqlalchemy/pytest-flask-sqlalchemy/#Unit-test-finale"&gt;¶&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Finally, I put the query in a standalone function and try to come up with better names.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;query_message_by_user&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Retrieve messages from the DB by user."""&lt;/span&gt;
+    &lt;span class="k"&gt;try&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;message_objs&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Message&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;query&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;filter&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+            &lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Message&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;username&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="n"&gt;g&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;username&lt;/span&gt;
+        &lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;all&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="k"&gt;except&lt;/span&gt; &lt;span class="n"&gt;sqlalchemy&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;exc&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;SQLAlchemyError&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;abort&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;500&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"Could not retrieve records from the DB."&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;message_objs&lt;/span&gt;
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;retrieve_message_text&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Retrieve messages from database and return JSON string."""&lt;/span&gt;
+    &lt;span class="n"&gt;messages&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;query_message_by_user&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="o"&gt;...&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;That requires a slight change to our unit test patch.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# Note that we're patching the `query_message...` method and not the DB call.&lt;/span&gt;
+&lt;span class="nd"&gt;@patch&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"src.message_bp.query_message_by_user"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;test_retrieve_message_text&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;mock_q&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;app_inst&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Send a GET with good auth and expect a message."""&lt;/span&gt;
+    &lt;span class="n"&gt;mock_q&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;return_value&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;
+        &lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Message&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;username&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;FAKER&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;word&lt;/span&gt;&lt;span class="p"&gt;(),&lt;/span&gt; &lt;span class="n"&gt;message_text&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;FAKER&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;text&lt;/span&gt;&lt;span class="p"&gt;())&lt;/span&gt;
+            &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;number&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;10000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="p"&gt;]&lt;/span&gt;
+    &lt;span class="k"&gt;with&lt;/span&gt; &lt;span class="n"&gt;app_inst&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;test_request_context&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"/app/messages"&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="c1"&gt;# You *must* use an application or request context when dealing with Flask.g !!!&lt;/span&gt;
+        &lt;span class="n"&gt;g&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;user&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;MagicMock&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;username&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"not a user"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="n"&gt;resp&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;retrieve_message_text&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="n"&gt;json&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;loads&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;resp&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;You may be wondering why make such a small change.  The &lt;code&gt;retrieve_message_text&lt;/code&gt; is now streamlined down to its core logic.  This is a pet example, but this is where that critical business logic should live.  It also frees you to deal with DB queries and error handling without polluting this method with exception-handling.&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h3 id="In-conclusion"&gt;In conclusion&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/pytest-flask-sqlalchemy/pytest-flask-sqlalchemy/#In-conclusion"&gt;¶&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;This post assumes a lot of prior knowledge in an attempt to make a subtle point.  My goal was to focus on the process of refactoring your code to make it more testable.  The techniques are the same regardless of the test framework you are using in Python.  Flask and SQLAlchemy present some unique challenges of their own and sometimes require delicate handling.  In closing, if you are struggling with a mock or return data, take a step back and see if you can factor the troublesome code into another method.  At that point you might be able to simply patch the method instead of the data itself (as in the last example).  I have learned the hard way that testing is much more art than science.  I hope this helps, and feel free to leave comments on my repo!&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://github.com/dgjustice/dgjustice.github.io"&gt;blog.wificidr.net repo&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://github.com/dgjustice/flask_pytest"&gt;Code used in this post&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/div&gt;</description><category>python</category><guid>https://blog.wificidr.net/posts/pytest-flask-sqlalchemy/pytest-flask-sqlalchemy/</guid><pubDate>Sat, 14 Jul 2018 02:43:38 GMT</pubDate></item><item><title>PyCon US 2018</title><link>https://blog.wificidr.net/posts/pycon-us-2018/pycon-us-2018/</link><dc:creator>Daniel Justice</dc:creator><description>&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
 &lt;/div&gt;&lt;div class="inner_cell"&gt;
 &lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
 &lt;h3 id="PyCon-US-2018"&gt;PyCon US 2018&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/pycon-us-2018/pycon-us-2018/#PyCon-US-2018"&gt;¶&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;I had the amazing opportunity to go to &lt;a href="https://us.pycon.org/2018/"&gt;PyCon&lt;/a&gt; this year, and it was a blast!  I've shared this on Slack, but it warrants a post as I've not written anything since January.&lt;/p&gt;
