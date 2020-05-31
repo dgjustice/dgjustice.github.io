@@ -1,6 +1,6 @@
 .PHONY: clean-pyc
 PWD=$(shell pwd)
-DOCKER=docker run --rm -it -v ${PWD}:/app -w /app -e GITHUB_API_KEY=$(MY_GITHUB_API_KEY) -p 8888:8888 -p 8000:8000 website:version0.1
+DOCKER=docker run --rm -it -v ${PWD}:/app -w /app -e GITHUB_API_KEY=$(GITHUB_API_KEY) -p 8888:8888 -p 8000:8000 website:version0.1
 
 .PHONY: clean-pyc
 clean-pyc:
