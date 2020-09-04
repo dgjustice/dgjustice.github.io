@@ -1,5 +1,4 @@
-# Nikola 8.0.0b2 doesn's support python3.7
-FROM python:3.6
+FROM python:3.7
 COPY . /app
 WORKDIR /app
 
