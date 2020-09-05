@@ -3,6 +3,7 @@
 <%namespace name="zzz" file="zzz_helper.tmpl" import="*" />
 <%namespace name="helper" file="post_helper.tmpl"/>
 <%namespace name="comments" file="comments_helper.tmpl"/>
+<%namespace name="math" file="math_helper.tmpl"/>
 <%inherit file="base.tmpl"/>
 
 <%block name="extra_head">
@@ -14,6 +15,7 @@
     ${helper.open_graph_metadata(post)}
     ${helper.twitter_card_information(post)}
     ${helper.meta_translations(post)}
+    ${math.math_styles_ifpost(post)}
 </%block>
 
 <%block name="content">
@@ -31,7 +33,7 @@
       <div class="container">
 	<div class="meta clearfix">
 	  <div class="authordate">
-	    <time class="timeago" datetime="${post.date.isoformat()}">${post.formatted_date('%Y/%m/%d')}</time>
+	    <time class="timeago" datetime="${post.date.isoformat()}">${post.formatted_date('YYYY/MM/dd')}</time>
 	    ${zzz.html_translations(post)}
 	    ${zzz.html_sourcelink()}
 	  </div>
@@ -45,15 +47,15 @@
 	</div>
       </div>
     </div>
-    
-    
+
+
     <div id="post-main" class="main">
         <div class="container">
         ${post.text()}
         % if not post.meta('nocomments') and site_has_comments:
             ${comments.comment_form(post.permalink(absolute=True), post.title(), post._base_path)}
         % endif
-        ${helper.mathjax_script(post)}
+        ${math.math_scripts_ifpost(post)}
         </div>
     </div>
 </%block>

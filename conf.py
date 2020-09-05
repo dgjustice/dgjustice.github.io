@@ -238,7 +238,7 @@ TIMEZONE = "America/Chicago"
 # If you want to use ISO 8601 (also valid RFC 3339) throughout Nikola
 # (especially in new_post), set this to True.
 # Note that this does not affect DATE_FORMAT.
-# FORCE_ISO8601 = False
+FORCE_ISO8601 = True
 
 # Date format used to display post dates. (translatable)
 # (str used by datetime.datetime.strftime)
@@ -921,7 +921,13 @@ FEED_LINKS_APPEND_QUERY = False
 
 # A HTML fragment describing the license, for the sidebar.
 # (translatable)
-LICENSE = ""
+LICENSE = """
+<a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/">
+  <img alt="Creative Commons License BY-SA"
+       style="border-width:0; margin-bottom:12px;"
+       src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png">
+</a>
+"""
 # I recommend using the Creative Commons' wizard:
 # https://creativecommons.org/choose/
 # LICENSE = """
@@ -961,9 +967,9 @@ CONTENT_FOOTER_FORMATS = {
 
 # A simple copyright tag for inclusion in RSS feeds that works just
 # like CONTENT_FOOTER and CONTENT_FOOTER_FORMATS
-RSS_COPYRIGHT = 'Contents © {date} <a href="mailto:{email}">{author}</a> {license}'
-RSS_COPYRIGHT_PLAIN = 'Contents © {date} {author} {license}'
-RSS_COPYRIGHT_FORMATS = CONTENT_FOOTER_FORMATS
+# RSS_COPYRIGHT = 'Contents © {date} <a href="mailto:{email}">{author}</a> {license}'
+# RSS_COPYRIGHT_PLAIN = 'Contents © {date} {author} {license}'
+# RSS_COPYRIGHT_FORMATS = CONTENT_FOOTER_FORMATS
 
 # To use comments, you can choose between different third party comment
 # systems.  The following comment systems are supported by Nikola:
@@ -1350,9 +1356,15 @@ WARN_ABOUT_TAG_METADATA = False
 # Put in global_context things you want available on all your templates.
 # It can be anything, data, functions, modules, etc.
 GLOBAL_CONTEXT = {}
+GLOBAL_CONTEXT = {
+    'email': 'djustice@wificidr.net',
+    'github': 'dgjustice',
+    'linkedin': 'https://www.linkedin.com/in/daniel-justice-netdev/',
+}
 
 # Add functions here and they will be called with template
 # GLOBAL_CONTEXT as parameter when the template is about to be
 # rendered
 GLOBAL_CONTEXT_FILLER = []
 LESS_COMPILER = 'lessc'
+LESS_OPTIONS = []

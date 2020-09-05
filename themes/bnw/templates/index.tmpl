@@ -2,7 +2,12 @@
 <%namespace name="helper" file="index_helper.tmpl"/>
 <%namespace name="comments" file="comments_helper.tmpl"/>
 <%namespace name="header" file="zzz_header.tmpl" import="*" />
+<%namespace name="math" file="math_helper.tmpl"/>
 <%inherit file="base.tmpl"/>
+
+<%block name="extra_head">
+${math.math_styles_ifposts(posts)}
+</%block>
 
 <%block name="content">
     ${html_site_tagline()}
@@ -10,7 +15,7 @@
         <div class="container">
         % for post in posts:
         <div class="post-entry">
-            <time class="post-time" datetime="${post.date.isoformat()}">${post.formatted_date('%Y-%m-%d')}</time>
+            <time class="post-time" datetime="${post.date.isoformat()}">${post.formatted_date('YYYY-MM-dd')}</time>
             <div class="post-desc">
                 <div class="post-title">
                     <a href="${post.permalink()}">${post.title()}</a>
@@ -27,7 +32,7 @@
                     ${comments.comment_link(post.permalink(), post.base_path)}
                 % endif
                 </div>
-                <div class="post-description"> 
+                <div class="post-description">
                     ${post.description()}
                 </div>
             </div>
@@ -38,5 +43,5 @@
 
     ${helper.html_pager()}
     ${comments.comment_link_script()}
-    ${helper.mathjax_script(posts)}
+    ${math.math_scripts_ifposts(posts)}
 </%block>
