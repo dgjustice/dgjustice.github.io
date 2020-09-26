@@ -141,17 +141,17 @@ Fl">
 <p>The app uses a very simple model.  We have users and messages.  A message is related to a user by the <code>username</code> foreign key. This is vanilla SQLAlcehmy.</p>
 <div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">DB</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
     <span class="sd">"""Model representing a user object."""</span>
-    <span class="n">username</span> <span class="o">=</span> <span class="n">DB</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">DB</span><span class="o">.</span><span class="n">String</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-    <span class="n">password</span> <span class="o">=</span> <span class="n">DB</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">DB</span><span class="o">.</span><span class="n">String</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-    <span class="n">nick</span> <span class="o">=</span> <span class="n">DB</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">DB</span><span class="o">.</span><span class="n">String</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">username</span> <span class="o">=</span> <span class="n">DB</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">DB</span><span class="o">.</span><span class="n">String</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">password</span> <span class="o">=</span> <span class="n">DB</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">DB</span><span class="o">.</span><span class="n">String</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">nick</span> <span class="o">=</span> <span class="n">DB</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">DB</span><span class="o">.</span><span class="n">String</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
 <span class="k">class</span> <span class="nc">Message</span><span class="p">(</span><span class="n">DB</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
     <span class="sd">"""Message model."""</span>
-    <span class="n">message_id</span> <span class="o">=</span> <span class="n">DB</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">DB</span><span class="o">.</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">autoincrement</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">message_id</span> <span class="o">=</span> <span class="n">DB</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">DB</span><span class="o">.</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">autoincrement</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">username</span> <span class="o">=</span> <span class="n">DB</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">DB</span><span class="o">.</span><span class="n">String</span><span class="p">,</span> <span class="n">DB</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
-        <span class="n">f</span><span class="s2">"{User.__tablename__}.username"</span>
-    <span class="p">),</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-    <span class="n">message_text</span> <span class="o">=</span> <span class="n">DB</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">DB</span><span class="o">.</span><span class="n">String</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">User</span><span class="o">.</span><span class="n">__tablename__</span><span class="si">}</span><span class="s2">.username"</span>
+    <span class="p">),</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">message_text</span> <span class="o">=</span> <span class="n">DB</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">DB</span><span class="o">.</span><span class="n">String</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -167,8 +167,8 @@ Fl">
 <p>The interesting bit of code in is located in the <a href="https://github.com/dgjustice/flask_pytest/blob/rough_draft/src/message_bp.py"><code>src/message_bp.py</code></a> file.  The <code>show_messages</code> method could be implemented more easily using an <a href="http://flask.pocoo.org/extensions/">extension</a>.  Please note the authentication decorator that enforces who can view which posts <a href="https://github.com/dgjustice/flask_pytest/blob/rough_draft/src/auth.py"><code>src/auth.py</code></a>.  The <code>Flask.g</code> object stores the current user in the request context, queried from the database upon login.  This is wrapped up in a Response object and sent back to the client.</p>
 <div class="highlight"><pre><span></span><span class="n">BP</span> <span class="o">=</span> <span class="n">Blueprint</span><span class="p">(</span><span class="s2">"app"</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">)</span>
 
-<span class="nd">@BP.route</span><span class="p">(</span><span class="s2">"/messages"</span><span class="p">)</span>
-<span class="nd">@AUTH.login_required</span>
+<span class="nd">@BP</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">"/messages"</span><span class="p">)</span>
+<span class="nd">@AUTH</span><span class="o">.</span><span class="n">login_required</span>
 <span class="k">def</span> <span class="nf">show_messages</span><span class="p">():</span>
     <span class="sd">"""Show messages by user."""</span>
     <span class="k">try</span><span class="p">:</span>
@@ -215,7 +215,7 @@ Fl">
     <span class="sd">"""Send a GET with good auth and expect a message."""</span>
     <span class="n">client</span> <span class="o">=</span> <span class="n">app_inst</span><span class="o">.</span><span class="n">test_client</span><span class="p">()</span>
     <span class="n">auth_str</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="sa">b</span><span class="s2">"foo:foo_pass"</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">)</span>
-    <span class="n">rv</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/app/messages"</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">"Authorization"</span><span class="p">:</span> <span class="n">f</span><span class="s2">"Basic {auth_str}"</span><span class="p">})</span>
+    <span class="n">rv</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/app/messages"</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">"Authorization"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"Basic </span><span class="si">{</span><span class="n">auth_str</span><span class="si">}</span><span class="s2">"</span><span class="p">})</span>
     <span class="k">assert</span> <span class="n">rv</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
     <span class="k">assert</span> <span class="sa">b</span><span class="s1">'"user": "foo"'</span> <span class="ow">in</span> <span class="n">rv</span><span class="o">.</span><span class="n">data</span>
 </pre></div>
@@ -284,8 +284,8 @@ Fl">
     <span class="p">])</span>
     <span class="k">return</span> <span class="n">resp_text</span>
 
-<span class="nd">@BP.route</span><span class="p">(</span><span class="s2">"/messages"</span><span class="p">)</span>
-<span class="nd">@AUTH.login_required</span>
+<span class="nd">@BP</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">"/messages"</span><span class="p">)</span>
+<span class="nd">@AUTH</span><span class="o">.</span><span class="n">login_required</span>
 <span class="k">def</span> <span class="nf">show_messages</span><span class="p">():</span>
     <span class="sd">"""Show messages by user."""</span>
     <span class="n">resp_text</span> <span class="o">=</span> <span class="n">get_messages</span><span class="p">()</span>

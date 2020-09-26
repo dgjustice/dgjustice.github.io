@@ -196,7 +196,7 @@ They're not the first to try it, but it is one of the most complete libraries I 
 <span class="kn">from</span> <span class="nn">returns.functions</span> <span class="kn">import</span> <span class="n">tap</span>
 <span class="kn">from</span> <span class="nn">returns.io</span> <span class="kn">import</span> <span class="n">IOResultE</span><span class="p">,</span> <span class="n">impure_safe</span>
 
-<span class="kn">import</span> <span class="nn">typing</span> <span class="kn">as</span> <span class="nn">t</span>
+<span class="kn">import</span> <span class="nn">typing</span> <span class="k">as</span> <span class="nn">t</span>
 
 
 <span class="k">class</span> <span class="nc">OVHIpAddr</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
@@ -219,7 +219,7 @@ They're not the first to try it, but it is one of the most complete libraries I 
 
 <span class="k">def</span> <span class="nf">format_city_country</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">OVHIpAddr</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="sd">"""Format the city and country"""</span>
-    <span class="k">return</span> <span class="n">f</span><span class="s2">"{data.city}, {data.country}"</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">city</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">country</span><span class="si">}</span><span class="s2">"</span>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
@@ -227,7 +227,7 @@ They're not the first to try it, but it is one of the most complete libraries I 
     <span class="p">(</span>
         <span class="n">get_ip_addr</span><span class="p">(</span><span class="s2">"https://whatsmyip.ovh/json"</span><span class="p">)</span>
         <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">format_city_country</span><span class="p">)</span>
-        <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">tap</span><span class="p">(</span><span class="k">print</span><span class="p">))(</span><span class="n">session</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">tap</span><span class="p">(</span><span class="nb">print</span><span class="p">))(</span><span class="n">session</span><span class="p">)</span>
     <span class="p">)</span>
 </pre></div>
 <h3 id="Still-broken">Still broken<a class="anchor-link" href="#Still-broken">¶</a>

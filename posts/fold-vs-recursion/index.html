@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html prefix="" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Fold Versus Recursion | WifiCIDR Blog</title>
+<link href="../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../../rss.xml">
+<link rel="canonical" href="https://blog.wificidr.net/posts/fold-vs-recursion/">
+<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="author" content="Daniel Justice">
+<meta property="og:site_name" content="WifiCIDR Blog">
+<meta property="og:title" content="Fold Versus Recursion">
+<meta property="og:url" content="https://blog.wificidr.net/posts/fold-vs-recursion/">
+<meta property="og:description" content="Folds and recursion¶I recently read a paper by Graham Hutton on folds and recursion.
+If you don't care much about functional programming, feel free to disengage now.  😆
+It is an interesting paper, and">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2020-09-26T16:55:51-05:00">
+<meta property="article:tag" content="python">
+</head>
+<body>
+    
+
+    <header id="header" class="navbar"><div class="container">
+            
+    <div class="brand">
+
+        <div class="brand-text">
+            <a href="https://blog.wificidr.net/" title="WifiCIDR Blog" rel="home">
+                WifiCIDR Blog
+            </a>
+        </div>
+
+        <a id="btn-toggle-nav" class="navbar-toggle">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </a>
+    </div>
+
+            
+    <nav class="navbar-collapse collapse"><ul class="nav">
+<li><a href="../../archive.html">Archive</a></li>
+                <li><a href="../../categories/">Tags</a></li>
+                <li><a href="../../rss.xml">RSS feed</a></li>
+    
+    
+    </ul></nav>
+</div>
+    </header><div class="header-padding"> </div>
+
+    
+    <div class="post-header">
+        <div class="container">
+            <div class="title">
+                Fold Versus Recursion
+            </div>
+        </div>
+    </div>
+
+    <div class="post-meta">
+      <div class="container">
+	<div class="meta clearfix">
+	  <div class="authordate">
+	    <time class="timeago" datetime="2020-09-26T16:55:51-05:00">2020/09/26</time>
+	    
+
+	    
+          |  
+        <a href="index.ipynb" id="sourcelink">Source</a>
+
+	  </div>
+	  <div class="post-tags">
+	    <div class="tag">
+	      <a href="../../categories/python/" rel="tag">python</a>
+	    </div>
+	  </div>
+	</div>
+      </div>
+    </div>
+
+
+    <div id="post-main" class="main">
+        <div class="container">
+        <div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Folds-and-recursion">Folds and recursion<a class="anchor-link" href="#Folds-and-recursion">¶</a>
+</h2>
+<p>I recently read a <a href="http://www.cs.nott.ac.uk/~pszgmh/fold.pdf">paper by Graham Hutton</a> on folds and recursion.
+If you don't care much about functional programming, feel free to disengage now.  😆</p>
+<p>It is an interesting paper, and I encourage you to give it a read.
+This article is more squirrel chasing and less about the central thesis of Graham Hutton's work.</p>
+<p>Spoiler alert, Haskell doesn't have <code>for</code>, <code>while</code>, <code>do</code> loops!
+That leaves tools like <code>map</code>, recursions, and <code>fold</code> in our toolbox.
+Recursion can be very expensive, so this paper shows us how to abstract it away with <code>fold</code>.
+One of the examples rewrites <code>dropWhile</code> using <code>fold</code> instead of recursion.</p>
+<div class="highlight"><pre><span></span><span class="nf">dropWhile'</span> <span class="n">p</span> <span class="ow">=</span> <span class="n">foldr</span> <span class="n">f</span> <span class="n">v</span>
+  <span class="kr">where</span> <span class="n">f</span> <span class="n">x</span> <span class="p">(</span><span class="n">ys</span><span class="p">,</span> <span class="n">xs</span><span class="p">)</span> <span class="ow">=</span> <span class="p">(</span><span class="kr">if</span> <span class="n">p</span> <span class="n">x</span> <span class="kr">then</span> <span class="n">ys</span> <span class="kr">else</span> <span class="n">x</span><span class="kt">:</span><span class="n">xs</span><span class="p">,</span>  <span class="n">x</span><span class="kt">:</span><span class="n">xs</span><span class="p">)</span>
+        <span class="n">v</span> <span class="ow">=</span> <span class="p">([</span> <span class="p">],[</span> <span class="p">])</span>
+<span class="nf">dropWhile</span> <span class="n">p</span> <span class="ow">=</span> <span class="n">fst</span> <span class="o">.</span> <span class="n">dropWhile'</span> <span class="n">p</span>
+</pre></div>
+<p>It took me a while to unpack what that chunk of code is doing.</p>
+<ul>
+<li>Iterate over the list, <em>in reverse</em>
+</li>
+<li>Store visited values in <code>xs</code>
+</li>
+<li>When the predicate stops firing, flip <code>xs</code> into <code>ys</code> which has been empty up to this point</li>
+<li>The last line returns a <em>function</em> that takes a list of values and returns another (filtered) list</li>
+</ul>
+<p>Clearly, the list must be finite for this to work.</p>
+<h3 id="dropWhile-in-Python">dropWhile in Python<a class="anchor-link" href="#dropWhile-in-Python">¶</a>
+</h3>
+<p>Let's mess around with a translation and a couple variants.
+These are quick-and-dirty examples, missing guardrails.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [14]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">reduce</span>
+
+<span class="k">def</span> <span class="nf">drop_while</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="n">items</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_drop_while</span><span class="p">(</span><span class="n">tup</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">ys</span><span class="p">,</span> <span class="n">xs</span> <span class="o">=</span> <span class="n">tup</span>
+        <span class="k">if</span> <span class="n">pred</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">ys</span><span class="p">,</span> <span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">+</span> <span class="n">xs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">([</span><span class="n">x</span><span class="p">]</span> <span class="o">+</span> <span class="n">xs</span><span class="p">,</span> <span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">+</span> <span class="n">xs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">reduce</span><span class="p">(</span><span class="n">_drop_while</span><span class="p">,</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">items</span><span class="p">),</span> <span class="p">([],</span> <span class="p">[]))[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="o">%</span><span class="k">timeit</span> drop_while(lambda x: x &lt; 42, range(1000))
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>5.21 ms ± 37.4 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [15]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">drop_it_hot</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="n">items</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">items</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">pred</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+            <span class="k">continue</span>
+        <span class="k">return</span> <span class="n">items</span><span class="p">[</span><span class="n">i</span><span class="p">:]</span>
+    <span class="k">return</span> <span class="n">items</span>
+
+<span class="o">%</span><span class="k">timeit</span> drop_it_hot(lambda x: x &lt; 42, range(1000))
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>6.43 µs ± 9.13 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [16]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">drop_it_hotter</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="n">items</span><span class="p">):</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="k">while</span> <span class="n">pred</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">i</span>
+
+<span class="o">%</span><span class="k">timeit</span> drop_it_hotter(lambda x: x &lt; 42, range(1000))
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>7.37 µs ± 33.1 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Performance">Performance<a class="anchor-link" href="#Performance">¶</a>
+</h4>
+<p>Not bad!
+If you asked me ahead of time how those would perform, I would have guessed the exact opposite order that happened.
+The functional version has to traverse the entire list, but the other two short circuit when the predicate stops firing.
+If you know why this is the case, please leave a comment!
+(Buttons at the bottom of the page)</p>
+<h3 id="Fibonacci-numbers">Fibonacci numbers<a class="anchor-link" href="#Fibonacci-numbers">¶</a>
+</h3>
+<p>All this made me think about the Fibonacci function (everyone's pet recursion function).
+Let's start with the typical recursive implementation then see if we can rewrite it using ~<code>fold</code>~ <code>reduce</code>.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [17]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">fibr</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">fibr</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">fibr</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span>
+
+<span class="o">%</span><span class="k">timeit</span> fibr(10)
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>15.4 µs ± 95.2 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [19]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">reduce</span>
+
+<span class="k">def</span> <span class="nf">fib</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="c1"># `range` is simply a generator, and we ignore its value</span>
+    <span class="k">return</span> <span class="n">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">_</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="o">%</span><span class="k">timeit</span> fib(100)
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>18.6 µs ± 141 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [41]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">fibfor</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="c1"># Boring, imperative version</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="c1"># Am I the only one that finds this cringey?!</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+    <span class="k">return</span> <span class="n">a</span>
+
+<span class="o">%</span><span class="k">timeit</span> fibfor(100)
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>5.82 µs ± 84.7 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Recursion-is-expensive">Recursion is expensive<a class="anchor-link" href="#Recursion-is-expensive">¶</a>
+</h3>
+<p>Yikes!
+That recursive implementation is an <strong>order of magnitude</strong> worse than the other two versions.
+I was again surprised that the imperative version kicked <code>reduce</code>'s butt.</p>
+<p>TL;DR;
+When performance matters, measure!</p>
+<p>I have more mathy work coming soon.
+I wanted to slip this out between bigger projects, more to come soon!</p>
+<h4 id="IHaskell-plug">IHaskell plug<a class="anchor-link" href="#IHaskell-plug">¶</a>
+</h4>
+<p>Want to play with the Haskell code in the intro, but in the comfort of a Jupyter notebook?
+Check out <a href="https://github.com/gibiansky/IHaskell">IHaskell</a>!</p>
+
+</div>
+</div>
+</div>
+</div>
+        
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML" integrity="sha384-3lJUsx1TJHt7BA4udB5KPnDrlkO8T6J6v/op7ui0BbCjvZ9WqV4Xm6DTP6kQ/iBH" crossorigin="anonymous"></script><script type="text/x-mathjax-config">
+        MathJax.Hub.Config({tex2jax: {inlineMath: [['$latex ','$'], ['\\(','\\)']]}});
+        </script>
+</div>
+    </div>
+
+    
+    <footer><div class="container">
+            <div class="social">
+                <div class="social-entry">
+                    <a href="mailto:djustice@wificidr.net" target="_blank">
+                        <i class="fa fa-envelope-o"></i>
+                    </a>
+                </div>
+
+
+                <div class="social-entry">
+                    <a href="https://github.com/dgjustice" target="_blank">
+                        <i class="fa fa-github"></i>
+                    </a>
+                </div>
+
+                <div class="social-entry">
+                    <a href="https://www.linkedin.com/in/daniel-justice-netdev/" target="_blank">
+                        <i class="fa fa-linkedin"></i>
+                    </a>
+                </div>
+
+                <div class="social-entry">
+                    <a href="../../rss.xml" target="_blank">
+                        <i class="fa fa-rss"></i> 
+                    </a>
+                </div>
+            </div>
+                <div class="copyright">
+                    Contents © 2020         <a href="mailto:djustice@wificidr.net">Daniel Justice</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+<a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/">
+  <img alt="Creative Commons License BY-SA" style="border-width:0; margin-bottom:12px;" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png"></a>
+
+                    
+                </div>
+           
+        </div>
+    </footer><script src="../../assets/js/all-nocdn.js" type="text/javascript"></script>
+</body>
+</html>
