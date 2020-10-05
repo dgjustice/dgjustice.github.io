@@ -1,5 +1,460 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>WifiCIDR Blog</title><link>https://blog.wificidr.net/</link><description>WifiCIDR Blog</description><atom:link href="https://blog.wificidr.net/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sun, 27 Sep 2020 00:12:17 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Fold Versus Recursion</title><link>https://blog.wificidr.net/posts/fold-vs-recursion/</link><dc:creator>Daniel Justice</dc:creator><description>&lt;div&gt;&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>WifiCIDR Blog</title><link>https://blog.wificidr.net/</link><description>WifiCIDR Blog</description><atom:link href="https://blog.wificidr.net/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Mon, 05 Oct 2020 17:41:32 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Monoids for Pythonistas</title><link>https://blog.wificidr.net/posts/monoids-for-pythonistas/</link><dc:creator>Daniel Justice</dc:creator><description>&lt;div&gt;&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h2 id="Monoids-for-Pythonistas"&gt;Monoids for Pythonistas&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/monoids-for-pythonistas/#Monoids-for-Pythonistas"&gt;¶&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;&lt;a href="https://bartoszmilewski.com/"&gt;Bartosz Milewsky&lt;/a&gt; has a great series of articles on category theory as it applies to programmers.
+I'm not going to lie, the material is pretty dense which is par for the course for a lot of mathematics subjects (maybe it's worth mentioning that Bartosz has a PhD in Theoretical Physics 😬).
+However, many of the core concepts are reasonably simple abstractions, and programmers know all about abstractions!
+The language can be as big a hurdle as reading mathematics symbols, but these are the tools mathematicians use to convey ideas in an elegant and concise way.&lt;/p&gt;
+&lt;p&gt;I promise that you know what monoids are - you use them every day as a programmer!
+I am going to flip the script and try to work my way to the definition instead of the other way around.
+Hopefully, with a bit of patience, we can uncover the power of these ideas and see how they apply to our day-to-day jobs!&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Disclaimer&lt;/strong&gt; This is not meant to be a mathematically rigorous discussion.  Many small details are overlooked in favor of a high-level understanding.  However, please make me aware of any egregious offenses!&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h3 id="Sets"&gt;Sets&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/monoids-for-pythonistas/#Sets"&gt;¶&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;As a programmer, you &lt;em&gt;should&lt;/em&gt; know what a set is - an unordered collection of unique items of the same type (and if not, maybe a blog post for another day!).&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;my_pets&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s2"&gt;"Lamby"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"Dozer"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"Onyx"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"BlackHen"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"RedHen"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"NoisyRooster"&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;my_pets&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"BuffHen"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="s2"&gt;"Frank"&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;my_pets&lt;/span&gt;
+&lt;span class="kc"&gt;False&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;my_pets&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"BuffHen"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;  &lt;span class="c1"&gt;# `add` is idempotent and won't create a duplicate&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;my_pets&lt;/span&gt;  &lt;span class="c1"&gt;# Notice that the order isn't consistent&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s1"&gt;'NoisyRooster'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'RedHen'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'BuffHen'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'BlackHen'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'Lamby'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'Onyx'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'Dozer'&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;pets_son_feeds&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s2"&gt;"Shayna"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"Lamby"&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;pets_son_feeds&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;intersection&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;my_pets&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s1"&gt;'Lamby'&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;The integers form a set, $\mathbb{I} = \{-1,0,1,2,3,4...\}$.
+Rational numbers form a set, $\mathbb{Q} = \{-99.42,0,1.1,1.2,1.3...\}$.
+Character strings even form a set, $\{\text{"a", "b", "c", "foo", "cow", "Bob", ...}\}$.
+For the purposes of this article, a "set" is a mathematical set, not constrained by physical memory limits of computers.&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h3 id="Symbols"&gt;Symbols&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/monoids-for-pythonistas/#Symbols"&gt;¶&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Symbols are the syntax of mathematics.&lt;/p&gt;
+&lt;h4 id="$\forall$"&gt;$\forall$&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/monoids-for-pythonistas/#%24%5Cforall%24"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;Means "for all".  Given a set, "&lt;em&gt;for every element&lt;/em&gt; in the set."  In the definition of a monoid, we will use this to assert a property of the items in the set.  It is somewhat analogous to a &lt;code&gt;for&lt;/code&gt; loop over all the items.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;odds&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;9&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;odd&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;odds&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;  &lt;span class="c1"&gt;# ∀ in the set...&lt;/span&gt;
+&lt;span class="o"&gt;...&lt;/span&gt;   &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="n"&gt;odd&lt;/span&gt; &lt;span class="o"&gt;%&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;  &lt;span class="c1"&gt;# Assert that an odd divided by 2 has a remainder of 1&lt;/span&gt;
+&lt;span class="o"&gt;...&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="c1"&gt;# Success!&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;h4 id="$\in$"&gt;$\in$&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/monoids-for-pythonistas/#%24%5Cin%24"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;means "in" or "an element of".  1 is &lt;em&gt;an element of&lt;/em&gt; the set of integers.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;some_primes&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;11&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="mi"&gt;7&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;some_primes&lt;/span&gt;  &lt;span class="c1"&gt;# 7 ∈ some_primes == True&lt;/span&gt;
+&lt;span class="kc"&gt;True&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h3 id="More-terminology"&gt;More terminology&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/monoids-for-pythonistas/#More-terminology"&gt;¶&lt;/a&gt;&lt;/h3&gt;&lt;h4 id="Binary-operation"&gt;Binary operation&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/monoids-for-pythonistas/#Binary-operation"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;An operation that works on two (hence binary) values; addition, multiplication, division, etc.  Most of the Python numeric &lt;a href="https://docs.python.org/3/reference/datamodel.html#emulating-numeric-types"&gt;dunder methods&lt;/a&gt; are binary operations.&lt;/p&gt;
+&lt;h4 id="Associative"&gt;Associative&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/monoids-for-pythonistas/#Associative"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;If an operation is associative, the order of &lt;em&gt;composition&lt;/em&gt; doesn't matter.
+This property is &lt;strong&gt;very&lt;/strong&gt; important as we'll see a bit later.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Addition &lt;strong&gt;is&lt;/strong&gt; associative.  1 + (2 + 3) is the same as (1 + 2) + 3.&lt;/li&gt;
+&lt;li&gt;String concatenation &lt;strong&gt;is&lt;/strong&gt; associative.  "A" + ("B" + "C") == ("A" + "B") + "C"&lt;ul&gt;
+&lt;li&gt;Unlike numeric addition where 1 + 2 == 2 + 1, string concatenation is &lt;strong&gt;not&lt;/strong&gt; &lt;em&gt;commutative&lt;/em&gt;!  Monoids only depend on the associative property.  (See &lt;a href="https://blogs.ncl.ac.uk/andreymokhov/united-monoids/"&gt;Andrey Mokhov's article&lt;/a&gt; for a fascinating deep-dive into this subject)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Subtraction is &lt;strong&gt;not&lt;/strong&gt; associative as order of composition matters.  1 - (2 - 3) is &lt;strong&gt;not equal&lt;/strong&gt; to (1 - 2) - 3.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id="Closed"&gt;Closed&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/monoids-for-pythonistas/#Closed"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;For a given operation, the input and output types must match for the operation to be closed.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The minimum of two integers maps back into the set of integers.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;min_&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nb"&gt;min&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;ul&gt;
+&lt;li&gt;Multiplication of two integers stays within the set of integers.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;type&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;42&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="err"&gt;'&lt;/span&gt;&lt;span class="nc"&gt;int&lt;/span&gt;&lt;span class="s1"&gt;'&amp;gt;&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;42&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;7&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;type&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="err"&gt;'&lt;/span&gt;&lt;span class="nc"&gt;int&lt;/span&gt;&lt;span class="s1"&gt;'&amp;gt;&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;type&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="err"&gt;'&lt;/span&gt;&lt;span class="nc"&gt;int&lt;/span&gt;&lt;span class="s1"&gt;'&amp;gt;&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;type&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="err"&gt;'&lt;/span&gt;&lt;span class="nc"&gt;int&lt;/span&gt;&lt;span class="s1"&gt;'&amp;gt;&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;ul&gt;
+&lt;li&gt;Floating point division of two integers returns a float, which is outside the set of integers.  The &lt;em&gt;input&lt;/em&gt; and &lt;em&gt;output&lt;/em&gt; types don't match.  This is &lt;strong&gt;not&lt;/strong&gt; a closed operation.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;type&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;42&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt; &lt;span class="mi"&gt;33&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="err"&gt;'&lt;/span&gt;&lt;span class="nc"&gt;float&lt;/span&gt;&lt;span class="s1"&gt;'&amp;gt;&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;ul&gt;
+&lt;li&gt;The &lt;code&gt;chr&lt;/code&gt; function in Python takes an integer and returns a &lt;code&gt;str&lt;/code&gt;.  This operation is &lt;strong&gt;not&lt;/strong&gt; closed for the same reason; the output is of a different type than the input.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;type&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;chr&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;51&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="err"&gt;'&lt;/span&gt;&lt;span class="nc"&gt;str&lt;/span&gt;&lt;span class="s1"&gt;'&amp;gt;&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h3 id="Axioms"&gt;Axioms&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/monoids-for-pythonistas/#Axioms"&gt;¶&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;We're almost there!  We need to mention identity.  The importance of identity is a bit of a rabbit hole, so I'll leave it as an exercise for the reader to dig deeper (abstract algebra rings and rngs).&lt;/p&gt;
+&lt;p&gt;An identity element is an element that does not change the output when paired with any other input.&lt;/p&gt;
+&lt;h4 id="Identity"&gt;Identity&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/monoids-for-pythonistas/#Identity"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;Numeric addition: 0 is the identity (works with reals, integers, naturals, etc).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="mi"&gt;42&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;
+&lt;span class="mi"&gt;42&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;ul&gt;
+&lt;li&gt;Numeric multiplication: 1 is the identity (gotcha!  The identity is dependent on the &lt;em&gt;operation&lt;/em&gt; and the &lt;em&gt;type&lt;/em&gt;).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="mi"&gt;42&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
+&lt;span class="mi"&gt;42&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;ul&gt;
+&lt;li&gt;List concatenation: the empty list is the identity&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="p"&gt;[]&lt;/span&gt;
+&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;The reason we need this is a little subtle.
+We are using a binary operation to make a computation, but what do we do when we only have one value to work with?
+Many of the use cases of monoids are recursive in nature, so what do you do when you reduce a list to one element?
+This is fairly representative of the problem (or imagine if &lt;code&gt;functools.reduce&lt;/code&gt; didn't take a default argument).&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;list&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;map&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;lambda&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;42&lt;/span&gt;&lt;span class="p"&gt;]))&lt;/span&gt;
+&lt;span class="n"&gt;Traceback&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;most&lt;/span&gt; &lt;span class="n"&gt;recent&lt;/span&gt; &lt;span class="n"&gt;call&lt;/span&gt; &lt;span class="n"&gt;last&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+  &lt;span class="n"&gt;File&lt;/span&gt; &lt;span class="s2"&gt;"&amp;lt;stdin&amp;gt;"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;line&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;module&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="ne"&gt;TypeError&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="k"&gt;lambda&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="n"&gt;missing&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="n"&gt;required&lt;/span&gt; &lt;span class="n"&gt;positional&lt;/span&gt; &lt;span class="n"&gt;argument&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;'y'&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;We can use the identity!
+This allows the developer to safely perform a binary operation on a single element without changing the output.&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h3 id="Definition"&gt;Definition&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/monoids-for-pythonistas/#Definition"&gt;¶&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Hopefully, we now have the tools to unpack this definition...&lt;/p&gt;
+&lt;p&gt;According to Eric Weisstein on Wolfram, a monoid is "a set that is closed under an associative binary operation and has an identity element $I \in S$ such that $ \forall a \in S, Ia=aI=a$".&lt;/p&gt;
+&lt;p&gt;I don't like that definition.
+What the heck does $Ia=aI=a$ mean?
+It &lt;em&gt;looks&lt;/em&gt; like multiplication, but that is one of many possible binary operations.
+Here's my rephrasing:&lt;br&gt;
+A monoid consists of a set, $S$, that is closed under an associative binary operation, $f$, and has an identity element $I \in S$ such that $ \forall a \in S, f(I, a)=f(a, I)=a$.&lt;/p&gt;
+&lt;p&gt;A monoid has three components.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The set $S$, often called the "carrier set".  Programmers know this as a type (int, float, double, etc).&lt;/li&gt;
+&lt;li&gt;$I$ is the identity element, which we identified in the previous section&lt;/li&gt;
+&lt;li&gt;A binary operation.  Addition, multiplication, list concatenation, etc.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;I said in the intro that you already know what a monoid is.
+Here are some examples:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Integers, addition, 0&lt;/li&gt;
+&lt;li&gt;Reals, multiplication, 1&lt;/li&gt;
+&lt;li&gt;Lists, concatenation, [ ]&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h3 id="Why-it-matters"&gt;Why it matters&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/monoids-for-pythonistas/#Why-it-matters"&gt;¶&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;At this point, you might be thinking about whipping me with a large stick for describing simple arithmetic in such obtuse and abstract terms.
+It matters, I promise!
+These definitions allow us to precisely identify objects with certain properties that support certain operations.
+Enough math, why does this matter to programmers?!&lt;/p&gt;
+&lt;h4 id="Divide"&gt;Divide&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/monoids-for-pythonistas/#Divide"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;Remember how I said that associative property would be important later on?
+Consider the following items... they're all equivalent.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9 + 10
+(1 + 2) + (3 + 4 + 5 + 6 + 7 + 8 + 9 + 10)
+(1 + (2 + (3 + (4 + (5 + (6 + (7 + (8 + (9 + 10)))))))))
+(((((((((1 + 2) + 3) + 4) + 5) + 6) + 7) + 8) + 9) + 10)
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Here's another example.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;"a" + "b" + "c" + "d" + "e" + "f" + "g" + "h" + "i" + "j"
+"ab" + "cd" + "ef" + "gh" + "ij"
+"abcd" + "efgh" + "ij"
+"abcdefgh" + "ij"
+"abcdefghij"
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;I can write those down on a set of index cards and pass the pairs to two people at a time (think two CPU cores).
+As long as I track the order of the results, I can recursively continue this process in any order of composition until the task is done.
+This process succeeds even if the workers have different computational capacities.
+The answer is the same as if one poor individual toiled away at the tasks independently.&lt;/p&gt;
+&lt;h4 id="More-cores,-more-computers"&gt;More cores, more computers&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/monoids-for-pythonistas/#More-cores,-more-computers"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;If the list is really long or the binary operation is non-trivial, we can &lt;strong&gt;safely&lt;/strong&gt; and easily divide this tasks amongst different cores - or even different computers.
+Notice that we are talking about &lt;em&gt;CPU&lt;/em&gt;-bound tasks, not &lt;em&gt;IO&lt;/em&gt;-bound tasks (multiple cores do little to alleviate the latter).
+Python doesn't have the ability to do this natively, but other languages do.&lt;/p&gt;
+&lt;h5 id="But-be-careful"&gt;But be careful&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/monoids-for-pythonistas/#But-be-careful"&gt;¶&lt;/a&gt;&lt;/h5&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;multiprocessing&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Pool&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;cpu_count&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;timeit&lt;/span&gt;
+
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;read_data&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fname&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Read Wiki tables"""&lt;/span&gt;
+    &lt;span class="k"&gt;with&lt;/span&gt; &lt;span class="nb"&gt;open&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fname&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="n"&gt;fp&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;items&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;fp&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;readlines&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nb"&gt;map&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;lambda&lt;/span&gt; &lt;span class="n"&gt;item&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;item&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;split&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;" "&lt;/span&gt;&lt;span class="p"&gt;)[&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;]),&lt;/span&gt; &lt;span class="n"&gt;items&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;do_it&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fname&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Read data and perform calculation"""&lt;/span&gt;
+    &lt;span class="n"&gt;data&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;read_data&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fname&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nb"&gt;sum&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;multi_proc_demo&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="kc"&gt;None&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;N_PROC&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;cpu_count&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="c1"&gt;# Start the processes&lt;/span&gt;
+    &lt;span class="k"&gt;with&lt;/span&gt; &lt;span class="n"&gt;Pool&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;processes&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;N_PROC&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="n"&gt;p&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;results&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[]&lt;/span&gt;
+        &lt;span class="n"&gt;fnames&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;
+            &lt;span class="s2"&gt;"data/pagecounts-20090601-000000"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+            &lt;span class="s2"&gt;"data/pagecounts-20090601-010000"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+            &lt;span class="s2"&gt;"data/pagecounts-20090601-020000"&lt;/span&gt;
+        &lt;span class="p"&gt;]&lt;/span&gt;
+        &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;fname&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;fnames&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+            &lt;span class="n"&gt;results&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;append&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;p&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;apply_async&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;do_it&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;kwds&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s1"&gt;'fname'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;fname&lt;/span&gt;&lt;span class="p"&gt;}))&lt;/span&gt;
+        &lt;span class="nb"&gt;sum&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="n"&gt;result&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;timeout&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;result&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;results&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;single_proc_demo&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="kc"&gt;None&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="c1"&gt;# cat data/pagecounts* &amp;gt;&amp;gt; all.txt&lt;/span&gt;
+    &lt;span class="nb"&gt;sum&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;read_data&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"data/all.txt"&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+
+
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="vm"&gt;__name__&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s2"&gt;"__main__"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"Multi-proc: "&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;timeit&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Timer&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"multi_proc_demo()"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;globals&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nb"&gt;globals&lt;/span&gt;&lt;span class="p"&gt;())&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;repeat&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+    &lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"Single-proc: "&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;timeit&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Timer&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"single_proc_demo()"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;globals&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nb"&gt;globals&lt;/span&gt;&lt;span class="p"&gt;())&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;repeat&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;python wiki.py
+Multi-proc:  &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;28&lt;/span&gt;.17182195998612, &lt;span class="m"&gt;28&lt;/span&gt;.688616012994316, &lt;span class="m"&gt;28&lt;/span&gt;.539513622003142, &lt;span class="m"&gt;28&lt;/span&gt;.077732990990626, &lt;span class="m"&gt;28&lt;/span&gt;.294970447997912&lt;span class="o"&gt;]&lt;/span&gt;
+Single-proc:  &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;75&lt;/span&gt;.17859069499536, &lt;span class="m"&gt;73&lt;/span&gt;.89702447700256, &lt;span class="m"&gt;74&lt;/span&gt;.0759316909971, &lt;span class="m"&gt;74&lt;/span&gt;.918352623994, &lt;span class="m"&gt;74&lt;/span&gt;.7120841670112&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;The example above uses a publicly-available dataset from Wikipedia (linked in the References).
+I spent way too much time fighting &lt;code&gt;multiprocessing&lt;/code&gt;, but I learned a lot along the way.
+Always RTFM!
+There are several caveats to the library, and it is essential to read the &lt;a href="https://docs.python.org/3/library/multiprocessing.html#programming-guidelines"&gt;Programming Guidelines&lt;/a&gt;.
+One of the issues is how Python copies memory to child processes.
+This serialization overhead is huge, so it is much better for your child processes to retrieve their own data.
+When in doubt, measure (the &lt;code&gt;timeit&lt;/code&gt; library is great for this)!
+What does this have to do with monoids?&lt;/p&gt;
+&lt;p&gt;Since addition is a moniod, we can safely split the work up and aggregate the results.
+It is also commutative which means that we don't even have to track the order of the results.
+Not all operations are commutative, though!
+If you are multiplying a bunch of matrices, you can still batch the computation, but you &lt;em&gt;must&lt;/em&gt; track the order of the results.&lt;/p&gt;
+&lt;h5 id="The-right-tool-for-the-right-job"&gt;The right tool for the right job&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/monoids-for-pythonistas/#The-right-tool-for-the-right-job"&gt;¶&lt;/a&gt;&lt;/h5&gt;&lt;p&gt;Know your use case.
+I am an avid Pythonista, but sometimes alternatives might be the better choice.
+Gloang doesn't read &lt;code&gt;all.txt&lt;/code&gt; any faster, but it performs the summation in milliseconds instead of seconds!
+Julia as native support for &lt;a href="https://docs.julialang.org/en/v1/manual/parallel-computing/"&gt;multi-core processing&lt;/a&gt;, and there are other languages that do as well.&lt;/p&gt;
+&lt;h4 id="And-conquer"&gt;And conquer&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/monoids-for-pythonistas/#And-conquer"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;This divide-and-conquer concept is critical to well-known large-scale algorithms like &lt;a href="https://hadoop.apache.org/docs/r1.2.1/mapred_tutorial.html"&gt;MapReduce&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;It doesn't mean we can't do it ourselves, though!
+Libraries like &lt;code&gt;multiprocessing&lt;/code&gt; allow Python developers to delegate tasks among different cores or processors.
+Keep in mind that just like delegating tasks to friends, there is a computational overhead to splitting up tasks.
+It is important to understand that libraries like &lt;a href="https://numpy.org/"&gt;&lt;code&gt;Numpy&lt;/code&gt;&lt;/a&gt; don't &lt;a href="https://scipy.github.io/old-wiki/pages/ParallelProgramming"&gt;get you around the single-core limit&lt;/a&gt; even though it is implemented in C.
+Do your research!
+Know your data and the problem domain before you start concatenating small strings across processes! 😜&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h4 id="BLS-data"&gt;BLS data&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/monoids-for-pythonistas/#BLS-data"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;Let's look at some data freely available from the Bureau of Labor Statistics.
+I downloaded the flat files from the link in the references and created some &lt;code&gt;dataclasses&lt;/code&gt; to support our operations.
+This is a quick-and-dirty module.
+I'm not doing any type checking or validation in an effort to minimize boilerplate and get to the essence of the post.&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing code_cell rendered"&gt;
+&lt;div class="input"&gt;
+&lt;div class="prompt input_prompt"&gt;In [1]:&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+    &lt;div class="input_area"&gt;
+&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;functools&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;partial&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;reduce&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;dataclasses&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;dataclass&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;asdict&lt;/span&gt;
+
+&lt;span class="nd"&gt;@dataclass&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;frozen&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="kc"&gt;True&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;BLSRecord&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="sd"&gt;"""BLS table entry"""&lt;/span&gt;
+    &lt;span class="n"&gt;series_id&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;
+    &lt;span class="n"&gt;year&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;
+    &lt;span class="n"&gt;period&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;
+    &lt;span class="n"&gt;value&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;
+    &lt;span class="n"&gt;footnote_codes&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;
+
+&lt;span class="nd"&gt;@dataclass&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;frozen&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="kc"&gt;True&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;BLSSeries&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="sd"&gt;"""BLS series entry"""&lt;/span&gt;
+    &lt;span class="n"&gt;series_id&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;
+    &lt;span class="n"&gt;area_code&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;
+    &lt;span class="n"&gt;item_code&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;
+    &lt;span class="n"&gt;series_title&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;
+    &lt;span class="n"&gt;footnote_codes&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;
+    &lt;span class="n"&gt;begin_year&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;
+    &lt;span class="n"&gt;begin_period&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;
+    &lt;span class="n"&gt;end_year&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;
+    &lt;span class="n"&gt;end_period&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;
+
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;read_with_header&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fname&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;rec_type&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Read BLS tables with header row"""&lt;/span&gt;
+    &lt;span class="k"&gt;with&lt;/span&gt; &lt;span class="nb"&gt;open&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fname&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="n"&gt;fp&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;items&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;fp&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;readlines&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="c1"&gt;# Skip the header row, split, strip, and instantiate the dataclass&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nb"&gt;map&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;lambda&lt;/span&gt; &lt;span class="n"&gt;item&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;rec_type&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="nb"&gt;map&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;strip&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;item&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;split&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"&lt;/span&gt;&lt;span class="se"&gt;\t&lt;/span&gt;&lt;span class="s2"&gt;"&lt;/span&gt;&lt;span class="p"&gt;))),&lt;/span&gt; &lt;span class="n"&gt;items&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;::])&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h4 id="Composition"&gt;Composition&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/monoids-for-pythonistas/#Composition"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;When dealing with business logic, we are often faced with brittle code when requirements change and that massive &lt;code&gt;if&lt;/code&gt;/&lt;code&gt;else&lt;/code&gt; block just keeps growing.
+Even worse is when you realize that similar logic is needed in multiple parts of the code and it's unclear how to "glue" the pieces together.&lt;/p&gt;
+&lt;p&gt;Here is a much less trivial example.
+One of the key axioms is that we are dealing with &lt;strong&gt;binary operations&lt;/strong&gt; that map some type to the same type.
+Does this type have to be a number or a string?
+Not at all!
+Let's reconsider &lt;code&gt;sum&lt;/code&gt; on integers; it takes two integers and returns an integer.
+Replace integer with "numeric type", and we can still play ball.
+Can we go further?
+Here is the formula for standard deviation:&lt;/p&gt;
+$$ \sigma = \sqrt{\frac{\sum_{i=1}^N (x_i - \bar{x})^2}{N-1}} $$&lt;p&gt;Look at the summation $\sum_{i=1}^N (x_i - \bar{x})^2$ and break it down a little.
+Couldn't we also say $\sum_{i=1}^N func()$?
+In other words, instead of passing some numeric type to &lt;code&gt;add&lt;/code&gt;, I want to pass a &lt;em&gt;function&lt;/em&gt; that &lt;strong&gt;returns&lt;/strong&gt; a numeric type to &lt;code&gt;add&lt;/code&gt;.
+This is a perfectly valid construction!
+The cool thing is that we can &lt;em&gt;compose&lt;/em&gt; functions that return numeric types with the &lt;code&gt;add&lt;/code&gt; binary operation.&lt;/p&gt;
+&lt;p&gt;We can use this idea with boolean operations to compose data queries instead of using an endless string of &lt;code&gt;if X and Y and Z&lt;/code&gt; where &lt;code&gt;X&lt;/code&gt;, &lt;code&gt;Y&lt;/code&gt;, and &lt;code&gt;Z&lt;/code&gt; tend to get lengthy in my experience.&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing code_cell rendered"&gt;
+&lt;div class="input"&gt;
+&lt;div class="prompt input_prompt"&gt;In [24]:&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+    &lt;div class="input_area"&gt;
+&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;is_coffee_lookup&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;rec&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;BLSRecord&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;lookup&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;bool&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;series_data&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;rec&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;series_id&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;item_code&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s2"&gt;"717311"&lt;/span&gt;
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;is_january&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;rec&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;BLSRecord&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;bool&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;rec&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;period&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s2"&gt;"M01"&lt;/span&gt;
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;is_not_1995&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;rec&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;BLSRecord&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;bool&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;rec&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;year&lt;/span&gt; &lt;span class="o"&gt;!=&lt;/span&gt; &lt;span class="s2"&gt;"1995"&lt;/span&gt;
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;intersect_identity&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;rec&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;BLSRecord&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;bool&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="c1"&gt;# The "natural element" for intersections is True&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="kc"&gt;True&lt;/span&gt;
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;intersect&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fst_fn&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;snd_fn&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="k"&gt;lambda&lt;/span&gt; &lt;span class="n"&gt;rec&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;fst_fn&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;rec&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="ow"&gt;and&lt;/span&gt; &lt;span class="n"&gt;snd_fn&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;rec&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="c1"&gt;# Create a lookup table for series entries&lt;/span&gt;
+&lt;span class="n"&gt;series_data&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="n"&gt;row&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;series_id&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;row&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;row&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;read_with_header&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"data/ap.series"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;BLSSeries&lt;/span&gt;&lt;span class="p"&gt;)}&lt;/span&gt;
+
+&lt;span class="c1"&gt;# Inject our state&lt;/span&gt;
+&lt;span class="n"&gt;is_coffee&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;partial&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;is_coffee_lookup&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;lookup&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;series_data&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="sa"&gt;f&lt;/span&gt;&lt;span class="s2"&gt;"All records: &lt;/span&gt;&lt;span class="si"&gt;{&lt;/span&gt;&lt;span class="nb"&gt;len&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;price_data&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="si"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;,&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt;"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="c1"&gt;# Filter for entries that are coffee&lt;/span&gt;
+&lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="sa"&gt;f&lt;/span&gt;&lt;span class="s2"&gt;"Coffee: &lt;/span&gt;&lt;span class="si"&gt;{&lt;/span&gt;&lt;span class="nb"&gt;len&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;list&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;filter&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;is_coffee&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;price_data&lt;/span&gt;&lt;span class="p"&gt;)))&lt;/span&gt;&lt;span class="si"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;,&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt;"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="c1"&gt;# Filter for entries that are in January&lt;/span&gt;
+&lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="sa"&gt;f&lt;/span&gt;&lt;span class="s2"&gt;"January: &lt;/span&gt;&lt;span class="si"&gt;{&lt;/span&gt;&lt;span class="nb"&gt;len&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;list&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;filter&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;is_january&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;price_data&lt;/span&gt;&lt;span class="p"&gt;)))&lt;/span&gt;&lt;span class="si"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;,&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt;"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="c1"&gt;# Compose and profit!&lt;/span&gt;
+&lt;span class="n"&gt;coffee_and_january&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;reduce&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;intersect&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;is_coffee&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;is_january&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="n"&gt;intersect_identity&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="sa"&gt;f&lt;/span&gt;&lt;span class="s2"&gt;"Coffee and January: &lt;/span&gt;&lt;span class="si"&gt;{&lt;/span&gt;&lt;span class="nb"&gt;len&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;list&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;filter&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;coffee_and_january&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;price_data&lt;/span&gt;&lt;span class="p"&gt;)))&lt;/span&gt;&lt;span class="si"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;,&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt;"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="c1"&gt;# We can compose any number of functions that are valid Moniods!&lt;/span&gt;
+&lt;span class="n"&gt;coffee_and_january_not_1995&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;reduce&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;intersect&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;is_not_1995&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;is_coffee&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;is_january&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="n"&gt;intersect_identity&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="sa"&gt;f&lt;/span&gt;&lt;span class="s2"&gt;"Coffee and January and not 1995: &lt;/span&gt;&lt;span class="si"&gt;{&lt;/span&gt;&lt;span class="nb"&gt;len&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;list&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;filter&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;coffee_and_january_not_1995&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;price_data&lt;/span&gt;&lt;span class="p"&gt;)))&lt;/span&gt;&lt;span class="si"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;,&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt;"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class="output_wrapper"&gt;
+&lt;div class="output"&gt;
+
+
+&lt;div class="output_area"&gt;
+
+    &lt;div class="prompt"&gt;&lt;/div&gt;
+
+
+&lt;div class="output_subarea output_stream output_stdout output_text"&gt;
+&lt;pre&gt;All records: 177,894
+Coffee: 786
+January: 15,042
+Coffee and January: 66
+Coffee and January and not 1995: 62
+&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h4 id="Conclusion"&gt;Conclusion&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/monoids-for-pythonistas/#Conclusion"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;I hope I didn't chase too many rabbits; there are plenty to chase on this topic!
+I also hope that this has sparked some ideas and will help you identify common patterns in software that will make your coding a bit more efficient and clean.&lt;/p&gt;
+&lt;h3 id="References"&gt;References&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/monoids-for-pythonistas/#References"&gt;¶&lt;/a&gt;&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;Weisstein, Eric W. "Monoid." From MathWorld--A Wolfram Web Resource. &lt;a href="https://mathworld.wolfram.com/Monoid.html"&gt;https://mathworld.wolfram.com/Monoid.html&lt;/a&gt; &lt;/li&gt;
+&lt;li&gt;&lt;a href="https://en.wikipedia.org/wiki/Monoid"&gt;https://en.wikipedia.org/wiki/Monoid&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://wiki.haskell.org/Monoid"&gt;https://wiki.haskell.org/Monoid&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://github.com/dry-python/functional-jargon-python"&gt;https://github.com/dry-python/functional-jargon-python&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://planetmath.org/examplesofnoncommutativeoperations"&gt;https://planetmath.org/examplesofnoncommutativeoperations&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://blogs.ncl.ac.uk/andreymokhov/united-monoids/"&gt;https://blogs.ncl.ac.uk/andreymokhov/united-monoids/&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="Data"&gt;Data&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/monoids-for-pythonistas/#Data"&gt;¶&lt;/a&gt;&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://download.bls.gov/pub/time.series/ap"&gt;https://download.bls.gov/pub/time.series/ap&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://archive.org/details/wikipedia_visitor_stats_200906"&gt;https://archive.org/details/wikipedia_visitor_stats_200906&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/div&gt;</description><category>category-theory</category><category>math</category><category>python</category><guid>https://blog.wificidr.net/posts/monoids-for-pythonistas/</guid><pubDate>Mon, 05 Oct 2020 12:30:10 GMT</pubDate></item><item><title>Fold Versus Recursion</title><link>https://blog.wificidr.net/posts/fold-vs-recursion/</link><dc:creator>Daniel Justice</dc:creator><description>&lt;div&gt;&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
 &lt;/div&gt;&lt;div class="inner_cell"&gt;
 &lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
 &lt;h2 id="Folds-and-recursion"&gt;Folds and recursion&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/fold-vs-recursion/#Folds-and-recursion"&gt;¶&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;I recently read a &lt;a href="http://www.cs.nott.ac.uk/~pszgmh/fold.pdf"&gt;paper by Graham Hutton&lt;/a&gt; on folds and recursion.
