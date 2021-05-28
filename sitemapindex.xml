@@ -30,11 +30,15 @@
   <lastmod>2020-10-31T20:35:00Z</lastmod>
  </sitemap>
  <sitemap>
+  <loc>https://blog.wificidr.net/categories/running.xml</loc>
+  <lastmod>2021-05-28T01:48:00Z</lastmod>
+ </sitemap>
+ <sitemap>
   <loc>https://blog.wificidr.net/rss.xml</loc>
-  <lastmod>2021-05-28T01:22:00Z</lastmod>
+  <lastmod>2021-05-28T01:48:00Z</lastmod>
  </sitemap>
  <sitemap>
   <loc>https://blog.wificidr.net/sitemap.xml</loc>
-  <lastmod>2021-05-28T01:22:00Z</lastmod>
+  <lastmod>2021-05-28T01:48:00Z</lastmod>
  </sitemap>
 </sitemapindex>
