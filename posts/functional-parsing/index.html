@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html prefix="" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Functional Parsing | WifiCIDR Blog</title>
+<link href="../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../../rss.xml">
+<link rel="canonical" href="https://blog.wificidr.net/posts/functional-parsing/">
+<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="author" content="Daniel Justice">
+<meta property="og:site_name" content="WifiCIDR Blog">
+<meta property="og:title" content="Functional Parsing">
+<meta property="og:url" content="https://blog.wificidr.net/posts/functional-parsing/">
+<meta property="og:description" content="Parsing with OCaml and Angstrom¶All opinions are my own and do not represent those of any employer, past or present.
+Network automation is dominated by the Python and Go programming languages.
+Python ">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2021-05-27T08:30:10-05:00">
+<meta property="article:tag" content="ocaml">
+<meta property="article:tag" content="parsing">
+</head>
+<body>
+    
+
+    <header id="header" class="navbar"><div class="container">
+            
+    <div class="brand">
+
+        <div class="brand-text">
+            <a href="https://blog.wificidr.net/" title="WifiCIDR Blog" rel="home">
+                WifiCIDR Blog
+            </a>
+        </div>
+
+        <a id="btn-toggle-nav" class="navbar-toggle">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </a>
+    </div>
+
+            
+    <nav class="navbar-collapse collapse"><ul class="nav">
+<li><a href="../../archive.html">Archive</a></li>
+                <li><a href="../../categories/">Tags</a></li>
+                <li><a href="../../rss.xml">RSS feed</a></li>
+    
+    
+    </ul></nav>
+</div>
+    </header><div class="header-padding"> </div>
+
+    
+    <div class="post-header">
+        <div class="container">
+            <div class="title">
+                Functional Parsing
+            </div>
+        </div>
+    </div>
+
+    <div class="post-meta">
+      <div class="container">
+	<div class="meta clearfix">
+	  <div class="authordate">
+	    <time class="timeago" datetime="2021-05-27T08:30:10-05:00">2021/05/27</time>
+	    
+
+	    
+          |  
+        <a href="index.ipynb" id="sourcelink">Source</a>
+
+	  </div>
+	  <div class="post-tags">
+	    <div class="tag">
+	      <a href="../../categories/ocaml/" rel="tag">ocaml</a>
+	    </div>
+	    <div class="tag">
+	      <a href="../../categories/parsing/" rel="tag">parsing</a>
+	    </div>
+	  </div>
+	</div>
+      </div>
+    </div>
+
+
+    <div id="post-main" class="main">
+        <div class="container">
+        <div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Parsing-with-OCaml-and-Angstrom">Parsing with OCaml and Angstrom<a class="anchor-link" href="#Parsing-with-OCaml-and-Angstrom">¶</a>
+</h2>
+<p>All opinions are my own and do not represent those of any employer, past or present.</p>
+<p>Network automation is dominated by the Python and Go programming languages.
+Python is very attractive since it has one of the lowest learning curves of any programming language, and most network automation developers and scripters started out like myself, in traditional network engineering roles.
+Python has an incredible ecosystem of tooling focused on this domain.
+Python has some serious drawbacks, too.
+It is a fat language in many respects.
+The standard library is large, it is near impossible to build small containers, and it is not terribly performant.
+I don't want to wade into the dynamic-versus-typed debate, but my opinion is that it is difficult to write "correct" programs in a dynamic language.
+The typing system in Python is a dumpster fire.
+Like the continuous stream of new language features, the typing committee is trying to please all masters simultaneously.</p>
+<p>Golang is an advantage in each of these situations with the added benefits of an elegant concurrency model and strongly-typed compiler.
+My main gripe with Go is that it is a strongly-opinionated language, and it is very difficult to color outside the lines.
+It lacks generics, and the current proposals leave a lot to be desired despite being huge improvements over the current situation.</p>
+<p>Functional programming is going through a bit of a renaissance, and it has become popular in fin-tech and crypto.
+Many other companies large and small are testing the waters as well.
+I would like to explore functional programming as an alternative for network automation tasks.
+I will start with a common example then deal with the language details in a future post.
+I hope showing the "why" inspires interest in the "how".</p>
+<h3 id="Parsing">Parsing<a class="anchor-link" href="#Parsing">¶</a>
+</h3>
+<p>Most network automation developers are intimately familiar regular expressions and libraries like <a href="https://github.com/google/textfsm">TextFSM</a>.
+I never did look deeply into subject, and I recently discovered the large rabbit hole that is the world of parsing.
+At a high level, parsing is simply the act of turning a string of characters into some sort of structured data.
+Parsers are used in everything from programming languages to the code that translates this markdown into HTML.
+Several tools have been created to simplify this work.
+The three broad categories are:</p>
+<ul>
+<li>regular expressions</li>
+<li>parser generators</li>
+<li>parser combinators</li>
+</ul>
+<p>If you aren't familiar with regular expressions, you probably aren't interested in reading further.
+😂
+Wikipedia has great articles on each subject.</p>
+<h4 id="Parser-generators">Parser generators<a class="anchor-link" href="#Parser-generators">¶</a>
+</h4>
+<p>Parser generators perform a task called lexicographical analysis that converts a stream of characters into a stream of "tokens".
+These tokens are assembled in the parsing step to build an abstract syntax tree (AST).
+Parser generators work best for well-defined grammars.
+Think programming languages, JSON, YANG, YAML, etc.
+These are streams of characters that throw errors when we hit unexpected input.</p>
+<p>OCaml's <a href="http://gallium.inria.fr/~fpottier/menhir/">Menhir</a> library is a parser generator.
+David Beazely has <a href="https://www.youtube.com/watch?v=zJ9z6Ge-vXs">spoken</a> and <a href="http://www.dabeaz.com/ply/ply.html">written</a> about the subject using Python.</p>
+<h4 id="Parser-combinators">Parser combinators<a class="anchor-link" href="#Parser-combinators">¶</a>
+</h4>
+<p>Lastly, we consider parser combinators (and the real focus of this post).
+From a network automation slant, we would consider parser combinators anywhere we have written bespoke regex logic.
+<code>Textfsm</code> works great in this space, but it has a few drawbacks.</p>
+<ul>
+<li>It introduces yet another DSL.</li>
+<li>The DSL isn't as expressive as a programming language.</li>
+<li>It is untyped (as a result of the Python backend).</li>
+<li>It is not very extensible (the returned data structures are not configurable).</li>
+<li>It's run by Google, and they're not exactly engaged with the community.</li>
+</ul>
+<p>To be clear, TextFSM is my go-to library most days.
+Parser-combinators typically support look-ahead, and it is much easier to "throw away" data we're not interested in.
+A good example of the limitations of the DSL is in this <a href="https://github.com/networktocode/ntc-templates/blob/master/ntc_templates/templates/cisco_ios_show_vlan.textfsm">template</a>.
+It is clunky to deal with repeated data in certain contexts, and what if there is no upper bound on the list length?</p>
+<h5 id="Side-rant">Side rant<a class="anchor-link" href="#Side-rant">¶</a>
+</h5>
+<p>It is no secret that I love to hate on YAML.
+Software developers love abstractions; we live in abstractions.
+We also tend to be a bit too lazy for our own good.
+"Arrrgggh, I'm sick of writing regex parsers, we need to abstract this into a library!"
+"This library is too complicated, let's write a DSL!"
+The next thing you know...
+<img src="https://imgs.xkcd.com/comics/standards.png" alt="standards"><em>Source: <a href="https://xkcd.com/927/">Randall Munroe</a></em></p>
+<p>I am not saying YAML isn't useful.
+I am saying that if you work with Ansible or Kubernetes that you have probably tried to build Turing-complete logic in YAML.
+Be cognizant of the limitations of your tools, and go back to your roots when the abstractions start to fall apart.
+We try to make tools accessible and easy to use for those around us, but it is difficult to replicate the expressiveness of a programming language.</p>
+<p><code>&lt;/rant&gt;</code></p>
+<h3 id="Angstrom">Angstrom<a class="anchor-link" href="#Angstrom">¶</a>
+</h3>
+<p>Below, I am using OCaml's <a href="https://github.com/inhabitedtype/angstrom">Angstrom</a> library.
+The complete source is available in this <a href="https://gist.github.com/dgjustice/07e57185422b8125164bfd16d3612dfc">gist</a>.
+Let's consider this <a href="https://github.com/networktocode/ntc-templates/blob/master/tests/cisco_ios/show_vlan/cisco_ios_show_vlan.raw">raw string</a> from Cisco IOS from the <code>show vlan</code> command:</p>
+<h4 id="Input">Input<a class="anchor-link" href="#Input">¶</a>
+</h4>
+<div class="highlight"><pre><span></span><span class="k">let</span> <span class="n">vlan_raw</span> <span class="o">=</span>
+  <span class="s2">"VLAN Name                             Status    Ports</span>
+<span class="s2">---- -------------------------------- --------- -------------------------------</span>
+<span class="s2">1    default                          active    Gi0/1</span>
+<span class="s2">10   Management                       active</span>
+<span class="s2">50   VLan50                           active    Fa0/1, Fa0/2, Fa0/3, Fa0/4, Fa0/5, Fa0/6, Fa0/7, Fa0/8, Fa0/9</span>
+<span class="s2">                                                Fa0/10, Fa0/11, Fa0/12</span>
+<span class="s2">60   VLan60                           active    Fa0/13, Fa0/14, Fa0/15, Fa0/16, Fa0/17, Fa0/18, Fa0/19, Fa0/20</span>
+<span class="s2">                                                Fa0/21, Fa0/22, Fa0/23, Fa0/24</span>
+<span class="s2">1002 fddi-default                     act/unsup</span>
+<span class="s2">1003 token-ring-default               act/unsup</span>
+<span class="s2">1004 fddinet-default                  act/unsup</span>
+<span class="s2">1005 trnet-default                    act/unsup</span>
+<span class="s2">VLAN Type  SAID       MTU   Parent RingNo BridgeNo Stp  BrdgMode Trans1 Trans2</span>
+<span class="s2">---- ----- ---------- ----- ------ ------ -------- ---- -------- ------ ------</span>
+<span class="s2">1    enet  100001     1500  -      -      -        -    -        0      0</span>
+<span class="s2">10   enet  100010     1500  -      -      -        -    -        0      0</span>
+<span class="s2">50   enet  100050     1500  -      -      -        -    -        0      0</span>
+<span class="s2">60   enet  100060     1500  -      -      -        -    -        0      0</span>
+<span class="s2">1002 fddi  101002     1500  -      -      -        -    -        0      0</span>
+<span class="s2">1003 tr    101003     1500  -      -      -        -    srb      0      0</span>
+<span class="s2">1004 fdnet 101004     1500  -      -      -        ieee -        0      0</span>
+<span class="s2">1005 trnet 101005     1500  -      -      -        ibm  -        0      0</span>
+<span class="s2">Remote SPAN VLANs</span>
+<span class="s2">------------------------------------------------------------------------------</span>
+<span class="s2">Primary Secondary Type              Ports</span>
+<span class="s2">------- --------- ----------------- ------------------------------------------"</span>
+</pre></div>
+<h4 id="Data-structures">Data structures<a class="anchor-link" href="#Data-structures">¶</a>
+</h4>
+<p>We wish to capture the two tables and transform them to structured data.
+OCaml has record types.
+These <em>look</em> like annotated Python <code>dict</code> types, but they are closer conceptually to named tuples.
+The primary difference is that these types are not keyed mappings.</p>
+<div class="highlight"><pre><span></span><span class="k">type</span> <span class="n">vlan</span> <span class="o">=</span> <span class="o">{</span>
+  <span class="n">vlan_id</span> <span class="o">:</span> <span class="kt">int</span><span class="o">;</span>
+  <span class="n">name</span> <span class="o">:</span> <span class="kt">string</span><span class="o">;</span>
+  <span class="n">status</span> <span class="o">:</span> <span class="kt">string</span><span class="o">;</span>
+  <span class="n">ports</span> <span class="o">:</span> <span class="kt">string</span> <span class="kt">list</span><span class="o">;</span>
+<span class="o">}</span>
+
+<span class="k">type</span> <span class="n">vlan_stat</span> <span class="o">=</span> <span class="o">{</span>
+  <span class="n">vlan_id</span> <span class="o">:</span> <span class="kt">int</span><span class="o">;</span>
+  <span class="n">vl_type</span> <span class="o">:</span> <span class="kt">string</span><span class="o">;</span>
+  <span class="n">said</span> <span class="o">:</span> <span class="kt">string</span><span class="o">;</span>
+  <span class="n">mtu</span> <span class="o">:</span> <span class="kt">int</span><span class="o">;</span>
+  <span class="n">parent</span> <span class="o">:</span> <span class="kt">string</span><span class="o">;</span>
+  <span class="n">ring_no</span> <span class="o">:</span> <span class="kt">string</span><span class="o">;</span>
+  <span class="n">bridge_no</span> <span class="o">:</span> <span class="kt">string</span><span class="o">;</span>
+  <span class="n">stp</span> <span class="o">:</span> <span class="kt">string</span><span class="o">;</span>
+  <span class="n">bridge_mode</span> <span class="o">:</span> <span class="kt">string</span><span class="o">;</span>
+  <span class="n">trans1</span> <span class="o">:</span> <span class="kt">int</span><span class="o">;</span>
+  <span class="n">trans2</span> <span class="o">:</span> <span class="kt">int</span><span class="o">;</span>
+<span class="o">}</span>
+</pre></div>
+<h4 id="Rules">Rules<a class="anchor-link" href="#Rules">¶</a>
+</h4>
+<p>Next, we need some parsing rules.
+Your first thought might be, "Why not use regex?".
+The reason is that this parser-combinator lexes a character at a time.
+We can match on strings, but this is simply a recursive implementation of the character processor.
+I followed the naming convention in Angstrom of using a <code>1</code> to indicate that a rule requires at least one match.</p>
+<p>Speaking of empty matches... this is the primary "gotcha" that I ran into using Angstrom.
+If your parser hangs and starts chewing through vast amounts of memory and CPU, double check your rules.
+Angstrom doesn't handle arbitrary conditions well, and happily recurses itself into a corner if you mess up.
+Be mindful of cases where a string <strong>must</strong> exist or <em>may</em> exist.
+Try not to get hung up on the syntax; I will explain the language in much more detail in another post.</p>
+<div class="highlight"><pre><span></span><span class="k">let</span> <span class="n">is_whitespace</span> <span class="o">=</span> <span class="k">function</span> <span class="sc">'\x20'</span> <span class="o">|</span> <span class="sc">'\x09'</span> <span class="o">-&gt;</span> <span class="bp">true</span> <span class="o">|</span> <span class="o">_</span> <span class="o">-&gt;</span> <span class="bp">false</span>
+
+<span class="k">let</span> <span class="n">whitespace</span> <span class="o">=</span> <span class="n">take_while</span> <span class="n">is_whitespace</span>
+
+<span class="k">let</span> <span class="n">whitespace1</span> <span class="o">=</span> <span class="n">take_while1</span> <span class="n">is_whitespace</span>
+
+<span class="k">let</span> <span class="n">is_newline</span> <span class="o">=</span> <span class="k">function</span> <span class="sc">'\x0a'</span> <span class="o">|</span> <span class="sc">'\x0d'</span> <span class="o">-&gt;</span> <span class="bp">true</span> <span class="o">|</span> <span class="o">_</span> <span class="o">-&gt;</span> <span class="bp">false</span>
+
+<span class="k">let</span> <span class="n">newline</span> <span class="o">=</span> <span class="n">take_while</span> <span class="n">is_newline</span>
+
+<span class="k">let</span> <span class="n">newline1</span> <span class="o">=</span> <span class="n">take_while1</span> <span class="n">is_newline</span>
+
+<span class="k">let</span> <span class="n">is_digit</span> <span class="o">=</span> <span class="k">function</span> <span class="sc">'0'</span> <span class="o">..</span> <span class="sc">'9'</span> <span class="o">-&gt;</span> <span class="bp">true</span> <span class="o">|</span> <span class="o">_</span> <span class="o">-&gt;</span> <span class="bp">false</span>
+
+<span class="k">let</span> <span class="n">digit</span> <span class="o">=</span> <span class="n">take_while</span> <span class="n">is_digit</span>
+
+<span class="k">let</span> <span class="n">digit1</span> <span class="o">=</span> <span class="n">take_while</span> <span class="n">is_digit</span>
+
+<span class="k">let</span> <span class="n">is_alpha</span> <span class="o">=</span> <span class="k">function</span>
+  <span class="o">|</span> <span class="sc">'_'</span> <span class="o">|</span> <span class="sc">'-'</span> <span class="o">|</span> <span class="sc">'a'</span> <span class="o">..</span> <span class="sc">'z'</span> <span class="o">|</span> <span class="sc">'A'</span> <span class="o">..</span> <span class="sc">'Z'</span> <span class="o">-&gt;</span> <span class="bp">true</span>
+  <span class="o">|</span> <span class="o">_</span> <span class="o">-&gt;</span> <span class="bp">false</span>
+
+<span class="k">let</span> <span class="n">is_iface_char</span> <span class="o">=</span> <span class="k">function</span> <span class="sc">'/'</span> <span class="o">|</span> <span class="sc">'.'</span> <span class="o">-&gt;</span> <span class="bp">true</span> <span class="o">|</span> <span class="o">_</span> <span class="o">-&gt;</span> <span class="bp">false</span>
+
+<span class="k">let</span> <span class="n">is_ident</span> <span class="n">c</span> <span class="o">=</span> <span class="n">is_alpha</span> <span class="n">c</span> <span class="o">||</span> <span class="n">is_digit</span> <span class="n">c</span> <span class="o">||</span> <span class="n">is_iface_char</span> <span class="n">c</span>
+
+<span class="k">let</span> <span class="n">ident</span> <span class="o">=</span> <span class="n">take_while</span> <span class="n">is_ident</span>
+
+<span class="k">let</span> <span class="n">ident1</span> <span class="o">=</span> <span class="n">take_while1</span> <span class="n">is_ident</span>
+</pre></div>
+<h4 id="Handwaving-and-magic">Handwaving and magic<a class="anchor-link" href="#Handwaving-and-magic">¶</a>
+</h4>
+<p>If you are familiar with ML-family languages, this will look a lot less magical.
+If you come from an imperative language, the following looks like pure chicken scratch.
+These operators are the "combinator" part of "parser-combinator".
+We can write a bunch of rules and glue them together in interesting ways.
+Programmers know about modularity; this is all about modularity!</p>
+<ul>
+<li>
+<code>*&gt;</code> is an operator that throws away the preceding output and returns the next expression</li>
+<li>
+<code>&lt;*</code> does just the opposite</li>
+<li>
+<code>&gt;&gt;=</code> binds two functions together, chaining the results together</li>
+<li>
+<code>variable |&gt; int_of_string</code> is a way of applying a type cast to a result</li>
+<li>
+<code>return</code> binds the results together given our data structures at the beginning</li>
+</ul>
+<p>Hopefully, the flow will make some sense.
+These build more complex parsers from the simple rules above.</p>
+<div class="highlight"><pre><span></span><span class="k">let</span> <span class="n">vl_header</span> <span class="o">=</span>
+  <span class="nn">Angstrom</span><span class="p">.</span><span class="n">string</span> <span class="s2">"VLAN"</span> <span class="o">*&gt;</span> <span class="n">take_while1</span> <span class="n">is_whitespace</span> <span class="o">*&gt;</span> <span class="n">string_ci</span> <span class="s2">"name"</span>
+  <span class="o">*&gt;</span> <span class="n">take_while1</span> <span class="n">is_whitespace</span> <span class="o">*&gt;</span> <span class="n">string_ci</span> <span class="s2">"status"</span>
+  <span class="o">*&gt;</span> <span class="n">take_while1</span> <span class="n">is_whitespace</span> <span class="o">*&gt;</span> <span class="n">string_ci</span> <span class="s2">"ports"</span> <span class="o">*&gt;</span> <span class="n">take_while</span> <span class="n">is_whitespace</span>
+  <span class="o">*&gt;</span> <span class="n">newline</span>
+
+<span class="k">let</span> <span class="n">sep_row</span> <span class="o">=</span> <span class="nn">Angstrom</span><span class="p">.</span><span class="n">string</span> <span class="s2">"--"</span> <span class="o">*&gt;</span> <span class="n">take_till</span> <span class="n">is_newline</span> <span class="o">*&gt;</span> <span class="n">skip_many</span> <span class="n">newline1</span>
+
+<span class="k">let</span> <span class="n">vl_stat_header</span> <span class="o">=</span>
+  <span class="nn">Angstrom</span><span class="p">.</span><span class="n">string</span> <span class="s2">"VLAN"</span> <span class="o">*&gt;</span> <span class="n">whitespace</span> <span class="o">*&gt;</span> <span class="n">string_ci</span> <span class="s2">"type"</span> <span class="o">*&gt;</span> <span class="n">whitespace</span>
+  <span class="o">*&gt;</span> <span class="n">string_ci</span> <span class="s2">"said"</span> <span class="o">*&gt;</span> <span class="n">whitespace</span> <span class="o">*&gt;</span> <span class="n">string_ci</span> <span class="s2">"mtu"</span> <span class="o">*&gt;</span> <span class="n">take_till</span> <span class="n">is_newline</span>
+  <span class="o">*&gt;</span> <span class="n">newline</span>
+
+<span class="k">let</span> <span class="n">iface_list</span> <span class="o">=</span> <span class="n">sep_by</span> <span class="o">(</span><span class="kt">string</span> <span class="s2">", "</span><span class="o">)</span> <span class="n">ident1</span> <span class="o">&lt;*</span> <span class="n">newline1</span>
+
+<span class="c">(* VLAN Name Status Ports *)</span>
+<span class="k">let</span> <span class="n">vl_data_row</span> <span class="o">=</span>
+  <span class="n">digit1</span> <span class="o">&lt;*</span> <span class="n">whitespace1</span> <span class="o">&gt;&gt;=</span> <span class="k">fun</span> <span class="n">vid</span> <span class="o">-&gt;</span>
+  <span class="n">ident1</span> <span class="o">&lt;*</span> <span class="n">whitespace1</span> <span class="o">&gt;&gt;=</span> <span class="k">fun</span> <span class="n">name</span> <span class="o">-&gt;</span>
+  <span class="n">ident1</span> <span class="o">&lt;*</span> <span class="n">whitespace</span> <span class="o">&gt;&gt;=</span> <span class="k">fun</span> <span class="n">status</span> <span class="o">-&gt;</span>
+  <span class="n">iface_list</span> <span class="o">&gt;&gt;=</span> <span class="k">fun</span> <span class="n">ifaces</span> <span class="o">-&gt;</span>
+  <span class="n">many</span> <span class="o">(</span><span class="n">whitespace1</span> <span class="o">*&gt;</span> <span class="n">iface_list</span><span class="o">)</span> <span class="o">&gt;&gt;=</span> <span class="k">fun</span> <span class="n">add_ifaces</span> <span class="o">-&gt;</span>
+  <span class="n">return</span>
+    <span class="o">{</span>
+      <span class="n">vlan_id</span> <span class="o">=</span> <span class="n">vid</span> <span class="o">|&gt;</span> <span class="n">int_of_string</span><span class="o">;</span>
+      <span class="n">name</span><span class="o">;</span>
+      <span class="n">status</span><span class="o">;</span>
+      <span class="n">ports</span> <span class="o">=</span> <span class="nn">List</span><span class="p">.</span><span class="n">append</span> <span class="n">ifaces</span> <span class="o">(</span><span class="nn">List</span><span class="p">.</span><span class="n">flatten</span> <span class="n">add_ifaces</span><span class="o">);</span>
+    <span class="o">}</span>
+
+<span class="c">(* VLAN Type SAID MTU Parent RingNo BridgeNo Stp BrdgMode Trans1 Trans2 *)</span>
+<span class="k">let</span> <span class="n">vl_stats_row</span> <span class="o">=</span>
+  <span class="n">digit1</span> <span class="o">&lt;*</span> <span class="n">whitespace1</span> <span class="o">&gt;&gt;=</span> <span class="k">fun</span> <span class="n">vid</span> <span class="o">-&gt;</span>
+  <span class="n">ident1</span> <span class="o">&lt;*</span> <span class="n">whitespace1</span> <span class="o">&gt;&gt;=</span> <span class="k">fun</span> <span class="n">vtype</span> <span class="o">-&gt;</span>
+  <span class="n">ident1</span> <span class="o">&lt;*</span> <span class="n">whitespace1</span> <span class="o">&gt;&gt;=</span> <span class="k">fun</span> <span class="n">said</span> <span class="o">-&gt;</span>
+  <span class="n">ident1</span> <span class="o">&lt;*</span> <span class="n">whitespace1</span> <span class="o">&gt;&gt;=</span> <span class="k">fun</span> <span class="n">mtu</span> <span class="o">-&gt;</span>
+  <span class="n">ident1</span> <span class="o">&lt;*</span> <span class="n">whitespace1</span> <span class="o">&gt;&gt;=</span> <span class="k">fun</span> <span class="n">parent</span> <span class="o">-&gt;</span>
+  <span class="n">ident1</span> <span class="o">&lt;*</span> <span class="n">whitespace1</span> <span class="o">&gt;&gt;=</span> <span class="k">fun</span> <span class="n">ringno</span> <span class="o">-&gt;</span>
+  <span class="n">ident1</span> <span class="o">&lt;*</span> <span class="n">whitespace1</span> <span class="o">&gt;&gt;=</span> <span class="k">fun</span> <span class="n">brno</span> <span class="o">-&gt;</span>
+  <span class="n">ident1</span> <span class="o">&lt;*</span> <span class="n">whitespace1</span> <span class="o">&gt;&gt;=</span> <span class="k">fun</span> <span class="n">stp</span> <span class="o">-&gt;</span>
+  <span class="n">ident1</span> <span class="o">&lt;*</span> <span class="n">whitespace1</span> <span class="o">&gt;&gt;=</span> <span class="k">fun</span> <span class="n">brmode</span> <span class="o">-&gt;</span>
+  <span class="n">ident1</span> <span class="o">&lt;*</span> <span class="n">whitespace1</span> <span class="o">&gt;&gt;=</span> <span class="k">fun</span> <span class="n">t1</span> <span class="o">-&gt;</span>
+  <span class="n">ident1</span> <span class="o">&lt;*</span> <span class="n">whitespace1</span> <span class="o">&lt;*</span> <span class="n">skip_many</span> <span class="n">newline1</span> <span class="o">&gt;&gt;=</span> <span class="k">fun</span> <span class="n">t2</span> <span class="o">-&gt;</span>
+  <span class="n">return</span>
+    <span class="o">{</span>
+      <span class="n">vlan_id</span> <span class="o">=</span> <span class="n">vid</span> <span class="o">|&gt;</span> <span class="n">int_of_string</span><span class="o">;</span>
+      <span class="n">vl_type</span> <span class="o">=</span> <span class="n">vtype</span><span class="o">;</span>
+      <span class="n">said</span><span class="o">;</span>
+      <span class="n">mtu</span> <span class="o">=</span> <span class="n">mtu</span> <span class="o">|&gt;</span> <span class="n">int_of_string</span><span class="o">;</span>
+      <span class="n">parent</span><span class="o">;</span>
+      <span class="n">ring_no</span> <span class="o">=</span> <span class="n">ringno</span><span class="o">;</span>
+      <span class="n">bridge_no</span> <span class="o">=</span> <span class="n">brno</span><span class="o">;</span>
+      <span class="n">stp</span><span class="o">;</span>
+      <span class="n">bridge_mode</span> <span class="o">=</span> <span class="n">brmode</span><span class="o">;</span>
+      <span class="n">trans1</span> <span class="o">=</span> <span class="n">t1</span> <span class="o">|&gt;</span> <span class="n">int_of_string</span><span class="o">;</span>
+      <span class="n">trans2</span> <span class="o">=</span> <span class="n">t2</span> <span class="o">|&gt;</span> <span class="n">int_of_string</span><span class="o">;</span>
+    <span class="o">}</span>
+
+<span class="k">let</span> <span class="n">vlan_info</span> <span class="o">=</span> <span class="n">vl_header</span> <span class="o">*&gt;</span> <span class="n">sep_row</span> <span class="o">*&gt;</span> <span class="n">many</span> <span class="n">vl_data_row</span> <span class="o">&lt;*</span> <span class="n">skip_many</span> <span class="n">newline1</span>
+
+<span class="k">let</span> <span class="n">vlan_stats</span> <span class="o">=</span>
+  <span class="n">vl_stat_header</span> <span class="o">*&gt;</span> <span class="n">sep_row</span> <span class="o">*&gt;</span> <span class="n">many</span> <span class="n">vl_stats_row</span> <span class="o">&lt;*</span> <span class="n">skip_many</span> <span class="n">any_char</span>
+</pre></div>
+<h4 id="Tie-it-all-together">Tie it all together<a class="anchor-link" href="#Tie-it-all-together">¶</a>
+</h4>
+<p>The last expression is the final piece of glue to wrap up all of the above work.
+It returns a tuple of lists of <code>vlan</code> and <code>vlan_stat</code> defined in the beginning.</p>
+<div class="highlight"><pre><span></span><span class="k">let</span> <span class="n">p</span> <span class="o">=</span>
+  <span class="k">match</span>
+    <span class="nn">Angstrom</span><span class="p">.</span><span class="n">parse_string</span> <span class="o">~</span><span class="n">consume</span><span class="o">:</span><span class="nc">All</span>
+      <span class="o">(</span> <span class="n">vlan_info</span> <span class="o">&gt;&gt;=</span> <span class="k">fun</span> <span class="n">vli</span> <span class="o">-&gt;</span>
+        <span class="n">vlan_stats</span> <span class="o">&gt;&gt;=</span> <span class="k">fun</span> <span class="n">vls</span> <span class="o">-&gt;</span> <span class="n">return</span> <span class="o">(</span><span class="n">vli</span><span class="o">,</span> <span class="n">vls</span><span class="o">)</span> <span class="o">)</span>
+      <span class="n">vlan_raw</span>
+  <span class="k">with</span>
+  <span class="o">|</span> <span class="nc">Ok</span> <span class="n">v</span> <span class="o">-&gt;</span> <span class="n">v</span>
+  <span class="o">|</span> <span class="nc">Error</span> <span class="n">msg</span> <span class="o">-&gt;</span> <span class="n">failwith</span> <span class="n">msg</span>
+</pre></div>
+<h4 id="And-produce-a-result">And produce a result<a class="anchor-link" href="#And-produce-a-result">¶</a>
+</h4>
+<p>At long last, Angstrom "magic" produces a useful result!</p>
+<div class="highlight"><pre><span></span><span class="n">utop</span> <span class="o">#</span> <span class="nn">Lib</span><span class="p">.</span><span class="nn">Vlan</span><span class="p">.</span><span class="n">p</span><span class="o">;;</span>
+<span class="o">-</span> <span class="o">:</span> <span class="nn">Lib</span><span class="p">.</span><span class="nn">Vlan</span><span class="p">.</span><span class="n">vlan</span> <span class="kt">list</span> <span class="o">*</span> <span class="nn">Lib</span><span class="p">.</span><span class="nn">Vlan</span><span class="p">.</span><span class="n">vlan_stat</span> <span class="kt">list</span> <span class="o">=</span>
+<span class="o">([{</span><span class="nn">Lib</span><span class="p">.</span><span class="nn">Vlan</span><span class="p">.</span><span class="n">vlan_id</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">name</span> <span class="o">=</span> <span class="s2">"default"</span><span class="o">;</span> <span class="n">status</span> <span class="o">=</span> <span class="s2">"active"</span><span class="o">;</span>
+   <span class="n">ports</span> <span class="o">=</span> <span class="o">[</span><span class="s2">"Gi0/1"</span><span class="o">]};</span>
+  <span class="o">{</span><span class="nn">Lib</span><span class="p">.</span><span class="nn">Vlan</span><span class="p">.</span><span class="n">vlan_id</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span> <span class="n">name</span> <span class="o">=</span> <span class="s2">"Management"</span><span class="o">;</span> <span class="n">status</span> <span class="o">=</span> <span class="s2">"active"</span><span class="o">;</span> <span class="n">ports</span> <span class="o">=</span> <span class="bp">[]</span><span class="o">};</span>
+  <span class="o">{</span><span class="nn">Lib</span><span class="p">.</span><span class="nn">Vlan</span><span class="p">.</span><span class="n">vlan_id</span> <span class="o">=</span> <span class="mi">50</span><span class="o">;</span> <span class="n">name</span> <span class="o">=</span> <span class="s2">"VLan50"</span><span class="o">;</span> <span class="n">status</span> <span class="o">=</span> <span class="s2">"active"</span><span class="o">;</span>
+   <span class="n">ports</span> <span class="o">=</span>
+    <span class="o">[</span><span class="s2">"Fa0/1"</span><span class="o">;</span> <span class="s2">"Fa0/2"</span><span class="o">;</span> <span class="s2">"Fa0/3"</span><span class="o">;</span> <span class="s2">"Fa0/4"</span><span class="o">;</span> <span class="s2">"Fa0/5"</span><span class="o">;</span> <span class="s2">"Fa0/6"</span><span class="o">;</span> <span class="s2">"Fa0/7"</span><span class="o">;</span> <span class="s2">"Fa0/8"</span><span class="o">;</span>
+     <span class="s2">"Fa0/9"</span><span class="o">;</span> <span class="s2">"Fa0/10"</span><span class="o">;</span> <span class="s2">"Fa0/11"</span><span class="o">;</span> <span class="s2">"Fa0/12"</span><span class="o">]};</span>
+  <span class="o">{</span><span class="nn">Lib</span><span class="p">.</span><span class="nn">Vlan</span><span class="p">.</span><span class="n">vlan_id</span> <span class="o">=</span> <span class="mi">60</span><span class="o">;</span> <span class="n">name</span> <span class="o">=</span> <span class="s2">"VLan60"</span><span class="o">;</span> <span class="n">status</span> <span class="o">=</span> <span class="s2">"active"</span><span class="o">;</span>
+   <span class="n">ports</span> <span class="o">=</span>
+    <span class="o">[</span><span class="s2">"Fa0/13"</span><span class="o">;</span> <span class="s2">"Fa0/14"</span><span class="o">;</span> <span class="s2">"Fa0/15"</span><span class="o">;</span> <span class="s2">"Fa0/16"</span><span class="o">;</span> <span class="s2">"Fa0/17"</span><span class="o">;</span> <span class="s2">"Fa0/18"</span><span class="o">;</span> <span class="s2">"Fa0/19"</span><span class="o">;</span>
+     <span class="s2">"Fa0/20"</span><span class="o">;</span> <span class="s2">"Fa0/21"</span><span class="o">;</span> <span class="s2">"Fa0/22"</span><span class="o">;</span> <span class="s2">"Fa0/23"</span><span class="o">;</span> <span class="s2">"Fa0/24"</span><span class="o">]};</span>
+  <span class="o">{</span><span class="nn">Lib</span><span class="p">.</span><span class="nn">Vlan</span><span class="p">.</span><span class="n">vlan_id</span> <span class="o">=</span> <span class="mi">1002</span><span class="o">;</span> <span class="n">name</span> <span class="o">=</span> <span class="s2">"fddi-default"</span><span class="o">;</span> <span class="n">status</span> <span class="o">=</span> <span class="s2">"act/unsup"</span><span class="o">;</span>
+   <span class="n">ports</span> <span class="o">=</span> <span class="bp">[]</span><span class="o">};</span>
+  <span class="o">{</span><span class="nn">Lib</span><span class="p">.</span><span class="nn">Vlan</span><span class="p">.</span><span class="n">vlan_id</span> <span class="o">=</span> <span class="mi">1003</span><span class="o">;</span> <span class="n">name</span> <span class="o">=</span> <span class="s2">"token-ring-default"</span><span class="o">;</span> <span class="n">status</span> <span class="o">=</span> <span class="s2">"act/unsup"</span><span class="o">;</span>
+   <span class="n">ports</span> <span class="o">=</span> <span class="bp">[]</span><span class="o">};</span>
+  <span class="o">{</span><span class="nn">Lib</span><span class="p">.</span><span class="nn">Vlan</span><span class="p">.</span><span class="n">vlan_id</span> <span class="o">=</span> <span class="mi">1004</span><span class="o">;</span> <span class="n">name</span> <span class="o">=</span> <span class="s2">"fddinet-default"</span><span class="o">;</span> <span class="n">status</span> <span class="o">=</span> <span class="s2">"act/unsup"</span><span class="o">;</span>
+   <span class="n">ports</span> <span class="o">=</span> <span class="bp">[]</span><span class="o">};</span>
+  <span class="o">{</span><span class="nn">Lib</span><span class="p">.</span><span class="nn">Vlan</span><span class="p">.</span><span class="n">vlan_id</span> <span class="o">=</span> <span class="mi">1005</span><span class="o">;</span> <span class="n">name</span> <span class="o">=</span> <span class="s2">"trnet-default"</span><span class="o">;</span> <span class="n">status</span> <span class="o">=</span> <span class="s2">"act/unsup"</span><span class="o">;</span>
+   <span class="n">ports</span> <span class="o">=</span> <span class="bp">[]</span><span class="o">}],</span>
+ <span class="o">[{</span><span class="nn">Lib</span><span class="p">.</span><span class="nn">Vlan</span><span class="p">.</span><span class="n">vlan_id</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">vl_type</span> <span class="o">=</span> <span class="s2">"enet"</span><span class="o">;</span> <span class="n">said</span> <span class="o">=</span> <span class="s2">"100001"</span><span class="o">;</span> <span class="n">mtu</span> <span class="o">=</span> <span class="mi">1500</span><span class="o">;</span>
+   <span class="n">parent</span> <span class="o">=</span> <span class="s2">"-"</span><span class="o">;</span> <span class="n">ring_no</span> <span class="o">=</span> <span class="s2">"-"</span><span class="o">;</span> <span class="n">bridge_no</span> <span class="o">=</span> <span class="s2">"-"</span><span class="o">;</span> <span class="n">stp</span> <span class="o">=</span> <span class="s2">"-"</span><span class="o">;</span> <span class="n">bridge_mode</span> <span class="o">=</span> <span class="s2">"-"</span><span class="o">;</span>
+   <span class="n">trans1</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">trans2</span> <span class="o">=</span> <span class="mi">0</span><span class="o">};</span>
+  <span class="o">{</span><span class="nn">Lib</span><span class="p">.</span><span class="nn">Vlan</span><span class="p">.</span><span class="n">vlan_id</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span> <span class="n">vl_type</span> <span class="o">=</span> <span class="s2">"enet"</span><span class="o">;</span> <span class="n">said</span> <span class="o">=</span> <span class="s2">"100010"</span><span class="o">;</span> <span class="n">mtu</span> <span class="o">=</span> <span class="mi">1500</span><span class="o">;</span>
+   <span class="n">parent</span> <span class="o">=</span> <span class="s2">"-"</span><span class="o">;</span> <span class="n">ring_no</span> <span class="o">=</span> <span class="s2">"-"</span><span class="o">;</span> <span class="n">bridge_no</span> <span class="o">=</span> <span class="s2">"-"</span><span class="o">;</span> <span class="n">stp</span> <span class="o">=</span> <span class="s2">"-"</span><span class="o">;</span> <span class="n">bridge_mode</span> <span class="o">=</span> <span class="s2">"-"</span><span class="o">;</span>
+   <span class="n">trans1</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">trans2</span> <span class="o">=</span> <span class="mi">0</span><span class="o">};</span>
+  <span class="o">{</span><span class="nn">Lib</span><span class="p">.</span><span class="nn">Vlan</span><span class="p">.</span><span class="n">vlan_id</span> <span class="o">=</span> <span class="mi">50</span><span class="o">;</span> <span class="n">vl_type</span> <span class="o">=</span> <span class="s2">"enet"</span><span class="o">;</span> <span class="n">said</span> <span class="o">=</span> <span class="s2">"100050"</span><span class="o">;</span> <span class="n">mtu</span> <span class="o">=</span> <span class="mi">1500</span><span class="o">;</span>
+   <span class="n">parent</span> <span class="o">=</span> <span class="s2">"-"</span><span class="o">;</span> <span class="n">ring_no</span> <span class="o">=</span> <span class="s2">"-"</span><span class="o">;</span> <span class="n">bridge_no</span> <span class="o">=</span> <span class="s2">"-"</span><span class="o">;</span> <span class="n">stp</span> <span class="o">=</span> <span class="s2">"-"</span><span class="o">;</span> <span class="n">bridge_mode</span> <span class="o">=</span> <span class="s2">"-"</span><span class="o">;</span>
+   <span class="n">trans1</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">trans2</span> <span class="o">=</span> <span class="mi">0</span><span class="o">};</span>
+  <span class="o">{</span><span class="nn">Lib</span><span class="p">.</span><span class="nn">Vlan</span><span class="p">.</span><span class="n">vlan_id</span> <span class="o">=</span> <span class="mi">60</span><span class="o">;</span> <span class="n">vl_type</span> <span class="o">=</span> <span class="s2">"enet"</span><span class="o">;</span> <span class="n">said</span> <span class="o">=</span> <span class="s2">"100060"</span><span class="o">;</span> <span class="n">mtu</span> <span class="o">=</span> <span class="mi">1500</span><span class="o">;</span>
+   <span class="n">parent</span> <span class="o">=</span> <span class="s2">"-"</span><span class="o">;</span> <span class="n">ring_no</span> <span class="o">=</span> <span class="s2">"-"</span><span class="o">;</span> <span class="n">bridge_no</span> <span class="o">=</span> <span class="s2">"-"</span><span class="o">;</span> <span class="n">stp</span> <span class="o">=</span> <span class="s2">"-"</span><span class="o">;</span> <span class="n">bridge_mode</span> <span class="o">=</span> <span class="s2">"-"</span><span class="o">;</span>
+   <span class="n">trans1</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">trans2</span> <span class="o">=</span> <span class="mi">0</span><span class="o">};</span>
+  <span class="o">{</span><span class="nn">Lib</span><span class="p">.</span><span class="nn">Vlan</span><span class="p">.</span><span class="n">vlan_id</span> <span class="o">=</span> <span class="mi">1002</span><span class="o">;</span> <span class="n">vl_type</span> <span class="o">=</span> <span class="s2">"fddi"</span><span class="o">;</span> <span class="n">said</span> <span class="o">=</span> <span class="s2">"101002"</span><span class="o">;</span> <span class="n">mtu</span> <span class="o">=</span> <span class="mi">1500</span><span class="o">;</span>
+   <span class="n">parent</span> <span class="o">=</span> <span class="s2">"-"</span><span class="o">;</span> <span class="n">ring_no</span> <span class="o">=</span> <span class="s2">"-"</span><span class="o">;</span> <span class="n">bridge_no</span> <span class="o">=</span> <span class="s2">"-"</span><span class="o">;</span> <span class="n">stp</span> <span class="o">=</span> <span class="s2">"-"</span><span class="o">;</span> <span class="n">bridge_mode</span> <span class="o">=</span> <span class="s2">"-"</span><span class="o">;</span>
+   <span class="n">trans1</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">trans2</span> <span class="o">=</span> <span class="mi">0</span><span class="o">};</span>
+  <span class="o">{</span><span class="nn">Lib</span><span class="p">.</span><span class="nn">Vlan</span><span class="p">.</span><span class="n">vlan_id</span> <span class="o">=</span> <span class="mi">1003</span><span class="o">;</span> <span class="n">vl_type</span> <span class="o">=</span> <span class="s2">"tr"</span><span class="o">;</span> <span class="n">said</span> <span class="o">=</span> <span class="s2">"101003"</span><span class="o">;</span> <span class="n">mtu</span> <span class="o">=</span> <span class="mi">1500</span><span class="o">;</span>
+   <span class="n">parent</span> <span class="o">=</span> <span class="s2">"-"</span><span class="o">;</span> <span class="n">ring_no</span> <span class="o">=</span> <span class="s2">"-"</span><span class="o">;</span> <span class="n">bridge_no</span> <span class="o">=</span> <span class="s2">"-"</span><span class="o">;</span> <span class="n">stp</span> <span class="o">=</span> <span class="s2">"-"</span><span class="o">;</span>
+   <span class="n">bridge_mode</span> <span class="o">=</span> <span class="s2">"srb"</span><span class="o">;</span> <span class="n">trans1</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">trans2</span> <span class="o">=</span> <span class="mi">0</span><span class="o">};</span>
+  <span class="o">{</span><span class="nn">Lib</span><span class="p">.</span><span class="nn">Vlan</span><span class="p">.</span><span class="n">vlan_id</span> <span class="o">=</span> <span class="mi">1004</span><span class="o">;</span> <span class="n">vl_type</span> <span class="o">=</span> <span class="s2">"fdnet"</span><span class="o">;</span> <span class="n">said</span> <span class="o">=</span> <span class="s2">"101004"</span><span class="o">;</span> <span class="n">mtu</span> <span class="o">=</span> <span class="mi">1500</span><span class="o">;</span>
+   <span class="n">parent</span> <span class="o">=</span> <span class="s2">"-"</span><span class="o">;</span> <span class="n">ring_no</span> <span class="o">=</span> <span class="s2">"-"</span><span class="o">;</span> <span class="n">bridge_no</span> <span class="o">=</span> <span class="s2">"-"</span><span class="o">;</span> <span class="n">stp</span> <span class="o">=</span> <span class="s2">"ieee"</span><span class="o">;</span>
+   <span class="n">bridge_mode</span> <span class="o">=</span> <span class="s2">"-"</span><span class="o">;</span> <span class="n">trans1</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">trans2</span> <span class="o">=</span> <span class="mi">0</span><span class="o">};</span>
+  <span class="o">{</span><span class="nn">Lib</span><span class="p">.</span><span class="nn">Vlan</span><span class="p">.</span><span class="n">vlan_id</span> <span class="o">=</span> <span class="mi">1005</span><span class="o">;</span> <span class="n">vl_type</span> <span class="o">=</span> <span class="s2">"trnet"</span><span class="o">;</span> <span class="n">said</span> <span class="o">=</span> <span class="s2">"101005"</span><span class="o">;</span> <span class="n">mtu</span> <span class="o">=</span> <span class="mi">1500</span><span class="o">;</span>
+   <span class="n">parent</span> <span class="o">=</span> <span class="s2">"-"</span><span class="o">;</span> <span class="n">ring_no</span> <span class="o">=</span> <span class="s2">"-"</span><span class="o">;</span> <span class="n">bridge_no</span> <span class="o">=</span> <span class="s2">"-"</span><span class="o">;</span> <span class="n">stp</span> <span class="o">=</span> <span class="s2">"ibm"</span><span class="o">;</span>
+   <span class="n">bridge_mode</span> <span class="o">=</span> <span class="s2">"-"</span><span class="o">;</span> <span class="n">trans1</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">trans2</span> <span class="o">=</span> <span class="mi">0</span><span class="o">}])</span>
+</pre></div>
+<p>There is a lot more that could be done with this, especially around data validation.
+So far, the only thing I check for is that certain values are integers.
+We could wrap those <code>"-"</code> in <code>Option</code>, <code>STP</code> in a sum type, etc.
+This is where we start pulling ahead of Python in terms of type safety and data integrity.
+There are a few corner cases that will break this parser as well as the <code>ntc-templates</code> version.
+I will leave that as an exercise for the reader.</p>
+<h3 id="Going-forward">Going forward<a class="anchor-link" href="#Going-forward">¶</a>
+</h3>
+<p>Do I plan to rewrite the <code>ntc-templates</code> library in OCaml?
+No!
+It does a splendid job, and has fantastic support.</p>
+<p>I would love to make a case for using functional languages in automation tasks, but it's not practical yet.
+Ideas don't pay my bills, nor do rants about software quality and testing.
+First and foremost, software <strong>must</strong> be usable.
+Haskell is a wonderful language in many aspects, but it is so hard to do "real" work with it.
+We don't live in a pure data utopia, and I'm no postdoc getting paid by a university.
+I will go into more details as to "why OCaml?" in another post, but I wanted to whet your appetite something practical and useful.</p>
+
+</div>
+</div>
+</div>
+        
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML" integrity="sha384-3lJUsx1TJHt7BA4udB5KPnDrlkO8T6J6v/op7ui0BbCjvZ9WqV4Xm6DTP6kQ/iBH" crossorigin="anonymous"></script><script type="text/x-mathjax-config">
+        MathJax.Hub.Config({tex2jax: {inlineMath: [['$latex ','$'], ['\\(','\\)']]}});
+        </script>
+</div>
+    </div>
+
+    
+    <footer><div class="container">
+            <div class="social">
+                <div class="social-entry">
+                    <a href="mailto:djustice@wificidr.net" target="_blank">
+                        <i class="fa fa-envelope-o"></i>
+                    </a>
+                </div>
+
+
+                <div class="social-entry">
+                    <a href="https://github.com/dgjustice" target="_blank">
+                        <i class="fa fa-github"></i>
+                    </a>
+                </div>
+
+                <div class="social-entry">
+                    <a href="https://www.linkedin.com/in/daniel-justice-netdev/" target="_blank">
+                        <i class="fa fa-linkedin"></i>
+                    </a>
+                </div>
+
+                <div class="social-entry">
+                    <a href="../../rss.xml" target="_blank">
+                        <i class="fa fa-rss"></i> 
+                    </a>
+                </div>
+            </div>
+                <div class="copyright">
+                    Contents © 2021         <a href="mailto:djustice@wificidr.net">Daniel Justice</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+<a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/">
+  <img alt="Creative Commons License BY-SA" style="border-width:0; margin-bottom:12px;" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png"></a>
+
+                    
+                </div>
+           
+        </div>
+    </footer><script src="../../assets/js/all-nocdn.js" type="text/javascript"></script>
+</body>
+</html>

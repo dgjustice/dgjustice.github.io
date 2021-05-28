@@ -7,74 +7,90 @@
                         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
  <url>
   <loc>https://blog.wificidr.net/</loc>
-  <lastmod>2020-10-05T18:10:00Z</lastmod>
+  <lastmod>2021-05-28T01:22:00Z</lastmod>
  </url>
  <url>
   <loc>https://blog.wificidr.net/2018/</loc>
-  <lastmod>2020-10-05T18:10:00Z</lastmod>
+  <lastmod>2020-10-31T20:35:00Z</lastmod>
  </url>
  <url>
   <loc>https://blog.wificidr.net/2019/</loc>
-  <lastmod>2020-10-05T18:10:00Z</lastmod>
+  <lastmod>2020-10-31T20:35:00Z</lastmod>
  </url>
  <url>
   <loc>https://blog.wificidr.net/2020/</loc>
-  <lastmod>2020-10-05T18:10:00Z</lastmod>
+  <lastmod>2020-10-31T20:35:00Z</lastmod>
+ </url>
+ <url>
+  <loc>https://blog.wificidr.net/2021/</loc>
+  <lastmod>2021-05-28T01:22:00Z</lastmod>
  </url>
  <url>
   <loc>https://blog.wificidr.net/archive.html</loc>
-  <lastmod>2020-10-05T18:19:00Z</lastmod>
+  <lastmod>2021-05-28T01:22:00Z</lastmod>
  </url>
  <url>
   <loc>https://blog.wificidr.net/categories/</loc>
-  <lastmod>2020-10-05T18:10:00Z</lastmod>
+  <lastmod>2021-05-28T01:22:00Z</lastmod>
  </url>
  <url>
   <loc>https://blog.wificidr.net/categories/category-theory/</loc>
-  <lastmod>2020-10-05T18:10:00Z</lastmod>
+  <lastmod>2020-10-31T20:35:00Z</lastmod>
  </url>
  <url>
   <loc>https://blog.wificidr.net/categories/math/</loc>
-  <lastmod>2020-10-05T18:10:00Z</lastmod>
+  <lastmod>2020-10-31T20:35:00Z</lastmod>
+ </url>
+ <url>
+  <loc>https://blog.wificidr.net/categories/ocaml/</loc>
+  <lastmod>2021-05-28T01:22:00Z</lastmod>
+ </url>
+ <url>
+  <loc>https://blog.wificidr.net/categories/parsing/</loc>
+  <lastmod>2021-05-28T01:22:00Z</lastmod>
  </url>
  <url>
   <loc>https://blog.wificidr.net/categories/pycon/</loc>
-  <lastmod>2020-10-05T18:10:00Z</lastmod>
+  <lastmod>2020-10-31T20:35:00Z</lastmod>
  </url>
  <url>
   <loc>https://blog.wificidr.net/categories/python/</loc>
-  <lastmod>2020-10-05T18:10:00Z</lastmod>
+  <lastmod>2020-10-31T20:35:00Z</lastmod>
  </url>
  <url>
   <loc>https://blog.wificidr.net/posts/fold-vs-recursion/</loc>
-  <lastmod>2020-10-05T18:10:00Z</lastmod>
+  <lastmod>2020-10-31T20:35:00Z</lastmod>
+ </url>
+ <url>
+  <loc>https://blog.wificidr.net/posts/functional-parsing/</loc>
+  <lastmod>2021-05-28T01:21:00Z</lastmod>
  </url>
  <url>
   <loc>https://blog.wificidr.net/posts/functional-programming-in-python/</loc>
-  <lastmod>2020-10-05T18:10:00Z</lastmod>
+  <lastmod>2020-10-31T20:35:00Z</lastmod>
  </url>
  <url>
   <loc>https://blog.wificidr.net/posts/monoids-for-pythonistas/</loc>
-  <lastmod>2020-10-05T18:50:00Z</lastmod>
+  <lastmod>2020-10-31T20:35:00Z</lastmod>
  </url>
  <url>
   <loc>https://blog.wificidr.net/posts/ntc-rosetta-and-yang-for-dummies-tutorial/</loc>
-  <lastmod>2020-10-05T18:10:00Z</lastmod>
+  <lastmod>2020-10-31T20:35:00Z</lastmod>
  </url>
  <url>
   <loc>https://blog.wificidr.net/posts/parabola/circles-and-parabolas/</loc>
-  <lastmod>2020-10-05T18:10:00Z</lastmod>
+  <lastmod>2020-10-31T20:35:00Z</lastmod>
  </url>
  <url>
   <loc>https://blog.wificidr.net/posts/project-euler-6/project-euler-6/</loc>
-  <lastmod>2020-10-05T18:10:00Z</lastmod>
+  <lastmod>2020-10-31T20:35:00Z</lastmod>
  </url>
  <url>
   <loc>https://blog.wificidr.net/posts/pycon-us-2018/pycon-us-2018/</loc>
-  <lastmod>2020-10-05T18:10:00Z</lastmod>
+  <lastmod>2020-10-31T20:35:00Z</lastmod>
  </url>
  <url>
   <loc>https://blog.wificidr.net/posts/pytest-flask-sqlalchemy/pytest-flask-sqlalchemy/</loc>
-  <lastmod>2020-10-05T18:10:00Z</lastmod>
+  <lastmod>2020-10-31T20:35:00Z</lastmod>
  </url>
 </urlset>
