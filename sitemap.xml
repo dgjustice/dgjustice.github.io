@@ -7,7 +7,7 @@
                         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
  <url>
   <loc>https://blog.wificidr.net/</loc>
-  <lastmod>2021-05-28T01:22:00Z</lastmod>
+  <lastmod>2021-06-01T20:22:00Z</lastmod>
  </url>
  <url>
   <loc>https://blog.wificidr.net/2018/</loc>
@@ -27,15 +27,19 @@
  </url>
  <url>
   <loc>https://blog.wificidr.net/archive.html</loc>
-  <lastmod>2021-05-28T01:48:00Z</lastmod>
+  <lastmod>2021-06-01T20:23:00Z</lastmod>
  </url>
  <url>
   <loc>https://blog.wificidr.net/categories/</loc>
-  <lastmod>2021-05-28T01:48:00Z</lastmod>
+  <lastmod>2021-06-01T20:22:00Z</lastmod>
  </url>
  <url>
   <loc>https://blog.wificidr.net/categories/category-theory/</loc>
   <lastmod>2020-10-31T20:35:00Z</lastmod>
+ </url>
+ <url>
+  <loc>https://blog.wificidr.net/categories/functional-programming/</loc>
+  <lastmod>2021-06-01T20:22:00Z</lastmod>
  </url>
  <url>
   <loc>https://blog.wificidr.net/categories/math/</loc>
@@ -62,6 +66,10 @@
   <lastmod>2021-05-28T01:48:00Z</lastmod>
  </url>
  <url>
+  <loc>https://blog.wificidr.net/index-1.html</loc>
+  <lastmod>2021-06-01T20:22:00Z</lastmod>
+ </url>
+ <url>
   <loc>https://blog.wificidr.net/posts/fold-vs-recursion/</loc>
   <lastmod>2020-10-31T20:35:00Z</lastmod>
  </url>
@@ -72,6 +80,10 @@
  <url>
   <loc>https://blog.wificidr.net/posts/functional-programming-in-python/</loc>
   <lastmod>2020-10-31T20:35:00Z</lastmod>
+ </url>
+ <url>
+  <loc>https://blog.wificidr.net/posts/intro-to-functional-programming-ideas/</loc>
+  <lastmod>2021-06-01T20:22:00Z</lastmod>
  </url>
  <url>
   <loc>https://blog.wificidr.net/posts/monoids-for-pythonistas/</loc>

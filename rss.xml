@@ -1,5 +1,434 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>WifiCIDR Blog</title><link>https://blog.wificidr.net/</link><description>WifiCIDR Blog</description><atom:link href="https://blog.wificidr.net/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Fri, 28 May 2021 01:48:26 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Running</title><link>https://blog.wificidr.net/posts/running/</link><dc:creator>Daniel Justice</dc:creator><description>&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>WifiCIDR Blog</title><link>https://blog.wificidr.net/</link><description>WifiCIDR Blog</description><atom:link href="https://blog.wificidr.net/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Tue, 01 Jun 2021 20:23:32 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Introduction to Functional Programming Ideas</title><link>https://blog.wificidr.net/posts/intro-to-functional-programming-ideas/</link><dc:creator>Daniel Justice</dc:creator><description>&lt;div&gt;&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h2 id="Functional-Programming-for-Pythonistas"&gt;Functional Programming for Pythonistas&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/intro-to-functional-programming-ideas/#Functional-Programming-for-Pythonistas"&gt;¶&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;There are never-ending arguments in tech communities about things like RDBMS versus no-SQL, or functional programming (FP) versus object-oriented-programming (OOP).
+My goal here isn't to weigh in on that debate; those dead horses have been beaten by people far smarter than myself.
+These are all tools.
+My favorite analogy is this:
+If you have a giant mechanic's toolbox in front of you and you keep reaching for the crescent wrench, "you're doing it wrong."
+Let's open up some drawers in that toolbox and play with some different tools to see where they might be useful.&lt;/p&gt;
+&lt;h3 id="Why-learn-FP"&gt;Why learn FP&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/intro-to-functional-programming-ideas/#Why-learn-FP"&gt;¶&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;This point is important, and it is difficult for me to quantify.
+There are lots of articles if you search "Why learn Haskell?" or "Why learn functional programming?".
+I believe the main benefit is that it changes how you view and approach some problems.
+When you encounter functional code in the wild, you will see a useful abstraction instead of a chunk of "code golf".
+Functional-style programming gets you to focus on the data and less about the cruft around it.
+It teaches you to break problems down into really small components, then glue them together to build a solution.
+Functional programming is heavily inspired by mathematics.
+Category theory has an important relationship to FP, and it seeks to abstract common patterns across "families" of objects.
+Don't worry, I am not going to get into those weeds in this post.&lt;/p&gt;
+&lt;p&gt;One of my favorite quotes is from the well-known network architect Russ White.
+&lt;a href="https://www.circleid.com/posts/20171019_network_design_if_you_havent_found_the_tradeoff/"&gt;He says&lt;/a&gt;, "If you think you've found a design with no tradeoffs, well… Guess what? &lt;strong&gt;You've not looked hard enough.&lt;/strong&gt;"
+I believe this is as applicable to network design as it is software development.
+When discussing programming languages and software design, time is often the tradeoff.
+Some of the items below can ease your cognitive burden (immutable data structures), and others require some up-front head scratching; things like thinking with types and dealing with side effects.&lt;/p&gt;
+&lt;h3 id="Why-OCaml"&gt;Why OCaml&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/intro-to-functional-programming-ideas/#Why-OCaml"&gt;¶&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;If you are going to burn time learning something, it's best if it is useful in some capacity.
+When I started sipping the FP Kool-Aid, I chose to learn Haskell.
+All the cool kids [PhD's] are doing it!
+I would like to think that there is room in the automation world for a functional language.
+Unfortunately, I don't think Haskell is the best choice.
+Haskell has a steep learning curve, and it complicates common operations in a pursuit of "purity".
+The next contender I looked at is OCaml.
+It is very similar to Haskell, but it trades purity for pragmatism.
+Unfortunately, this is my main gripe with the language and one of Python's major shortcomings.
+Neither language has en explicit mechanism to signal the developer that a side-effect is occurring or that a function call might raise an exception.
+Despite that, there are many benefits:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Compiled: It's straightforward to build tiny containers from binaries.&lt;/li&gt;
+&lt;li&gt;REPL: &lt;code&gt;utop&lt;/code&gt;, a great debugging tool.&lt;/li&gt;
+&lt;li&gt;Impure: This is a double-edged sword as mentioned previously.&lt;ul&gt;
+&lt;li&gt;Functions can perform side-effects (print debugging is dead simple unlike Haskell).&lt;/li&gt;
+&lt;li&gt;Side effects aren't forcibly bound to monads (don't worry if you don't know what that means).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Strongly typed&lt;/li&gt;
+&lt;li&gt;Good parsing libraries.  &lt;a href="http://gallium.inria.fr/~fpottier/menhir/"&gt;Menhir&lt;/a&gt;, &lt;a href="https://github.com/inhabitedtype/angstrom"&gt;Angstrom&lt;/a&gt;, others.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Some other drawbacks:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Small community&lt;/li&gt;
+&lt;li&gt;Tiny library pool&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="Whirlwind-tour"&gt;Whirlwind tour&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/intro-to-functional-programming-ideas/#Whirlwind-tour"&gt;¶&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;These concepts are generic to functional programming, and I will show code examples where appropriate.&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h4 id="Function-application"&gt;Function application&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/intro-to-functional-programming-ideas/#Function-application"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;In Python:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt;
+
+&lt;span class="n"&gt;n&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="c1"&gt;# n = 6&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;OCaml doesn't use parenthesis for function application, although they are used to group ambiguous terms together.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;let&lt;/span&gt; &lt;span class="n"&gt;add&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt;
+
+&lt;span class="k"&gt;let&lt;/span&gt; &lt;span class="n"&gt;n&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;add&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt; &lt;span class="mi"&gt;4&lt;/span&gt; &lt;span class="c"&gt;(* val n : int = 6 *)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h4 id="Immutability"&gt;Immutability&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/intro-to-functional-programming-ideas/#Immutability"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;In functional languages, variables are immutable by default (Rust, too!).
+The following code tries to create a function that takes a variable &lt;code&gt;x&lt;/code&gt; and assign it a new value.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;utop&lt;/span&gt; &lt;span class="o"&gt;#&lt;/span&gt; &lt;span class="k"&gt;let&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;:=&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="o"&gt;;;&lt;/span&gt;
+&lt;span class="nc"&gt;Line&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt; &lt;span class="n"&gt;characters&lt;/span&gt; &lt;span class="mi"&gt;15&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;16&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;span class="nc"&gt;Error&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nc"&gt;This&lt;/span&gt; &lt;span class="n"&gt;expression&lt;/span&gt; &lt;span class="n"&gt;has&lt;/span&gt; &lt;span class="k"&gt;type&lt;/span&gt; &lt;span class="k"&gt;'&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="n"&gt;ref&lt;/span&gt; &lt;span class="n"&gt;but&lt;/span&gt; &lt;span class="n"&gt;an&lt;/span&gt; &lt;span class="n"&gt;expression&lt;/span&gt; &lt;span class="n"&gt;was&lt;/span&gt; &lt;span class="n"&gt;expected&lt;/span&gt; &lt;span class="k"&gt;of&lt;/span&gt; &lt;span class="k"&gt;type&lt;/span&gt;
+         &lt;span class="kt"&gt;int&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Python lambdas have better guards (expressions only, no assignment), but "regular" functions do not.
+Notice that the dictionary &lt;code&gt;vals&lt;/code&gt; is mutated by a function that doesn't return a value.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;vals&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s2"&gt;"42"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;42&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;f&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+&lt;span class="o"&gt;...&lt;/span&gt;   &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;"42"&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;24&lt;/span&gt;
+&lt;span class="o"&gt;...&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;vals&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;vals&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s1"&gt;'42'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;24&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Golang is just as guilty.
+Pointers are often used to reduce memory use, but they allow the developer to mutate values in ways that may have unexpected results.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;package&lt;/span&gt; &lt;span class="nx"&gt;main&lt;/span&gt;
+
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="s"&gt;"fmt"&lt;/span&gt;
+&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="kd"&gt;func&lt;/span&gt; &lt;span class="nx"&gt;doit&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;val&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="kt"&gt;string&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="nx"&gt;val&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="nx"&gt;val&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="s"&gt;" world!"&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+
+&lt;span class="kd"&gt;func&lt;/span&gt; &lt;span class="nx"&gt;main&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="nx"&gt;hello&lt;/span&gt; &lt;span class="o"&gt;:=&lt;/span&gt; &lt;span class="s"&gt;"hello"&lt;/span&gt;
+    &lt;span class="nx"&gt;doit&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="nx"&gt;hello&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="nx"&gt;fmt&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Printf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"%s\n"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;hello&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;hello world!
+
+Program exited.
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;These are trivial pet examples, but the problem becomes clear when you look at much larger projects.
+It is extremely difficult to reason about the state of a program if everything is mutable and functions are allowed to create arbirary side effects.&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h4 id="Purity"&gt;Purity&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/intro-to-functional-programming-ideas/#Purity"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;"Pure" functions are simply those that always produce the same result given the same input.
+Pure functions can be written in nearly every language.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="k"&gt;lambda&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;f&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;let&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Think of pure functions in the same way as mathematical functions (that's where the idea originates).
+Addition takes two arguments and produces a result.
+The same result given the same input!
+One benefit of pure functions is that they tend to be very straightforward to test.&lt;/p&gt;
+&lt;p&gt;These are impure functions.
+&lt;code&gt;doit&lt;/code&gt; above in the golang example (Play with it to see why. Hint, print the pointer address).&lt;/p&gt;
+&lt;p&gt;This function will return different values depending on what is input.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;get_input&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nb"&gt;input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"Type something: "&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;This function might raise an exception.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;get_val&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;d&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;d&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;42&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;You may be thinking that this is a nice idea, but it's entirely useless!
+Exceptions happen; we need to validate inputs!
+This argument is correct, but few people are taught a different way to deal with the ugly "real world".&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h4 id="Referential-transparency"&gt;Referential transparency&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/intro-to-functional-programming-ideas/#Referential-transparency"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;This is closely related to purity.
+Referential transparency means that you can replace a funciton call with its return value.
+I'll leave this as an exercise for the reader to see why this only works with pure functions.&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h4 id="Higer-order-functions"&gt;Higer-order functions&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/intro-to-functional-programming-ideas/#Higer-order-functions"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;Thanfully, Python treats functions as first-class citizens (so does golang).
+This means that functions can be passed as values to other functions.
+Functions can also return functions (think &lt;code&gt;functools.wraps&lt;/code&gt;).
+The most common example in Python is the &lt;code&gt;key&lt;/code&gt; argument to the &lt;code&gt;sorted&lt;/code&gt; function.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;l&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;42&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;21&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;17&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;19&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;sorted&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;l&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;17&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;19&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;21&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;42&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;sorted&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;l&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;key&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="k"&gt;lambda&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;42&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;21&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;19&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;17&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;code&gt;sorted&lt;/code&gt; is a function that accepts a &lt;code&gt;key&lt;/code&gt; which is simply another function.
+Less common, but fairly regular examples in Python are &lt;code&gt;map&lt;/code&gt; and &lt;code&gt;filter&lt;/code&gt;.
+Both of these functions accept a function that is applied to the values of an interable.&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h4 id="Currying"&gt;Currying&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/intro-to-functional-programming-ideas/#Currying"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;Most developers will argue that addition is a function of two arguments that returns a numeric value.
+e.g. 2 + 2 = 4
+Can we look at this a different way?
+What if we considered the function &lt;code&gt;lambda x: x + 2&lt;/code&gt;?
+It adds two to whatever argument is passed to it.
+That means that we can think of addition as a function that takes a single argument, and &lt;em&gt;returns a function that adds that argument to another value.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;In OCaml, infix operators can be rewritten as binary operators by surrounding them with parenthesis.
+e.g. &lt;code&gt;2 + 2&lt;/code&gt; is equivalent to &lt;code&gt;(+) 2 2&lt;/code&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;utop&lt;/span&gt; &lt;span class="o"&gt;#&lt;/span&gt; &lt;span class="k"&gt;let&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="o"&gt;(+);;&lt;/span&gt;
+&lt;span class="k"&gt;val&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="k"&gt;fun&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;The second line should look sort of familiar if you have used Python's type annotations.
+The difference with ML family languages is that they don't differentiate between arguments and return values because all functions are "curried" by default.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;utop&lt;/span&gt; &lt;span class="o"&gt;#&lt;/span&gt; &lt;span class="k"&gt;let&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="o"&gt;(+)&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="o"&gt;;;&lt;/span&gt;
+&lt;span class="k"&gt;val&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="k"&gt;fun&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+
+&lt;span class="n"&gt;utop&lt;/span&gt; &lt;span class="o"&gt;#&lt;/span&gt; &lt;span class="k"&gt;let&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="o"&gt;(+)&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt; &lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="o"&gt;;;&lt;/span&gt;
+&lt;span class="k"&gt;val&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;6&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;h5 id="This-is-not-the-curry-you-are-looking-for"&gt;This is not the curry you are looking for&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/intro-to-functional-programming-ideas/#This-is-not-the-curry-you-are-looking-for"&gt;¶&lt;/a&gt;&lt;/h5&gt;&lt;p&gt;You may be familiar with &lt;code&gt;functools.partial&lt;/code&gt;.
+This function is a curry in spirit, but with the complications that mutable-everything bring.
+&lt;code&gt;partial&lt;/code&gt; is an unfortunate name as we'll see next.&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h4 id="Total-and-partial-functions"&gt;Total and partial functions&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/intro-to-functional-programming-ideas/#Total-and-partial-functions"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;I am speaking of mathematical partial functions, not "partially-applied" functions.
+I have to get into the weeds a little on this one, but it's an important concept.
+The &lt;em&gt;domain&lt;/em&gt; of a function is the set of values in the "input space".
+The &lt;em&gt;range&lt;/em&gt; or &lt;em&gt;co-domain&lt;/em&gt; is the set of values in the output space.
+Here's an example:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;int_to_str&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;The domain of this function is all integers and the range or co-domain is the subset of strings that can be translated from integers.
+This can be a bit of a squishy subject because computers have finite resources.
+We can say a function works on "all strings", but implicitly, we understand that "all strings" are those we can store and process on a given machine.&lt;/p&gt;
+&lt;p&gt;Here is another example, Python's &lt;a href="https://docs.python.org/3/library/math.html#math.log"&gt;&lt;code&gt;math.log&lt;/code&gt;&lt;/a&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;math&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;log&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;log&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;Traceback&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;most&lt;/span&gt; &lt;span class="n"&gt;recent&lt;/span&gt; &lt;span class="n"&gt;call&lt;/span&gt; &lt;span class="n"&gt;last&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+  &lt;span class="n"&gt;File&lt;/span&gt; &lt;span class="s2"&gt;"&amp;lt;stdin&amp;gt;"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;line&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;module&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="ne"&gt;ValueError&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;math&lt;/span&gt; &lt;span class="n"&gt;domain&lt;/span&gt; &lt;span class="n"&gt;error&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;We have to be careful about how we define the &lt;em&gt;domain&lt;/em&gt; of a function.
+In math class, you have probably heard, "The domain of the natural logarithm is all positive real numbers".
+In this context, the natural logarithm is a &lt;em&gt;total function&lt;/em&gt;.
+It is defined (an output exists) for every value in the domain.&lt;/p&gt;
+&lt;p&gt;Programmers tend not to think in those restrictive terms, and thankfully, mathematicians provide us with the terminology to handle these situations.
+If we expand our definition of domain a bit, then we can consider &lt;em&gt;partial functions&lt;/em&gt;.
+What if I want to define the domain of the natural logarithm as all the reals, positive and negative?
+In this context, the natural logarithm becomes a &lt;em&gt;partial function&lt;/em&gt; because there are elements of the input set that do not map to the output set (range or co-domain).
+In other words, there are some inputs that are invalid.&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;add&lt;/code&gt; function defined earlier is total.
+This is because Python integers are only bound by system resources.
+The &lt;code&gt;get_val&lt;/code&gt; function defined earlier is a partial function.
+In OCaml, &lt;code&gt;List.hd&lt;/code&gt; returns the first element of a list.
+This function is partial because it will fail on an empty list.&lt;/p&gt;
+&lt;p&gt;This may sound like a silly mathematical exercise, but looking at your code in this light is an important skill.
+Partial functions will fail under certain conditions.
+We can make them total functions through a type system.
+In a language like Python, we have to rely on data sanitation and validation.&lt;/p&gt;
+&lt;p&gt;Before you run off and create custom types for all of your functions, consider the tradeoffs.
+Why doesn't everyone program like this?
+The reason is because this kind of type safety comes at the cost of complexity.
+Maybe dealing with an exception is a simpler, more elegant solution to your problem than creating a &lt;code&gt;positive_reals&lt;/code&gt; data structure.
+And maybe the problem in question is a mission-critical piece of business logic, and some of us like to try to sleep soundly at night.&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h4 id="Recursion"&gt;Recursion&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/intro-to-functional-programming-ideas/#Recursion"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;Most developers are aware of recursion, and it is supported by most programming languages.
+Recursion is another first-class feature of functional languages.
+Haskell has no loops, relying exclusively on recursion.
+Recursion is inefficient in some languages, and care should be taken when dealing with large data structures.
+Read about tail recursion in &lt;a href="https://wiki.haskell.org/Tail_recursion"&gt;Haskell&lt;/a&gt; and &lt;a href="https://www.cs.cornell.edu/courses/cs3110/2020fa/textbook/data/tail_recursion.html"&gt;OCaml&lt;/a&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;l&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[]&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+&lt;span class="o"&gt;...&lt;/span&gt;     &lt;span class="n"&gt;l&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;append&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="o"&gt;...&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;l&lt;/span&gt;
+&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;6&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;8&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;9&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Don't let the syntax scare you too much.
+There is a &lt;strong&gt;lot&lt;/strong&gt; to unpack here.
+This is simply to demonstrate that we don't &lt;em&gt;need&lt;/em&gt; loops.
+One possible recursive solution in OCaml.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;utop&lt;/span&gt; &lt;span class="o"&gt;#&lt;/span&gt; &lt;span class="k"&gt;let&lt;/span&gt; &lt;span class="k"&gt;rec&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="n"&gt;n&lt;/span&gt; &lt;span class="n"&gt;acc&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="k"&gt;match&lt;/span&gt; &lt;span class="n"&gt;n&lt;/span&gt; &lt;span class="k"&gt;with&lt;/span&gt; 
+&lt;span class="o"&gt;|&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;acc&lt;/span&gt;
+&lt;span class="o"&gt;|&lt;/span&gt; &lt;span class="o"&gt;_&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt; &lt;span class="o"&gt;((&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt; &lt;span class="o"&gt;::&lt;/span&gt; &lt;span class="n"&gt;acc&lt;/span&gt;&lt;span class="o"&gt;);;&lt;/span&gt;
+&lt;span class="k"&gt;val&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="kt"&gt;list&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="kt"&gt;list&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="k"&gt;fun&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+
+&lt;span class="n"&gt;utop&lt;/span&gt; &lt;span class="o"&gt;#&lt;/span&gt; &lt;span class="k"&gt;let&lt;/span&gt; &lt;span class="o"&gt;_&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt; &lt;span class="bp"&gt;[]&lt;/span&gt;&lt;span class="o"&gt;;;&lt;/span&gt;
+&lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="kt"&gt;list&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="o"&gt;;&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="o"&gt;;&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="o"&gt;;&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="o"&gt;;&lt;/span&gt; &lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="o"&gt;;&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="o"&gt;;&lt;/span&gt; &lt;span class="mi"&gt;6&lt;/span&gt;&lt;span class="o"&gt;;&lt;/span&gt; &lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="o"&gt;;&lt;/span&gt; &lt;span class="mi"&gt;8&lt;/span&gt;&lt;span class="o"&gt;;&lt;/span&gt; &lt;span class="mi"&gt;9&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;The &lt;code&gt;rec&lt;/code&gt; keyword tells the compiler that this is a recursive function.
+This defines a function named &lt;code&gt;f&lt;/code&gt; that takes an integer &lt;code&gt;n&lt;/code&gt; and a list of integers &lt;code&gt;acc&lt;/code&gt;. Finally, a list of integers is the return type.&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h4 id="Pattern-matching"&gt;Pattern matching&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/intro-to-functional-programming-ideas/#Pattern-matching"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;The &lt;code&gt;switch&lt;/code&gt; statement of functional programming, but better and more powerful.
+This was shown earlier, now I'll break it down a bit.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;let&lt;/span&gt; &lt;span class="k"&gt;rec&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="n"&gt;n&lt;/span&gt; &lt;span class="n"&gt;acc&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="k"&gt;match&lt;/span&gt; &lt;span class="n"&gt;n&lt;/span&gt; &lt;span class="k"&gt;with&lt;/span&gt; 
+&lt;span class="o"&gt;|&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;acc&lt;/span&gt;
+&lt;span class="o"&gt;|&lt;/span&gt; &lt;span class="o"&gt;_&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt; &lt;span class="o"&gt;((&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt; &lt;span class="o"&gt;::&lt;/span&gt; &lt;span class="n"&gt;acc&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;code&gt;match n with&lt;/code&gt; says match this variable with a value (or even a type).
+The first case is &lt;code&gt;0&lt;/code&gt; and the underscore means we don't care (OCaml enforces unused variables just like golang).
+This is useful in a recursive function becaus we can identify edge conditions that signal the termination of the loop.
+It also saves us from &lt;code&gt;if&lt;/code&gt; &lt;code&gt;then&lt;/code&gt; Hades.
+Also notice that there are no types in this function definition!
+OCaml and Haskell have powerful type inferencing mechanisms, so annotations are rarely needed.
+Speaking of types, OCaml is strongly-typed, right?
+Why would we need to be able to match on a type?
+Read on!&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h4 id="Sum-types"&gt;Sum types&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/intro-to-functional-programming-ideas/#Sum-types"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;Algebraic data types are well-supported in FP languages.
+An option is a sum type that acts as a container for possibly empty values (see Tony Hoare's talk on the &lt;a href="https://www.infoq.com/presentations/Null-References-The-Billion-Dollar-Mistake-Tony-Hoare/"&gt;billion-dollar mistake&lt;/a&gt;).
+This is a parameterized type because the inner value takes on the type of the parameter passed to the constructor (I'll explain below).&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;utop&lt;/span&gt; &lt;span class="o"&gt;#&lt;/span&gt; &lt;span class="k"&gt;type&lt;/span&gt; &lt;span class="k"&gt;'&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="n"&gt;option&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt;
+&lt;span class="o"&gt;|&lt;/span&gt; &lt;span class="nc"&gt;Some&lt;/span&gt; &lt;span class="k"&gt;of&lt;/span&gt; &lt;span class="k"&gt;'&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;
+&lt;span class="o"&gt;|&lt;/span&gt; &lt;span class="nc"&gt;None&lt;/span&gt;&lt;span class="o"&gt;;;&lt;/span&gt;
+&lt;span class="k"&gt;type&lt;/span&gt; &lt;span class="k"&gt;'&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="n"&gt;option&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nc"&gt;Some&lt;/span&gt; &lt;span class="k"&gt;of&lt;/span&gt; &lt;span class="k"&gt;'&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="o"&gt;|&lt;/span&gt; &lt;span class="nc"&gt;None&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Going back to pattern-matching, we can match on types as well:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;let&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="k"&gt;function&lt;/span&gt;
+&lt;span class="o"&gt;|&lt;/span&gt; &lt;span class="nc"&gt;Some&lt;/span&gt; &lt;span class="n"&gt;v&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="nc"&gt;Some&lt;/span&gt; &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="n"&gt;v&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="o"&gt;|&lt;/span&gt; &lt;span class="nc"&gt;None&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="nc"&gt;None&lt;/span&gt;&lt;span class="o"&gt;;;&lt;/span&gt;
+&lt;span class="k"&gt;val&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;option&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;option&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="k"&gt;fun&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+
+&lt;span class="n"&gt;utop&lt;/span&gt; &lt;span class="o"&gt;#&lt;/span&gt; &lt;span class="k"&gt;let&lt;/span&gt; &lt;span class="o"&gt;_&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="n"&gt;v&lt;/span&gt;&lt;span class="o"&gt;;;&lt;/span&gt;
+&lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;option&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nc"&gt;Some&lt;/span&gt; &lt;span class="mi"&gt;44&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Notice here that the type isn't &lt;code&gt;'a option&lt;/code&gt; which is our "generic" option.
+This option has been paramaterized by the &lt;code&gt;int&lt;/code&gt; type.
+OCaml is able to determine this entirely through type-inferencing because we called the &lt;code&gt;+&lt;/code&gt; function!&lt;/p&gt;
+&lt;p&gt;On one hand neat, but on the other hand, am I saying that you have to write special functions just to deal with containers?
+Don't worry!
+This isn't golang!
+The monadic interface is supported as well (monads will get covered in another article).
+The following code leverages the built-in &lt;code&gt;Option&lt;/code&gt; type.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;utop&lt;/span&gt; &lt;span class="o"&gt;#&lt;/span&gt; &lt;span class="k"&gt;let&lt;/span&gt; &lt;span class="n"&gt;v&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nc"&gt;Some&lt;/span&gt; &lt;span class="mi"&gt;42&lt;/span&gt;&lt;span class="o"&gt;;;&lt;/span&gt;
+&lt;span class="k"&gt;val&lt;/span&gt; &lt;span class="n"&gt;v&lt;/span&gt; &lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="nc"&gt;Option&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nc"&gt;Some&lt;/span&gt; &lt;span class="mi"&gt;42&lt;/span&gt;
+
+&lt;span class="n"&gt;utop&lt;/span&gt; &lt;span class="o"&gt;#&lt;/span&gt; &lt;span class="nn"&gt;Option&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;map&lt;/span&gt; &lt;span class="o"&gt;((+)&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt; &lt;span class="n"&gt;v&lt;/span&gt;&lt;span class="o"&gt;;;&lt;/span&gt; 
+&lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="nc"&gt;Option&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nc"&gt;Some&lt;/span&gt; &lt;span class="mi"&gt;44&lt;/span&gt;
+
+&lt;span class="n"&gt;utop&lt;/span&gt; &lt;span class="o"&gt;#&lt;/span&gt; &lt;span class="k"&gt;let&lt;/span&gt; &lt;span class="n"&gt;v&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nc"&gt;None&lt;/span&gt;&lt;span class="o"&gt;;;&lt;/span&gt;
+&lt;span class="k"&gt;val&lt;/span&gt; &lt;span class="n"&gt;v&lt;/span&gt; &lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="k"&gt;'&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="n"&gt;option&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nc"&gt;None&lt;/span&gt;
+&lt;span class="n"&gt;utop&lt;/span&gt; &lt;span class="o"&gt;#&lt;/span&gt; &lt;span class="nn"&gt;Option&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;map&lt;/span&gt; &lt;span class="o"&gt;((+)&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt; &lt;span class="n"&gt;v&lt;/span&gt;&lt;span class="o"&gt;;;&lt;/span&gt;
+&lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;option&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nc"&gt;None&lt;/span&gt;
+&lt;span class="n"&gt;utop&lt;/span&gt; &lt;span class="o"&gt;#&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;These are called sum types because the cardinality of the set is the sum of the cardinalities of the member types of the set.
+Scott Wlashin has a &lt;a href="https://vimeo.com/113707214"&gt;great video&lt;/a&gt; on how this concept is useful to programmers.&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h4 id="Product-types"&gt;Product types&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/intro-to-functional-programming-ideas/#Product-types"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;Does that mean there is such a thing as product types?
+Of course!
+These are hidden away in what Pythonistas know as tuples.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;42&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"abc"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;42&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'abc'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;type&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="mi"&gt;42&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"abc"&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="err"&gt;'&lt;/span&gt;&lt;span class="nc"&gt;tuple&lt;/span&gt;&lt;span class="s1"&gt;'&amp;gt;&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;If we were to use a type annotation, it would be &lt;code&gt;Tuple[Int, String]&lt;/code&gt;.
+Looking back at cardinalilities, this is a product type because the cardinality of the combined type is the product of its members.
+These don't have to be 2-tuples, either, any permutation is allowed.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;utop&lt;/span&gt; &lt;span class="o"&gt;#&lt;/span&gt; &lt;span class="k"&gt;let&lt;/span&gt; &lt;span class="n"&gt;t&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;42&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"forty-two"&lt;/span&gt;&lt;span class="o"&gt;);;&lt;/span&gt;
+&lt;span class="k"&gt;val&lt;/span&gt; &lt;span class="n"&gt;t&lt;/span&gt; &lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="kt"&gt;string&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;42&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"forty-two"&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Notice the &lt;code&gt;*&lt;/code&gt; in the type anotation above.
+You know, like multiplication!
+Can we pattern match on product types?
+Yes!&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;utop&lt;/span&gt; &lt;span class="o"&gt;#&lt;/span&gt; &lt;span class="k"&gt;let&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="n"&gt;v&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="k"&gt;match&lt;/span&gt; &lt;span class="n"&gt;v&lt;/span&gt; &lt;span class="k"&gt;with&lt;/span&gt;
+&lt;span class="o"&gt;|&lt;/span&gt; &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;42&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt; &lt;span class="o"&gt;_)&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="s2"&gt;"You really like Douglas Adams!"&lt;/span&gt;
+&lt;span class="o"&gt;|&lt;/span&gt; &lt;span class="o"&gt;_&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="s2"&gt;"What a boring tuple"&lt;/span&gt;&lt;span class="o"&gt;;;&lt;/span&gt;
+&lt;span class="k"&gt;val&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="k"&gt;'&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="kt"&gt;string&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="k"&gt;fun&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+
+&lt;span class="n"&gt;utop&lt;/span&gt; &lt;span class="o"&gt;#&lt;/span&gt; &lt;span class="k"&gt;let&lt;/span&gt; &lt;span class="o"&gt;_&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="n"&gt;t&lt;/span&gt;&lt;span class="o"&gt;;;&lt;/span&gt;
+&lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="kt"&gt;string&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;"You really like Douglas Adams!"&lt;/span&gt;
+
+&lt;span class="n"&gt;utop&lt;/span&gt; &lt;span class="o"&gt;#&lt;/span&gt; &lt;span class="k"&gt;let&lt;/span&gt; &lt;span class="o"&gt;_&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;99&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;22&lt;/span&gt;&lt;span class="o"&gt;);;&lt;/span&gt;
+&lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="kt"&gt;string&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;"What a boring tuple"&lt;/span&gt;
+
+&lt;span class="n"&gt;utop&lt;/span&gt; &lt;span class="o"&gt;#&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;You may notice that I didn't provide anything useful in the second argument of the pattern match.
+This is why the REPL annotates it as &lt;code&gt;'a&lt;/code&gt;.
+That means that the function will accept any type in that position.
+The typing system is incredibly powerful once you sort it out in your head.&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h3 id="Next-steps"&gt;Next steps&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/intro-to-functional-programming-ideas/#Next-steps"&gt;¶&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;All of these topics are covered in great detail by the smart people of the interwebs.
+My goal was to introduce these ideas from a Pythonista's frame of mind since Python is still my "daily driver".
+I didn't cover some important topics like composition and thinking with types.
+They deserve more thorough coverage, and I hope to tackle each of them in the near future.&lt;/p&gt;
+&lt;p&gt;Can you use these techniques in Python?
+Yes, of course!
+I do encourage you to learn a bit of Haskell or OCaml first.
+For me, leaving the comfort of Python really made this material "click".
+You also need to be acutely aware of the limitations of Python and where these constructs fall apart.&lt;/p&gt;
+&lt;h4 id="My-favorite-Python/FP-libraries"&gt;My favorite Python/FP libraries&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/intro-to-functional-programming-ideas/#My-favorite-Python/FP-libraries"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://github.com/tobgu/pyrsistent/"&gt;pyrsistent&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://returns.readthedocs.io/en/latest/"&gt;returns&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://toolz.readthedocs.io/en/latest/"&gt;toolz&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/div&gt;</description><category>functional-programming</category><category>ocaml</category><category>python</category><guid>https://blog.wificidr.net/posts/intro-to-functional-programming-ideas/</guid><pubDate>Tue, 01 Jun 2021 05:05:51 GMT</pubDate></item><item><title>Running</title><link>https://blog.wificidr.net/posts/running/</link><dc:creator>Daniel Justice</dc:creator><description>&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
 &lt;/div&gt;&lt;div class="inner_cell"&gt;
 &lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
 &lt;h2 id="Running-through-the-pandemic"&gt;Running through the pandemic&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/running/#Running-through-the-pandemic"&gt;¶&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;I don't write enough, and it is something that I need to work on.
@@ -2486,52 +2915,4 @@ Move the slider to see the solution adjust to changing conditions.&lt;/p&gt;
 
 &lt;/div&gt;
 &lt;/div&gt;
-&lt;/div&gt;</description><category>pycon</category><category>python</category><guid>https://blog.wificidr.net/posts/pycon-us-2018/pycon-us-2018/</guid><pubDate>Wed, 16 May 2018 21:44:58 GMT</pubDate></item><item><title>Project Euler #6</title><link>https://blog.wificidr.net/posts/project-euler-6/project-euler-6/</link><dc:creator>Daniel Justice</dc:creator><description>&lt;div&gt;&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
-&lt;/div&gt;&lt;div class="inner_cell"&gt;
-&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
-&lt;h3 id="Project-Euler-problem-6"&gt;Project Euler problem 6&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/project-euler-6/project-euler-6/#Project-Euler-problem-6"&gt;¶&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;I stumbled across Project Euler (at &lt;a href="https://www.hackerrank.com/contests/projecteuler/challenges/euler006"&gt;HackerRank&lt;/a&gt; or at &lt;a href="https://projecteuler.net/"&gt;Project Euler&lt;/a&gt;) a while back, and it has been a low item on my to-do list for some time.  It can be quite frustrating at first, but I find it rewarding each time I unlock a little piece of the mathematical puzzle.  Of course you can cheat, but that completely defeats the purpose and harms no one but yourself.  I hope I can demonstrate why with this example.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;On a side note, HackerRank typically penalizes you for brute force methods.  They force you to really think about the problems.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;a href="https://projecteuler.net/problem=6"&gt;Problem 6&lt;/a&gt; asks, "Find the difference between the sum of the squares of the first one hundred natural numbers and the square of the sum."  In other words, what is 
-$$ \big|\big(\sum_1^n n\big)^2 - \big(\sum_1^n n^2\big)\big| $$&lt;/p&gt;
-&lt;p&gt;I was already familiar with &lt;a href="http://mathandmultimedia.com/2010/09/15/sum-first-n-positive-integers/"&gt;Gauss's method&lt;/a&gt; of summing the first series of natural numbers.  What I did not know how to do was to sum their squares.  The brute force method will yield a result, but HackerRank will penalize you with a timeout if you go that route.  I chose to dig deeper...&lt;/p&gt;
-&lt;h4 id="A-row-of-boxes"&gt;A row of boxes&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/project-euler-6/project-euler-6/#A-row-of-boxes"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;Nothing beats a little chair time with pencil and paper.  I suspected a strong link between geometry and the answer to this problem, so I started drawing squares on my graph paper.&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://blog.wificidr.net/images/boxes.png" alt=""&gt;&lt;!-- .element height="50%" width="50%" --&gt;&lt;/p&gt;
-&lt;p&gt;If you are familiar with &lt;a href="https://www.mathsisfun.com/algebra/triangular-numbers.html"&gt;triangle numbers&lt;/a&gt;, you might notice the pattern of the right edge of each square.  It is the series 1, 3, 6, 10, 15...  It is really fascinating to me how these things relate to one another.  The formula to find the nth triangle number is the same formula to find the sum of a series of natural numbers!&lt;br&gt;
-$$ \sum_1^n n=\frac{n(n+1)}{2} $$&lt;/p&gt;
-&lt;p&gt;Therefore, to find the area of the enclosing rectangle, we simply multiply the sum from above by our 'n'.  Now, we need to account for all those little strips of triangle numbers that are left over on top of the squares.  I have to admit, I spent quite a bit of time on this one and simply got stuck.  I knew I needed to find another sum, but this time the series is the sum of the triangle numbers themselves.  I needed to find a formula for the series 1, 4, 10, 20, 35...&lt;/p&gt;
-&lt;h4 id="Tetrahedral-Numbers"&gt;Tetrahedral Numbers&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/project-euler-6/project-euler-6/#Tetrahedral-Numbers"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;In an attempt to not ruin the learning process, I did an internet search for the mystery series.  I immediately came across this article on &lt;a href="https://en.wikipedia.org/wiki/Tetrahedral_number"&gt;tetrahedral numbers&lt;/a&gt;.  This was my extra quantity!  To find the sum of a series of squares, subtract the (n - 1)th tetrahedral number from the area of the rectangle that overlays the boxes.&lt;/p&gt;
-&lt;p&gt;The tetrahedral numbers are easily visualized if you think of a triangular tower of spheres as in this image:&lt;br&gt;
-&lt;img src="https://upload.wikimedia.org/wikipedia/commons/8/87/Pyramid_of_35_spheres_animation_original.gif" alt=""&gt;&lt;/p&gt;
-&lt;p&gt;&lt;small&gt;By Blotwell [GFDL (http://www.gnu.org/copyleft/fdl.html), CC-BY-SA-3.0 (http://creativecommons.org/licenses/by-sa/3.0/) or GPL (http://www.gnu.org/licenses/gpl.html)], from Wikimedia Commons&lt;/small&gt;&lt;/p&gt;
-&lt;p&gt;If you start taking apart the tower, the spheres perfectly fill in the gaps in the stack of rectangles above.  If you get really bored, you can validate this like I did with a bunch of blocks and marbles.  These items are readily available if you have kids.  One last bit worth noting is that we only need (n - 1) tetrahedral numbers because we don't need to fill in the last row.&lt;/p&gt;
-&lt;p&gt;Finally, the sum of a series of squares can be found by:
-$$ \sum_1^n n^2=n * \frac{n(n+1)}{2} - \frac{(n - 1)(n)(n+1)}{6} $$&lt;/p&gt;
-$$ =\frac{n^3+n^2}{2} - \frac{(n^2-n)(n+1)}{6} $$&lt;p&gt;&lt;/p&gt;
-$$ =\frac{n^3+n^2}{2} - \frac{n^3+n^2-n^2-n}{6} $$&lt;p&gt;&lt;/p&gt;
-$$ =\frac{3(n^3+n^2)}{6} - \frac{n^3-n}{6} $$&lt;p&gt;&lt;/p&gt;
-$$ =\frac{3n^3+3n^2-n^3+n}{6} $$&lt;p&gt;&lt;/p&gt;
-$$ \sum_1^n n^2=\frac{2n^3+3n^2+n}{6} $$&lt;p&gt;&lt;/p&gt;
-&lt;h4 id="Why-does-this-matter?"&gt;Why does this matter?&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/project-euler-6/project-euler-6/#Why-does-this-matter?"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;Not to sound overly cliché, but it is easy, often too easy, to find answers to all of our questions at our fingertips.  For example, if you want to cut right to the chase, you could have a look at &lt;a href="http://www.mathblog.dk/project-euler-problem-6/"&gt;this answer&lt;/a&gt;.  Be sure to take a look at the &lt;a href="https://trans4mind.com/personal_development/mathematics/series/sumNaturalSquares.htm"&gt;proof&lt;/a&gt; as well.  Both posts are respectable, but I think they hide the intuition in the formulas.&lt;/p&gt;
-&lt;p&gt;In my search for an answer I learned something new, and I also saw the problem in a new light not illustrated at either of the previous links.  Pardon my drawing skills, but imagine the previous image as a stack of cubes, all laid on top of one another pushed to one side.  Here's a top-down view of what I'm describing:&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://blog.wificidr.net/images/stacked_boxes.png" alt=""&gt;&lt;!-- .element height="50%" width="50%" --&gt;&lt;/p&gt;
-&lt;p&gt;If you imagine the sum of squares as rows of stacked boxes, you can clearly see the relationship between the sum and the tetrahedral numbers from earlier (the missing space to be subtracted)!&lt;/p&gt;
-&lt;p&gt;I hope I have encouraged you to dig a little deeper the next time you run across a tricky math problem and to look for a deeper understanding of the fundamental forces that shape it.&lt;/p&gt;
-
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class="cell border-box-sizing code_cell rendered"&gt;
-&lt;div class="input"&gt;
-&lt;div class="prompt input_prompt"&gt;In [ ]:&lt;/div&gt;
-&lt;div class="inner_cell"&gt;
-    &lt;div class="input_area"&gt;
-&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt; 
-&lt;/pre&gt;&lt;/div&gt;
-
-    &lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-
-&lt;/div&gt;&lt;/div&gt;</description><category>math</category><category>python</category><guid>https://blog.wificidr.net/posts/project-euler-6/project-euler-6/</guid><pubDate>Tue, 23 Jan 2018 02:35:26 GMT</pubDate></item></channel></rss>
+&lt;/div&gt;</description><category>pycon</category><category>python</category><guid>https://blog.wificidr.net/posts/pycon-us-2018/pycon-us-2018/</guid><pubDate>Wed, 16 May 2018 21:44:58 GMT</pubDate></item></channel></rss>

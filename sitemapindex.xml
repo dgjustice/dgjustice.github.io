@@ -10,12 +10,16 @@
   <lastmod>2020-10-31T20:35:00Z</lastmod>
  </sitemap>
  <sitemap>
+  <loc>https://blog.wificidr.net/categories/functional-programming.xml</loc>
+  <lastmod>2021-06-01T20:23:00Z</lastmod>
+ </sitemap>
+ <sitemap>
   <loc>https://blog.wificidr.net/categories/math.xml</loc>
   <lastmod>2020-10-31T20:35:00Z</lastmod>
  </sitemap>
  <sitemap>
   <loc>https://blog.wificidr.net/categories/ocaml.xml</loc>
-  <lastmod>2021-05-28T01:22:00Z</lastmod>
+  <lastmod>2021-06-01T20:23:00Z</lastmod>
  </sitemap>
  <sitemap>
   <loc>https://blog.wificidr.net/categories/parsing.xml</loc>
@@ -27,7 +31,7 @@
  </sitemap>
  <sitemap>
   <loc>https://blog.wificidr.net/categories/python.xml</loc>
-  <lastmod>2020-10-31T20:35:00Z</lastmod>
+  <lastmod>2021-06-01T20:23:00Z</lastmod>
  </sitemap>
  <sitemap>
   <loc>https://blog.wificidr.net/categories/running.xml</loc>
@@ -35,10 +39,10 @@
  </sitemap>
  <sitemap>
   <loc>https://blog.wificidr.net/rss.xml</loc>
-  <lastmod>2021-05-28T01:48:00Z</lastmod>
+  <lastmod>2021-06-01T20:23:00Z</lastmod>
  </sitemap>
  <sitemap>
   <loc>https://blog.wificidr.net/sitemap.xml</loc>
-  <lastmod>2021-05-28T01:48:00Z</lastmod>
+  <lastmod>2021-06-01T20:23:00Z</lastmod>
  </sitemap>
 </sitemapindex>
