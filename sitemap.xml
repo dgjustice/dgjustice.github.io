@@ -27,7 +27,7 @@
  </url>
  <url>
   <loc>https://blog.wificidr.net/archive.html</loc>
-  <lastmod>2021-06-01T20:23:00Z</lastmod>
+  <lastmod>2021-06-25T21:37:00Z</lastmod>
  </url>
  <url>
   <loc>https://blog.wificidr.net/categories/</loc>
@@ -67,7 +67,7 @@
  </url>
  <url>
   <loc>https://blog.wificidr.net/index-1.html</loc>
-  <lastmod>2021-06-01T20:22:00Z</lastmod>
+  <lastmod>2021-06-25T21:37:00Z</lastmod>
  </url>
  <url>
   <loc>https://blog.wificidr.net/posts/fold-vs-recursion/</loc>
@@ -112,5 +112,9 @@
  <url>
   <loc>https://blog.wificidr.net/posts/running/</loc>
   <lastmod>2021-05-28T01:48:00Z</lastmod>
+ </url>
+ <url>
+  <loc>https://blog.wificidr.net/posts/timing-bit-manipulation/</loc>
+  <lastmod>2021-06-25T21:37:00Z</lastmod>
  </url>
 </urlset>

@@ -1,5 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>WifiCIDR Blog</title><link>https://blog.wificidr.net/</link><description>WifiCIDR Blog</description><atom:link href="https://blog.wificidr.net/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Tue, 01 Jun 2021 20:23:32 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Introduction to Functional Programming Ideas</title><link>https://blog.wificidr.net/posts/intro-to-functional-programming-ideas/</link><dc:creator>Daniel Justice</dc:creator><description>&lt;div&gt;&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>WifiCIDR Blog</title><link>https://blog.wificidr.net/</link><description>WifiCIDR Blog</description><atom:link href="https://blog.wificidr.net/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Fri, 25 Jun 2021 21:37:39 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Timing bit manipulation</title><link>https://blog.wificidr.net/posts/timing-bit-manipulation/</link><dc:creator>Daniel Justice</dc:creator><description>&lt;div&gt;&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h2 id="Timing-bit-manipulation"&gt;Timing bit manipulation&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/timing-bit-manipulation/#Timing-bit-manipulation"&gt;¶&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;I ran across a surprising result today (surprising to me, at least), and I thought I'd share.&lt;/p&gt;
+&lt;p&gt;TL;DR; When in doubt, double check your assumptions!&lt;/p&gt;
+&lt;p&gt;I need a function that counts how many 1-bits are set in an unsigned integer.
+My initial thought was to not even consider Python's &lt;code&gt;bin&lt;/code&gt; function because my assumption was that anything in string-land would be inherently slower.
+I don't necessarily need this to be blazingly fast, but there is no sense writing extra code if I don't need it.
+Thankfully, Python has a wonderful module called &lt;a href="https://docs.python.org/3/library/timeit.html"&gt;&lt;code&gt;timeit&lt;/code&gt;&lt;/a&gt; that is great for these sorts of tests.&lt;/p&gt;
+&lt;p&gt;I picked up Hacker's Delight by Henry S. Warren, Jr. a few months ago, and it is full of bit-twiddling greatness.
+I have transposed the C code to Python below, and I really thought it would blow the doors off the other two.
+It is an order of magnitude faster than my initial creation, but the simple one-liner is the fastest!&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing code_cell rendered"&gt;
+&lt;div class="input"&gt;
+&lt;div class="prompt input_prompt"&gt;In [12]:&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+    &lt;div class="input_area"&gt;
+&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;timeit&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;timeit&lt;/span&gt;
+
+&lt;span class="c1"&gt;# My quick-and-dirty attempt, works on unsized +ints&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;count_one_bits&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;positive_integer_or_zero&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;count&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;
+    &lt;span class="k"&gt;while&lt;/span&gt; &lt;span class="n"&gt;positive_integer_or_zero&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;count&lt;/span&gt; &lt;span class="o"&gt;+=&lt;/span&gt; &lt;span class="n"&gt;positive_integer_or_zero&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
+        &lt;span class="n"&gt;positive_integer_or_zero&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&amp;gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;count&lt;/span&gt;
+
+&lt;span class="c1"&gt;# divide-and-conquer from Hacker's Delight (Warren), works on 32-bit unsigned ints&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;pop32&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;-=&lt;/span&gt; &lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt; &lt;span class="mh"&gt;0x55555555&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt; &lt;span class="mh"&gt;0x33333333&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt; &lt;span class="mh"&gt;0x33333333&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt; &lt;span class="mh"&gt;0x0f0f0f0f&lt;/span&gt;
+    &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;+=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="mi"&gt;8&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;+=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="mi"&gt;16&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt; &lt;span class="mh"&gt;0x0000003f&lt;/span&gt;
+
+&lt;span class="c1"&gt;# Surely not, strings are slow, right?!&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;count_str_bits&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nb"&gt;bin&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;count&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"1"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;count_one_bits&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;4127189174&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;pop32&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;4127189174&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;count_str_bits&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;4127189174&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+
+&lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"-"&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="mi"&gt;80&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="o"&gt;%&lt;/span&gt;&lt;span class="k"&gt;timeit&lt;/span&gt; count_one_bits(4127189174)
+&lt;span class="o"&gt;%&lt;/span&gt;&lt;span class="k"&gt;timeit&lt;/span&gt; pop32(4127189174)
+&lt;span class="o"&gt;%&lt;/span&gt;&lt;span class="k"&gt;timeit&lt;/span&gt; count_str_bits(4127189174)
+&lt;/pre&gt;&lt;/div&gt;
+
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class="output_wrapper"&gt;
+&lt;div class="output"&gt;
+
+
+&lt;div class="output_area"&gt;
+
+    &lt;div class="prompt"&gt;&lt;/div&gt;
+
+
+&lt;div class="output_subarea output_stream output_stdout output_text"&gt;
+&lt;pre&gt;23
+23
+23
+--------------------------------------------------------------------------------
+3.17 µs ± 9.21 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
+478 ns ± 7.02 ns per loop (mean ± std. dev. of 7 runs, 1000000 loops each)
+352 ns ± 5.58 ns per loop (mean ± std. dev. of 7 runs, 1000000 loops each)
+&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h5 id="References"&gt;References&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/timing-bit-manipulation/#References"&gt;¶&lt;/a&gt;&lt;/h5&gt;&lt;p&gt;Warren, H. (2012). Hacker’s Delight (2nd ed.). Addison-Wesley Professional.&lt;/p&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/div&gt;</description><category>python</category><guid>https://blog.wificidr.net/posts/timing-bit-manipulation/</guid><pubDate>Fri, 25 Jun 2021 19:10:09 GMT</pubDate></item><item><title>Introduction to Functional Programming Ideas</title><link>https://blog.wificidr.net/posts/intro-to-functional-programming-ideas/</link><dc:creator>Daniel Justice</dc:creator><description>&lt;div&gt;&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
 &lt;/div&gt;&lt;div class="inner_cell"&gt;
 &lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
 &lt;h2 id="Functional-Programming-for-Pythonistas"&gt;Functional Programming for Pythonistas&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/intro-to-functional-programming-ideas/#Functional-Programming-for-Pythonistas"&gt;¶&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;There are never-ending arguments in tech communities about things like RDBMS versus no-SQL, or functional programming (FP) versus object-oriented-programming (OOP).
@@ -2896,23 +2987,4 @@ Move the slider to see the solution adjust to changing conditions.&lt;/p&gt;
 
 &lt;/div&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;/div&gt;</description><category>python</category><guid>https://blog.wificidr.net/posts/pytest-flask-sqlalchemy/pytest-flask-sqlalchemy/</guid><pubDate>Sat, 14 Jul 2018 02:43:38 GMT</pubDate></item><item><title>PyCon US 2018</title><link>https://blog.wificidr.net/posts/pycon-us-2018/pycon-us-2018/</link><dc:creator>Daniel Justice</dc:creator><description>&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
-&lt;/div&gt;&lt;div class="inner_cell"&gt;
-&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
-&lt;h3 id="PyCon-US-2018"&gt;PyCon US 2018&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/pycon-us-2018/pycon-us-2018/#PyCon-US-2018"&gt;¶&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;I had the amazing opportunity to go to &lt;a href="https://us.pycon.org/2018/"&gt;PyCon&lt;/a&gt; this year, and it was a blast!  I've shared this on Slack, but it warrants a post as I've not written anything since January.&lt;/p&gt;
-&lt;h6 id="Needs-improvement"&gt;Needs improvement&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/pycon-us-2018/pycon-us-2018/#Needs-improvement"&gt;¶&lt;/a&gt;&lt;/h6&gt;&lt;p&gt;Starting with this not because I'm a troll, but because I don't want it to be the "final thought".  Honestly, not much.  The food.  The food was not great, but we survived.  The scheduling was a bit wonky (four talks on testing all in the same slot); that's why they record the talks (I have a few hours worth bookmarked on YouTube).&lt;/p&gt;
-&lt;h5 id='The-"Meh"'&gt;The "Meh"&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/pycon-us-2018/pycon-us-2018/#The-%22Meh%22"&gt;¶&lt;/a&gt;&lt;/h5&gt;&lt;p&gt;The tutorials.  In the ones I took, they ran at breakneck speed, no time for questions.  It's probably better to watch the videos and follow on your own over a weekend.  I was expecting a little more time for questions and tangents.  I'm currently working my way through the tutorial by &lt;a href="https://youtu.be/uRvTeK5Ndq8"&gt;Chrisy Heaton on Spatial Alalysis&lt;/a&gt;.  So far it's great, and she is running at a deliberate pace.&lt;/p&gt;
-&lt;h4 id="The-rest-which-was-all-awesome:"&gt;The rest &lt;em&gt;which was all awesome&lt;/em&gt;:&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/pycon-us-2018/pycon-us-2018/#The-rest-which-was-all-awesome:"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;The experience is invaluable.  This community is unlike any other I've been a part of.  "Pythonistas" are passionate about their language and the community transcends many borders and spoken languages.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;p&gt;"The talks are recorded, why go?"  Good question, and I was wondering that myself on day 2.  The main reason is that you are a &lt;em&gt;captive audience&lt;/em&gt;.  Leave your laptop in the hotel, go pay attention.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;Open spaces.  I didn't know what these were until I got there.  They make many of the rooms available to pretty much anyone who wants to organize a pop-up gathering.  There were about 30 folks in the network automation room.  Got some good info on data science, message queues, and other random topics.  It's hit and miss, but some of these were as good as the main presenters themselves.  It's also an informal setting where you can easily speak to folks one-on-one.  See my previous point about meeting people.&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Lastly, and &lt;em&gt;most importantly&lt;/em&gt;, the people (have I mentioned that yet?):  I can't emphasize this point enough.  If I take nothing else away from this conference, it will be the amazing folks that I met and got to spend time with.  I spoke  with Michael Kennedy &lt;a href="https://talkpython.fm/"&gt;Talk Python podcast&lt;/a&gt;, I got to hear about Dan Bader &lt;a href="https://dbader.org/"&gt;Python Tips and Tricks&lt;/a&gt; getting "kicked" out of Canda (and they didn't even say sorry!), I drank beer with the founders of &lt;a href="https://pybit.es/"&gt;PyBites&lt;/a&gt;, Julian Sequeira and Bob Belderbos, the list goes on.  I spoke with the one of the founders of NumPy, a PhD in electrical engineering, one of the current maintainers of PyPi, ...  Every one of these people made themselves publicly available and welcomed questions and one-on-one interaction, even for n00bs like myself!&lt;/p&gt;
-&lt;p&gt;If someone asks me, "Why should I go to PyCon?", my answer is unequivocally to meet other people who share your passion for computer science.  My peers know that I lack people skills, and my biggest takeaway is the relationships I made while on site.  Big thanks to Samuel Moore for facilitating most of those meetings.&lt;/p&gt;
-&lt;h4 id="Next-year"&gt;Next year&lt;a class="anchor-link" href="https://blog.wificidr.net/posts/pycon-us-2018/pycon-us-2018/#Next-year"&gt;¶&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;What would I do differently?  Skip the tutorials or only do one session each day, not two.  Other blogs will tell you to leave free time in your schedule.  That's great advice; you can't make all the presentations (besides, it's exhausting at some point).&lt;/p&gt;
-
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;</description><category>pycon</category><category>python</category><guid>https://blog.wificidr.net/posts/pycon-us-2018/pycon-us-2018/</guid><pubDate>Wed, 16 May 2018 21:44:58 GMT</pubDate></item></channel></rss>
+&lt;/div&gt;&lt;/div&gt;</description><category>python</category><guid>https://blog.wificidr.net/posts/pytest-flask-sqlalchemy/pytest-flask-sqlalchemy/</guid><pubDate>Sat, 14 Jul 2018 02:43:38 GMT</pubDate></item></channel></rss>
